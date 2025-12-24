@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Loader from "../../components/loader";
 import {
@@ -17,10 +17,9 @@ export default function ReviewPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [filter, setFilter] = useState("all"); // all, 5, 4, 3, 2, 1
-  const [sortBy, setSortBy] = useState("newest"); // newest, oldest, highest, lowest
+  const [filter, setFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
-  // New review form
   const [newReview, setNewReview] = useState({
     productId: "",
     rating: 5,
@@ -30,19 +29,15 @@ export default function ReviewPage() {
     email: "",
   });
 
-  // Fetch reviews on component mount
-  useEffect(() => {
-    fetchReviews();
-  }, [filter, sortBy]);
-
-  const fetchReviews = () => {
+  // Wrap fetchReviews in useCallback to avoid dependency issues
+  const fetchReviews = useCallback(() => {
     setLoading(true);
     axios
       .get(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`, {
         params: { filter, sortBy },
       })
-      .then((res) => {
-        setReviews(res.data);
+      .then((response) => {
+        setReviews(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -50,7 +45,11 @@ export default function ReviewPage() {
         toast.error("Failed to load reviews");
         setLoading(false);
       });
-  };
+  }, [filter, sortBy]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   const handleSubmitReview = (e) => {
     e.preventDefault();
@@ -58,7 +57,8 @@ export default function ReviewPage() {
 
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`, newReview)
-      .then((res) => {
+      .then(() => {
+        // Removed unused 'res' parameter
         toast.success("Review submitted successfully!");
         setNewReview({
           productId: "",
@@ -68,7 +68,7 @@ export default function ReviewPage() {
           name: "",
           email: "",
         });
-        fetchReviews(); // Refresh reviews
+        fetchReviews();
         setSubmitting(false);
       })
       .catch((error) => {
@@ -83,8 +83,9 @@ export default function ReviewPage() {
       axios
         .delete(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/${reviewId}`)
         .then(() => {
+          // Removed unused 'res' parameter
           toast.success("Review deleted successfully!");
-          fetchReviews(); // Refresh reviews
+          fetchReviews();
         })
         .catch((error) => {
           console.error("Error deleting review:", error);
@@ -247,7 +248,8 @@ export default function ReviewPage() {
                       className="bg-yellow-400 h-2 rounded-full"
                       style={{
                         width: `${
-                          (ratingDistribution[stars] / totalReviews) * 100
+                          (ratingDistribution[stars] / (totalReviews || 1)) *
+                          100
                         }%`,
                       }}
                     ></div>
