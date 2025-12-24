@@ -11,22 +11,22 @@ import ResponsiveTesting from "./pages/test";
 import ForgetPassword from "./pages/client/forgetPassword";
 
 function App() {
-	return (
-		<GoogleOAuthProvider clientId="149381885055-vgt1mnbtecieslegomscgusp7tiu3kgv.apps.googleusercontent.com">
-			<BrowserRouter>
-			<Toaster position="top-right"/>
-				<Routes path="/*">
-					<Route path="/admin/*" element={<AdminPage/>}/>
-					<Route path="/login" element={<LoginPage/>}/>
-					<Route path="/testing" element={<Testing/>}/>
-					<Route path="/register" element={<RegisterPage/>}/>
-					<Route path="/forget" element={<ForgetPassword/>}/>
-					<Route path="/r" element={<ResponsiveTesting/>}/>
-					<Route path="/*" element={<HomePage/>}/>
-				</Routes>
-			</BrowserRouter>
-		</GoogleOAuthProvider>
-	);
+  return (
+    <GoogleOAuthProvider clientId="149381885055-vgt1mnbtecieslegomscgusp7tiu3kgv.apps.googleusercontent.com">
+      <BrowserRouter>
+        <Toaster position="top-right" />
+        <Routes path="/*">
+          <Route path="/admin/*" element={<AdminPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/testing" element={<Testing />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forget" element={<ForgetPassword />} />
+          <Route path="/r" element={<ResponsiveTesting />} />
+          <Route path="/*" element={<HomePage />} />
+        </Routes>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
+  );
 }
 
 export default App;
