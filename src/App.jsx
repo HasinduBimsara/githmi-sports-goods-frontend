@@ -10,6 +10,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import ResponsiveTesting from "./pages/test";
 import ForgetPassword from "./pages/client/forgetPassword";
 import ContactPage from "./pages/client/ContactPage";
+import ReviewPage from "./pages/client/ReviewPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/admin/*" element={<AdminPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/reviews" element={<ReviewPage />} />
           <Route path="/testing" element={<Testing />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forget" element={<ForgetPassword />} />
