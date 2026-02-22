@@ -29,7 +29,7 @@ export default function HomePage() {
     try {
       // Since you might not have these endpoints, use your existing endpoint
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/product/`
+        `${import.meta.env.VITE_BACKEND_URL}/api/product/`,
       );
 
       // Take first 8 products for demo
@@ -218,9 +218,6 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
                 Shop by Category
               </h2>
-              <p className="text-gray-600">
-                Browse products by your favorite categories
-              </p>
             </div>
             <Link
               to="/products"

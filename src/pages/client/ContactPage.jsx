@@ -54,7 +54,7 @@ export default function ContactPage() {
     {
       icon: <FaPhone className="text-xl" />,
       title: "Phone Support",
-      info: "+94 11 755 1111",
+      info: "+94 91 2255125 ",
       description: "24/7 Hotline Support",
       color: "bg-blue-500",
       delay: "100",
@@ -62,7 +62,7 @@ export default function ContactPage() {
     {
       icon: <FaWhatsapp className="text-xl" />,
       title: "WhatsApp",
-      info: "+94 70 711 7777",
+      info: "+94 70 1010 225",
       description: "Instant Message Support",
       color: "bg-green-500",
       delay: "200",
@@ -70,7 +70,7 @@ export default function ContactPage() {
     {
       icon: <FaEnvelope className="text-xl" />,
       title: "Email",
-      info: "support@kapruka.com",
+      info: "githmisportgoods@Gmail.com",
       description: "Response within 24 hours",
       color: "bg-red-500",
       delay: "300",

@@ -80,11 +80,11 @@ export default function Header() {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  LuxeCart
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent uppercase">
+                  Githmi Sports Goods
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
-                  Premium Store
+                  Sport Goods
                 </p>
               </div>
             </Link>
@@ -376,7 +376,9 @@ export default function Header() {
         }
 
         * {
-          transition: background-color 0.3s ease, border-color 0.3s ease,
+          transition:
+            background-color 0.3s ease,
+            border-color 0.3s ease,
             color 0.3s ease;
         }
       `}</style>
