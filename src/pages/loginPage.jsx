@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GrGoogle } from "react-icons/gr";
+import loginBg from "../assets/login-bg.jpg";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -62,9 +63,12 @@ export default function LoginPage() {
     console.log("Login button clicked");
   }
   return (
-    <div className="w-full h-screen bg-[url(/login-bg.jpg)] bg-cover bg-center flex">
+    <div
+      className="w-full h-screen bg-cover bg-center flex"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
       <div className="w-[50%] h-full"></div>
-      <div className="  w-[50%] h-full flex justify-center items-center">
+      <div className="w-[50%] h-full flex justify-center items-center">
         <div className="w-[450px] h-[600px] backdrop-blur-xl shadow-xl rounded-xl flex flex-col justify-center items-center">
           <input
             onChange={(e) => {
