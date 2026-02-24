@@ -1,0 +1,92 @@
+.slider-body {
+  min-height: 500px; /* Increased slightly to make room for the reflection shadow */
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.slider-wrapper {
+  height: 100%;
+  margin-inline: auto;
+  position: relative;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  overflow-x: scroll;
+  padding-top: 40px;
+  padding-bottom: 60px; /* Extra padding at the bottom for the shadow reflection */
+}
+
+.slider-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.slider-track {
+  display: flex;
+  width: calc(280px * 18);
+  animation: scroll 15s linear infinite alternate;
+  justify-content: center;
+  gap: 1.5rem;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.slide {
+  width: 260px;
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.4s ease;
+  perspective: 1000px;
+
+  /* THIS ADDS THE MOVIE-STYLE REFLECTION SHADOW UNDERNEATH */
+  -webkit-box-reflect: below 8px
+    linear-gradient(transparent, transparent, rgba(0, 0, 0, 0.15));
+}
+
+/* The inner card design */
+.slide > div {
+  transition: box-shadow 0.4s ease;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. Scale up the hovered card and add a MASSIVE deep shadow to make it pop */
+.slide:hover {
+  transform: scale(1.08) translateZ(30px);
+  z-index: 50;
+}
+.slide:hover > div {
+  /* Deep cinematic drop shadow when hovered */
+  box-shadow:
+    0 30px 60px -12px rgba(0, 0, 0, 0.4),
+    0 18px 36px -18px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 2. Tilt cards pushing them slightly behind when slider is hovered */
+.slider-track:hover > :not(:hover) {
+  margin-inline: -1rem;
+  transform: perspective(600px) rotateY(25deg) scale(0.85);
+  opacity: 0.6;
+}
+
+/* 3. Tilt cards occurring AFTER the hovered item in the opposite direction */
+.slide:hover ~ .slide {
+  transform: perspective(600px) rotateY(-25deg) scale(0.85);
+}
+
+/* 4. Completely pause the scrolling movement on hover */
+.slider-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-280px * 9));
+  }
+}
