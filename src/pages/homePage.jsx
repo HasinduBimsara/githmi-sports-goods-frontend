@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaArrowRight,
-  FaStar,
   FaShoppingBag,
   FaTruck,
   FaShieldAlt,
@@ -56,7 +55,6 @@ export default function HomePage() {
 
       /* * TO USE YOUR BACKEND LATER, REPLACE MOCK DATA WITH THIS LOGIC:
        * const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/`);
-       * // Then filter or slice the response data into your different states
        */
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -91,43 +89,16 @@ export default function HomePage() {
     },
   ];
 
-  const categories = [
-    {
-      name: "Electronics",
-      count: 45,
-      color: "bg-gradient-to-r from-blue-500 to-cyan-400",
-      image: "🔌",
-    },
-    {
-      name: "Fashion",
-      count: 120,
-      color: "bg-gradient-to-r from-pink-500 to-rose-400",
-      image: "👕",
-    },
-    {
-      name: "Home & Living",
-      count: 78,
-      color: "bg-gradient-to-r from-green-500 to-emerald-400",
-      image: "🏠",
-    },
-    {
-      name: "Sports",
-      count: 56,
-      color: "bg-gradient-to-r from-orange-500 to-yellow-400",
-      image: "⚽",
-    },
-    {
-      name: "Books",
-      count: 89,
-      color: "bg-gradient-to-r from-purple-500 to-violet-400",
-      image: "📚",
-    },
-    {
-      name: "Beauty",
-      count: 67,
-      color: "bg-gradient-to-r from-red-500 to-pink-400",
-      image: "💄",
-    },
+  // Modern, Sports-focused categories for the top line
+  const sportsCategories = [
+    "Cricket",
+    "Football",
+    "Fitness & Gym",
+    "Tennis",
+    "Badminton",
+    "Swimming",
+    "Basketball",
+    "Athletics",
   ];
 
   // 100% Crash-Proof Slider Component
@@ -183,25 +154,58 @@ export default function HomePage() {
   };
 
   return (
-    <div className="w-full">
-      {/* 1. Hero Section
-      <section className="relative w-full h-[600px] bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
-        <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Discover Amazing{" "}
-              <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Products Online
+    <div className="w-full font-sans">
+      {/* 1. LINE-WISE CATEGORY STRIP (Moved to top, modern bullet design) */}
+      <div className="w-full bg-white border-b border-gray-200 shadow-sm">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex items-center justify-center overflow-x-auto py-3 hide-scrollbar">
+            <div className="flex items-center space-x-3 sm:space-x-5 whitespace-nowrap">
+              <span className="text-sm font-black text-gray-900 uppercase tracking-wider">
+                Top Sports:
               </span>
+              {sportsCategories.map((cat, index) => (
+                <React.Fragment key={index}>
+                  <Link
+                    to="/products"
+                    className="text-sm font-bold text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    {cat}
+                  </Link>
+                  {index < sportsCategories.length - 1 && (
+                    <span className="text-gray-300 text-lg leading-none select-none">
+                      •
+                    </span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Hero Section */}
+      {/* <section
+        className="relative w-full h-[500px] overflow-hidden"
+        style={{
+          backgroundImage: 'url("/login-bg.jpg")', // Ensure this exists in your public folder
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="relative container mx-auto px-4 h-full flex items-center">
+          <div className="max-w-2xl z-10">
+            <h1 className="text-5xl md:text-6xl font-black text-white mb-4 leading-tight uppercase italic tracking-tight">
+              Level Up Your Game
             </h1>
-            <p className="text-xl text-gray-300 mb-8 max-w-xl">
-              Shop the latest trends in electronics, fashion, home goods, and
-              more.
+            <p className="text-xl text-gray-200 mb-8 max-w-xl font-medium">
+              Premium sports equipment, apparel, and accessories for champions.
             </p>
             <div className="flex gap-4">
               <Link
                 to="/products"
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:-translate-y-1 transition-all duration-300"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:-translate-y-1 transition-all duration-300 shadow-lg"
               >
                 Shop Now <FaArrowRight className="ml-3" />
               </Link>
@@ -210,40 +214,18 @@ export default function HomePage() {
         </div>
       </section> */}
 
-      {/* 2. Features Section */}
-      <section className="py-16 bg-gray-50">
+      {/* 3. Flash Deals */}
+      <section className="pt-2 pb-8 bg-gradient-to-b from-red-50 to-white overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl p-6 shadow-md hover:-translate-y-2 transition-transform"
-              >
-                <div
-                  className={`${feature.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6`}
-                >
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Flash Deals (Urgency right after features) */}
-      <section className="py-16 bg-gradient-to-b from-red-50 to-white overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-red-200">
-              <FaBolt className="text-2xl text-white" />
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-red-200">
+              <FaBolt className="text-2xl text-red-600" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Flash Deals</h2>
-              <p className="text-red-500 font-semibold">Ends in 24 hours!</p>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                Flash Deals
+              </h2>
+              <p className="text-red-500 font-medium mt-1">Ends in 24 hours!</p>
             </div>
           </div>
           {loading ? (
@@ -256,46 +238,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. Categories Section */}
-      <section className="py-16">
+      {/* 4. New Arrivals */}
+      <section className="pt-8 pb-8 bg-gradient-to-b from-white to-blue-50 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Shop by Category
-            </h2>
-            <Link
-              to="/products"
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
-            >
-              View All <FaChevronRight className="ml-2" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((cat, i) => (
-              <Link
-                key={i}
-                to="/products"
-                className={`${cat.color} rounded-2xl p-6 text-white text-center hover:scale-105 transition-transform shadow-lg`}
-              >
-                <div className="text-4xl mb-4">{cat.image}</div>
-                <h3 className="font-bold text-lg">{cat.name}</h3>
-                <p className="text-white/80 text-sm">{cat.count} items</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. New Arrivals */}
-      <section className="py-16 bg-gradient-to-b from-white to-blue-50 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-blue-200">
-              <FaBoxOpen className="text-2xl text-white" />
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-blue-200">
+              <FaBoxOpen className="text-2xl text-blue-600" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">New Arrivals</h2>
-              <p className="text-gray-600">Fresh gear just dropped</p>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                New Arrivals
+              </h2>
+              <p className="text-gray-500 font-medium mt-1">
+                Fresh gear just dropped
+              </p>
             </div>
           </div>
           {loading ? (
@@ -308,18 +264,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Featured Products */}
-      <section className="py-16 bg-white overflow-hidden">
+      {/* 5. Featured Products */}
+      <section className="pt-8 pb-8 bg-white overflow-hidden border-t border-gray-100">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-indigo-200">
-              <MdTrendingUp className="text-2xl text-white" />
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-indigo-200">
+              <MdTrendingUp className="text-2xl text-purple-600" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
                 Featured Products
               </h2>
-              <p className="text-gray-600">Handpicked items just for you</p>
+              <p className="text-gray-500 font-medium mt-1">
+                Handpicked items just for you
+              </p>
             </div>
           </div>
           {loading ? (
@@ -335,16 +293,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. Trending Now */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      {/* 6. Trending Now */}
+      <section className="pt-8 pb-8 bg-gradient-to-b from-gray-50 to-white overflow-hidden border-t border-gray-100">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-200">
-              <FaFire className="text-2xl text-white" />
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-200">
+              <FaFire className="text-2xl text-orange-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Trending Now</h2>
-              <p className="text-gray-600">What everyone is buying right now</p>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                Trending Now
+              </h2>
+              <p className="text-gray-500 font-medium mt-1">
+                What everyone is buying right now
+              </p>
             </div>
           </div>
           {loading ? (
@@ -360,16 +322,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. Top Rated (Social Proof before the final CTA) */}
-      <section className="py-16 bg-gradient-to-t from-yellow-50 to-white overflow-hidden">
+      {/* 7. Top Rated */}
+      <section className="pt-8 pb-16 bg-gradient-to-t from-yellow-50 to-white overflow-hidden border-t border-gray-100">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200">
-              <FaTrophy className="text-2xl text-white" />
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200">
+              <FaTrophy className="text-2xl text-yellow-600" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Top Rated</h2>
-              <p className="text-gray-600">5-star customer favorites</p>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                Top Rated
+              </h2>
+              <p className="text-gray-500 font-medium mt-1">
+                5-star customer favorites
+              </p>
             </div>
           </div>
           {loading ? (
@@ -382,29 +348,79 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 9. CTA Banner */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white text-center relative overflow-hidden">
-            <div className="relative z-10">
-              <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full mb-6">
-                <FaTag className="mr-2" />{" "}
-                <span className="font-medium">Limited Time Offer</span>
+      {/* 8. CTA Banner + Features Integrated */}
+      <section className="py-0 bg-white border-t border-gray-100">
+        <div className="container mx-auto px-0">
+          {/* Main CTA Block */}
+          <div className="bg-gray-900 overflow-hidden shadow-2xl relative flex flex-col lg:flex-row">
+            {/* Left side text/cta */}
+            <div className="lg:w-1/2 p-12 relative z-10 flex flex-col justify-center">
+              <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full mb-8 w-max border border-white/20">
+                <FaTag className="mr-2 text-yellow-400" />
+                <span className="font-semibold text-sm text-white">
+                  Limited Time Offer
+                </span>
               </div>
-              <h2 className="text-4xl font-bold mb-6">
-                Get <span className="text-yellow-300">25% OFF</span> Your First
-                Order
+              <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white uppercase italic">
+                Get <span className="text-yellow-400">25% OFF</span> <br />
+                Your First Order
               </h2>
+              <p className="text-gray-300 text-lg mb-8 max-w-md">
+                Sign up today to unlock exclusive discounts, early access to
+                sales, and premium support.
+              </p>
               <Link
                 to="/register"
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold rounded-xl hover:-translate-y-1 transition-all inline-block shadow-lg"
+                className="px-10 py-4 bg-white text-gray-900 font-bold text-lg rounded-xl hover:-translate-y-1 transition-all inline-flex items-center w-max shadow-lg"
               >
-                Sign Up Free
+                Sign Up Free <FaArrowRight className="ml-3" />
               </Link>
             </div>
+
+            {/* Right side features block */}
+            <div className="lg:w-1/2 bg-gray-800 p-8 lg:p-12 relative z-10 border-3 border-gray-700">
+              <h3 className="text-2xl font-bold text-white mb-8 border-b border-gray-700 pb-4">
+                Why Shop With Us?
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+                {features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-start text-left group"
+                  >
+                    <div
+                      className={`bg-white text-gray-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}
+                    >
+                      {feature.icon}
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-1">
+                      {feature.title}
+                    </h4>
+                    <p className="text-gray-400 text-sm leading-snug">
+                      {feature.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
           </div>
         </div>
       </section>
+
+      {/* Hide Scrollbar for category strip */}
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

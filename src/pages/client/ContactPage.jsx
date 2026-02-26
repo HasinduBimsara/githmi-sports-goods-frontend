@@ -34,6 +34,7 @@ const FormInput = ({
   required,
   placeholder,
   icon,
+  iconColorClass, // Added prop for modern colorful icons
   activeField,
   setActiveField,
 }) => (
@@ -42,7 +43,14 @@ const FormInput = ({
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     <div className="relative group">
-      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors">
+      {/* Modern Colorful Icon Wrapper */}
+      <div
+        className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all duration-300 ${
+          activeField === name
+            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md" // Active state
+            : iconColorClass // Inactive state (Pastel)
+        }`}
+      >
         {icon}
       </div>
       <input
@@ -53,7 +61,8 @@ const FormInput = ({
         onFocus={() => setActiveField(name)}
         onBlur={() => setActiveField(null)}
         required={required}
-        className={`w-full bg-gray-50 text-sm text-gray-800 py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 ${
+        // Increased left padding (pl-14) to make room for the new colored icon box
+        className={`w-full bg-gray-50 text-sm text-gray-800 py-3.5 pl-14 pr-4 rounded-xl outline-none transition-all duration-300 border-2 ${
           activeField === name
             ? "border-blue-500 bg-white shadow-md"
             : "border-transparent hover:border-gray-200"
@@ -72,7 +81,7 @@ const ChatMessage = ({ message, type }) => (
       className={`max-w-[80%] p-3 rounded-2xl text-sm ${
         type === "user"
           ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-none"
-          : "bg-gray-100 text-gray-800 rounded-bl-none"
+          : "bg-gray-100 text-gray-800 rounded-bl-none border border-gray-200"
       }`}
     >
       {message}
@@ -182,8 +191,9 @@ export default function ContactPage() {
 
           <div className="lg:w-7/12 flex flex-col sm:flex-row gap-8 lg:gap-16 pt-2">
             <div>
-              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-sm">
-                <MdLocationOn className="text-2xl" />
+              {/* Modern Gradient Icon Background */}
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 text-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-blue-200">
+                <MdLocationOn className="text-3xl" />
               </div>
               <h3 className="font-bold text-gray-900 mb-1">Our Address</h3>
               <p className="text-gray-500 text-sm">
@@ -192,8 +202,9 @@ export default function ContactPage() {
               <p className="text-gray-500 text-sm">Galle, Sri Lanka</p>
             </div>
             <div>
-              <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-sm">
-                <MdPhone className="text-2xl" />
+              {/* Modern Gradient Icon Background */}
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-purple-200">
+                <MdPhone className="text-3xl" />
               </div>
               <h3 className="font-bold text-gray-900 mb-1">Our Contact Info</h3>
               <p className="text-gray-500 text-sm">+94 778041167</p>
@@ -253,6 +264,7 @@ export default function ContactPage() {
                   required
                   placeholder="Enter your name..."
                   icon={<FaUser />}
+                  iconColorClass="bg-blue-100 text-blue-600" // Pastel Blue
                   activeField={uiState.activeField}
                   setActiveField={(f) =>
                     setUiState((prev) => ({ ...prev, activeField: f }))
@@ -267,6 +279,7 @@ export default function ContactPage() {
                   required
                   placeholder="How can we help?"
                   icon={<FaComment />}
+                  iconColorClass="bg-purple-100 text-purple-600" // Pastel Purple
                   activeField={uiState.activeField}
                   setActiveField={(f) =>
                     setUiState((prev) => ({ ...prev, activeField: f }))
@@ -280,7 +293,8 @@ export default function ContactPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="Enter your email..."
-                  icon={<MdEmail className="text-lg" />}
+                  icon={<MdEmail />}
+                  iconColorClass="bg-pink-100 text-pink-600" // Pastel Pink
                   activeField={uiState.activeField}
                   setActiveField={(f) =>
                     setUiState((prev) => ({ ...prev, activeField: f }))
@@ -293,7 +307,8 @@ export default function ContactPage() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Enter your phone..."
-                  icon={<MdPhone className="text-lg" />}
+                  icon={<MdPhone />}
+                  iconColorClass="bg-green-100 text-green-600" // Pastel Green
                   activeField={uiState.activeField}
                   setActiveField={(f) =>
                     setUiState((prev) => ({ ...prev, activeField: f }))
@@ -345,11 +360,15 @@ export default function ContactPage() {
           {/* Right: Compact FAQ & Socials */}
           <div className="lg:w-4/12 flex flex-col gap-8">
             <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl p-8 border border-white/50 flex-1">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <FaQuestionCircle className="text-blue-500 mr-2" /> Quick FAQ
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                {/* Modern FAQ Icon */}
+                <div className="w-10 h-10 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center mr-3">
+                  <FaQuestionCircle className="text-xl" />
+                </div>
+                Quick FAQ
               </h3>
               <div className="space-y-4">
-                <div className="border-b border-gray-100 pb-3">
+                <div className="border-b border-gray-100 pb-3 hover:pl-2 transition-all duration-300">
                   <h4 className="font-bold text-sm text-gray-800">
                     What are your shipping options?
                   </h4>
@@ -358,7 +377,7 @@ export default function ContactPage() {
                     island-wide.
                   </p>
                 </div>
-                <div className="border-b border-gray-100 pb-3">
+                <div className="border-b border-gray-100 pb-3 hover:pl-2 transition-all duration-300">
                   <h4 className="font-bold text-sm text-gray-800">
                     How do I return an item?
                   </h4>
@@ -369,25 +388,26 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mt-6 mb-4">
+              <h3 className="text-xl font-bold text-gray-900 mt-8 mb-5">
                 Follow Us
               </h3>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
+                {/* Modern Hover-Physics Social Icons */}
                 <a
                   href="https://web.facebook.com/p/Githmi-Sports-Goods-61559424647331/?_rdc=1&_rdr#"
-                  className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
+                  className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl hover:bg-blue-600 hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-blue-200 transition-all duration-300"
                 >
                   <FaFacebook />
                 </a>
                 <a
                   href="https://www.instagram.com/githmisportsshop/"
-                  className="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors"
+                  className="w-12 h-12 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center text-xl hover:bg-pink-600 hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-pink-200 transition-all duration-300"
                 >
                   <FaInstagram />
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center hover:bg-green-500 hover:text-white transition-colors"
+                  className="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center text-xl hover:bg-green-500 hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-green-200 transition-all duration-300"
                 >
                   <FaWhatsapp />
                 </a>
@@ -401,7 +421,7 @@ export default function ContactPage() {
       <div className="fixed bottom-6 right-6 z-50">
         {uiState.chatOpen && (
           <div className="absolute bottom-20 right-0 w-80 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 animate-slideUp">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center shadow-md">
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-2">
                   <BsChatDots />
@@ -417,7 +437,7 @@ export default function ContactPage() {
                 onClick={() =>
                   setUiState((prev) => ({ ...prev, chatOpen: false }))
                 }
-                className="text-white/80 hover:text-white"
+                className="text-white/80 hover:text-white transition-colors"
               >
                 ✕
               </button>
@@ -438,12 +458,12 @@ export default function ContactPage() {
                   setChatState((prev) => ({ ...prev, input: e.target.value }))
                 }
                 placeholder="Type a message..."
-                className="flex-1 px-3 py-2 text-sm border rounded-full outline-none focus:border-blue-500"
+                className="flex-1 px-4 py-2 text-sm border bg-gray-50 rounded-full outline-none focus:border-blue-500 focus:bg-white transition-all"
               />
               <button
                 type="submit"
                 disabled={!chatState.input.trim()}
-                className="w-9 h-9 bg-blue-600 text-white rounded-full flex justify-center items-center disabled:opacity-50"
+                className="w-9 h-9 bg-blue-600 text-white rounded-full flex justify-center items-center hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-md"
               >
                 <FaPaperPlane className="text-xs" />
               </button>
@@ -454,7 +474,7 @@ export default function ContactPage() {
           onClick={() =>
             setUiState((prev) => ({ ...prev, chatOpen: !prev.chatOpen }))
           }
-          className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white shadow-xl hover:scale-110 transition-transform"
+          className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white shadow-xl hover:scale-110 hover:shadow-blue-500/50 transition-all duration-300"
         >
           <BsChatDots className="text-2xl" />
         </button>
