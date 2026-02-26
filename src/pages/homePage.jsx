@@ -10,44 +10,53 @@ import {
   FaFire,
   FaTag,
   FaChevronRight,
+  FaBolt,
+  FaTrophy,
+  FaBoxOpen,
 } from "react-icons/fa";
 import { MdTrendingUp } from "react-icons/md";
 import Loader from "../components/loader";
 import "./ProductSlider.css";
 
 export default function HomePage() {
+  // State for all 5 slider sections
+  const [flashDeals, setFlashDeals] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [trendingProducts, setTrendingProducts] = useState([]);
+  const [topRated, setTopRated] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetchFeaturedProducts();
+    fetchProducts();
   }, []);
 
-  const fetchFeaturedProducts = async () => {
+  const fetchProducts = async () => {
     try {
-      // Safe Mock Data: 18 items to perfectly fill the sliding track
-      const safeMockData = Array.from({ length: 18 }, (_, i) => ({
-        id: `mock-${i}`,
-        name: `Premium Product ${i + 1}`,
-        price: (29.99 + i * 2).toFixed(2),
-        image: `https://placehold.co/300x400/1A1A1A/FFF?text=Item+${i + 1}`,
-        category: "Trending",
-      }));
+      // Safe Mock Data Generators for different categories
+      const generateMockData = (prefix, category, basePrice) =>
+        Array.from({ length: 18 }, (_, i) => ({
+          id: `${prefix}-${i}`,
+          name: `${category} Gear ${i + 1}`,
+          price: (basePrice + i * 2.5).toFixed(2),
+          image: `https://placehold.co/300x400/1A1A1A/FFF?text=${prefix}+${i + 1}`,
+          category: category,
+        }));
 
-      setFeaturedProducts(safeMockData);
-      setTrendingProducts(safeMockData);
+      // Populate states with distinct data
+      setFlashDeals(generateMockData("flash", "Flash Deal", 15.99));
+      setNewArrivals(generateMockData("new", "New Arrival", 49.99));
+      setFeaturedProducts(generateMockData("feat", "Featured", 39.99));
+      setTrendingProducts(generateMockData("trend", "Trending", 25.99));
+      setTopRated(generateMockData("top", "Top Rated", 59.99));
+
       setLoading(false);
 
-      /* * TO USE YOUR BACKEND LATER, UNCOMMENT THIS:
-       *
+      /* * TO USE YOUR BACKEND LATER, REPLACE MOCK DATA WITH THIS LOGIC:
        * const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/`);
-       * if (Array.isArray(response.data)) {
-       * setFeaturedProducts(response.data.slice(0, 18));
-       * setTrendingProducts(response.data.slice(18, 36).length > 0 ? response.data.slice(18, 36) : response.data.slice(0, 18));
-       * }
-       * setLoading(false);
+       * // Then filter or slice the response data into your different states
        */
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -122,7 +131,7 @@ export default function HomePage() {
   ];
 
   // 100% Crash-Proof Slider Component
-  const ProductSlider = ({ products }) => {
+  const ProductSlider = ({ products, badgeColor = "text-orange-500" }) => {
     if (!products || products.length === 0) return null;
 
     return (
@@ -131,7 +140,6 @@ export default function HomePage() {
           <div className="slider-track">
             {products.map((product, index) => (
               <div className="slide" key={product.id || index}>
-                {/* SAFE INLINE CARD: Replaces <ProductCard /> temporarily to prevent white screens */}
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow border border-gray-100">
                   <div className="h-64 overflow-hidden relative">
                     <img
@@ -144,11 +152,13 @@ export default function HomePage() {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md text-gray-400 hover:text-red-500 transition-colors">
-                      <FaFire className="text-orange-500" />
+                      <FaFire className={badgeColor} />
                     </div>
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
-                    <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-1">
+                    <p
+                      className={`text-xs font-bold uppercase tracking-wider mb-1 ${badgeColor}`}
+                    >
                       {product.category || "Trending"}
                     </p>
                     <h3 className="font-bold text-gray-900 text-lg mb-2 line-clamp-1">
@@ -174,7 +184,7 @@ export default function HomePage() {
 
   return (
     <div className="w-full">
-      {/* Hero Section */}
+      {/* 1. Hero Section
       <section className="relative w-full h-[600px] bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="max-w-2xl">
@@ -198,9 +208,9 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      {/* Features Section */}
+      {/* 2. Features Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -224,7 +234,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* 3. Flash Deals (Urgency right after features) */}
+      <section className="py-16 bg-gradient-to-b from-red-50 to-white overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center mb-10">
+            <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-red-200">
+              <FaBolt className="text-2xl text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Flash Deals</h2>
+              <p className="text-red-500 font-semibold">Ends in 24 hours!</p>
+            </div>
+          </div>
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader />
+            </div>
+          ) : (
+            <ProductSlider products={flashDeals} badgeColor="text-red-500" />
+          )}
+        </div>
+      </section>
+
+      {/* 4. Categories Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-10">
@@ -254,11 +286,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-16 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+      {/* 5. New Arrivals */}
+      <section className="py-16 bg-gradient-to-b from-white to-blue-50 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-blue-200">
+              <FaBoxOpen className="text-2xl text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">New Arrivals</h2>
+              <p className="text-gray-600">Fresh gear just dropped</p>
+            </div>
+          </div>
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader />
+            </div>
+          ) : (
+            <ProductSlider products={newArrivals} badgeColor="text-blue-500" />
+          )}
+        </div>
+      </section>
+
+      {/* 6. Featured Products */}
+      <section className="py-16 bg-white overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center mb-10">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-indigo-200">
               <MdTrendingUp className="text-2xl text-white" />
             </div>
             <div>
@@ -273,16 +327,19 @@ export default function HomePage() {
               <Loader />
             </div>
           ) : (
-            <ProductSlider products={featuredProducts} />
+            <ProductSlider
+              products={featuredProducts}
+              badgeColor="text-purple-500"
+            />
           )}
         </div>
       </section>
 
-      {/* Trending Now */}
-      <section className="py-16 overflow-hidden">
+      {/* 7. Trending Now */}
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center mb-10">
-            <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-200">
               <FaFire className="text-2xl text-white" />
             </div>
             <div>
@@ -295,12 +352,37 @@ export default function HomePage() {
               <Loader />
             </div>
           ) : (
-            <ProductSlider products={trendingProducts} />
+            <ProductSlider
+              products={trendingProducts}
+              badgeColor="text-orange-500"
+            />
           )}
         </div>
       </section>
 
-      {/* CTA Banner */}
+      {/* 8. Top Rated (Social Proof before the final CTA) */}
+      <section className="py-16 bg-gradient-to-t from-yellow-50 to-white overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center mb-10">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200">
+              <FaTrophy className="text-2xl text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Top Rated</h2>
+              <p className="text-gray-600">5-star customer favorites</p>
+            </div>
+          </div>
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader />
+            </div>
+          ) : (
+            <ProductSlider products={topRated} badgeColor="text-yellow-500" />
+          )}
+        </div>
+      </section>
+
+      {/* 9. CTA Banner */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white text-center relative overflow-hidden">
@@ -315,7 +397,7 @@ export default function HomePage() {
               </h2>
               <Link
                 to="/register"
-                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold rounded-xl hover:-translate-y-1 transition-all inline-block"
+                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold rounded-xl hover:-translate-y-1 transition-all inline-block shadow-lg"
               >
                 Sign Up Free
               </Link>
