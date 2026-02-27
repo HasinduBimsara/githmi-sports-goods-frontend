@@ -1,6 +1,21 @@
 @import "tailwindcss";
 
-@theme{
-    --color-accent: #FF6363;
-    
+/* CRITICAL FOR TAILWIND v4: 
+  This line tells Tailwind to trigger 'dark:' classes whenever the 
+  '.dark' class is present on the <html> or <body> tag. 
+*/
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-accent: #ff6363;
+}
+
+/* Base styles to ensure the entire page background changes smoothly */
+@layer base {
+  body {
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-white;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
 }
