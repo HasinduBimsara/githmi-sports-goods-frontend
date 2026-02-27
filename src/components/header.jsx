@@ -112,25 +112,23 @@ export default function Header() {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-3 md:space-x-4">
-              {/* Theme Toggle */}
+              {/* NEW: Modern Pill Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="relative p-2.5 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 shadow-sm hover:shadow-md transition-all duration-300 group"
+                className="w-16 h-8 bg-gray-900 dark:bg-gray-200 rounded-full p-1 flex items-center transition-colors duration-300 shadow-inner"
                 aria-label="Toggle theme"
               >
-                <div className="relative w-5 h-5 overflow-hidden">
-                  <BsSunFill
-                    className={`w-5 h-5 text-yellow-500 transition-all duration-500 absolute ${
-                      darkMode ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
-                    }`}
-                  />
-                  <BsMoonFill
-                    className={`w-5 h-5 text-purple-400 transition-all duration-500 absolute ${
-                      darkMode ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
-                    }`}
-                  />
+                <div
+                  className={`w-6 h-6 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center transform transition-transform duration-300 ${
+                    darkMode ? "translate-x-8" : "translate-x-0"
+                  }`}
+                >
+                  {darkMode ? (
+                    <BsMoonFill className="text-gray-900 dark:text-white text-xs" />
+                  ) : (
+                    <BsSunFill className="text-gray-900 dark:text-white text-xs" />
+                  )}
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 rounded-xl transition-all duration-300"></div>
               </button>
 
               {/* Cart */}
@@ -278,36 +276,42 @@ export default function Header() {
                 </div>
 
                 {/* Theme Toggle in Mobile */}
-                <div className="mt-8 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-                        {darkMode ? (
-                          <BsMoonFill className="text-lg text-purple-400" />
-                        ) : (
-                          <BsSunFill className="text-lg text-yellow-500" />
-                        )}
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">
-                          {darkMode ? "Dark Mode" : "Light Mode"}
-                        </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Switch theme
-                        </p>
-                      </div>
+                <div className="mt-8 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center shadow-sm">
+                      {darkMode ? (
+                        <BsMoonFill className="text-lg text-purple-400" />
+                      ) : (
+                        <BsSunFill className="text-lg text-yellow-500" />
+                      )}
                     </div>
-                    <button
-                      onClick={toggleTheme}
-                      className={`relative w-14 h-7 flex items-center rounded-full p-1 transition-all duration-300 ${
-                        darkMode
-                          ? "bg-gradient-to-r from-purple-500 to-blue-500 justify-end"
-                          : "bg-gradient-to-r from-yellow-400 to-orange-400 justify-start"
+                    <div>
+                      <span className="font-medium text-gray-700 dark:text-gray-300">
+                        {darkMode ? "Dark Mode" : "Light Mode"}
+                      </span>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Switch theme
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* NEW: Mobile Modern Pill Theme Toggle */}
+                  <button
+                    onClick={toggleTheme}
+                    className="w-14 h-7 bg-gray-900 dark:bg-gray-200 rounded-full p-1 flex items-center transition-colors duration-300 shadow-inner"
+                  >
+                    <div
+                      className={`w-5 h-5 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center transform transition-transform duration-300 ${
+                        darkMode ? "translate-x-7" : "translate-x-0"
                       }`}
                     >
-                      <div className="w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300"></div>
-                    </button>
-                  </div>
+                      {darkMode ? (
+                        <BsMoonFill className="text-gray-900 dark:text-white text-[10px]" />
+                      ) : (
+                        <BsSunFill className="text-gray-900 dark:text-white text-[10px]" />
+                      )}
+                    </div>
+                  </button>
                 </div>
 
                 {/* User Info in Mobile */}
@@ -333,7 +337,7 @@ export default function Header() {
               <div className="p-6 border-t border-gray-200 dark:border-gray-800">
                 <div className="text-center">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    © 2024 LuxeCart. All rights reserved.
+                    © 2024 Githmi Sports Goods. All rights reserved.
                   </p>
                 </div>
               </div>
@@ -342,39 +346,32 @@ export default function Header() {
         </div>
       )}
 
-      {/* Add global styles for theme */}
+      {/* Global styles */}
       <style jsx global>{`
         :root {
           --scrollbar-thumb: #cbd5e1;
           --scrollbar-track: #f1f5f9;
         }
-
         .dark {
           --scrollbar-thumb: #475569;
           --scrollbar-track: #1e293b;
         }
-
         ::-webkit-scrollbar {
           width: 10px;
         }
-
         ::-webkit-scrollbar-track {
           background: var(--scrollbar-track);
         }
-
         ::-webkit-scrollbar-thumb {
           background: var(--scrollbar-thumb);
           border-radius: 5px;
         }
-
         ::-webkit-scrollbar-thumb:hover {
           background: #94a3b8;
         }
-
         .dark ::-webkit-scrollbar-thumb:hover {
           background: #64748b;
         }
-
         * {
           transition:
             background-color 0.3s ease,
