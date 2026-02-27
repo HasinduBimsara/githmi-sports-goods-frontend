@@ -12,6 +12,9 @@ import {
   FaBolt,
   FaTrophy,
   FaBoxOpen,
+  FaFacebook, // Added
+  FaInstagram, // Added
+  FaWhatsapp, // Added
 } from "react-icons/fa";
 import { MdTrendingUp } from "react-icons/md";
 import Loader from "../components/loader";
@@ -188,7 +191,6 @@ export default function HomePage() {
       {/* 3. Flash Deals */}
       <section className="pt-8 pb-8 bg-gradient-to-b from-red-50 to-white dark:from-red-900/10 dark:to-gray-900 overflow-hidden transition-colors duration-300">
         <div className="container mx-auto px-4">
-          {/* ADDED MOTION: group class wraps the header */}
           <div className="flex items-center mb-6 group cursor-default">
             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-red-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12">
               <FaBolt className="text-2xl text-red-600 dark:text-red-500" />
@@ -213,7 +215,6 @@ export default function HomePage() {
       {/* 4. New Arrivals */}
       <section className="pt-8 pb-8 bg-gradient-to-b from-white to-blue-50 dark:from-gray-900 dark:to-blue-900/10 overflow-hidden transition-colors duration-300">
         <div className="container mx-auto px-4">
-          {/* ADDED MOTION: group class wraps the header */}
           <div className="flex items-center mb-6 group cursor-default">
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-blue-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1">
               <FaBoxOpen className="text-2xl text-blue-600 dark:text-blue-500" />
@@ -240,7 +241,6 @@ export default function HomePage() {
       {/* 5. Featured Products */}
       <section className="pt-8 pb-8 bg-white dark:bg-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          {/* ADDED MOTION: group class wraps the header */}
           <div className="flex items-center mb-6 group cursor-default">
             <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-indigo-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:translate-x-1 group-hover:-translate-y-1">
               <MdTrendingUp className="text-2xl text-purple-600 dark:text-purple-500" />
@@ -270,7 +270,6 @@ export default function HomePage() {
       {/* 6. Trending Now */}
       <section className="pt-8 pb-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          {/* ADDED MOTION: group class wraps the header */}
           <div className="flex items-center mb-6 group cursor-default">
             <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12">
               <FaFire className="text-2xl text-orange-500 dark:text-orange-400" />
@@ -300,7 +299,6 @@ export default function HomePage() {
       {/* 7. Top Rated */}
       <section className="pt-8 pb-16 bg-gradient-to-t from-yellow-50 to-white dark:from-yellow-900/10 dark:to-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          {/* ADDED MOTION: group class wraps the header */}
           <div className="flex items-center mb-6 group cursor-default">
             <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[15deg]">
               <FaTrophy className="text-2xl text-yellow-600 dark:text-yellow-500" />
@@ -352,6 +350,40 @@ export default function HomePage() {
                 {/* ADDED MOTION: Arrow slides right on hover */}
                 <FaArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-2" />
               </Link>
+
+              {/* ===== NEW SOCIAL MEDIA SECTION ===== */}
+              <div className="mt-10 pt-8 border-t border-white/10 dark:border-gray-700/50">
+                <p className="text-white/70 dark:text-gray-400 text-xs font-bold mb-4 uppercase tracking-widest">
+                  Connect With Us
+                </p>
+                <div className="flex gap-4">
+                  <a
+                    href="https://web.facebook.com/p/Githmi-Sports-Goods-61559424647331/?_rdc=1&_rdr#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-blue-200 dark:hover:shadow-blue-900 transition-all duration-300"
+                  >
+                    <FaFacebook />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/githmisportsshop/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-2xl bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400 flex items-center justify-center text-xl hover:bg-pink-600 dark:hover:bg-pink-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-pink-200 dark:hover:shadow-pink-900 transition-all duration-300"
+                  >
+                    <FaInstagram />
+                  </a>
+                  <a
+                    href="https://wa.me/94778041167"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 flex items-center justify-center text-xl hover:bg-green-500 dark:hover:bg-green-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-green-200 dark:hover:shadow-green-900 transition-all duration-300"
+                  >
+                    <FaWhatsapp />
+                  </a>
+                </div>
+              </div>
+              {/* ==================================== */}
             </div>
 
             {/* Right side features block */}
@@ -365,7 +397,6 @@ export default function HomePage() {
                     key={index}
                     className="flex flex-col items-start text-left group cursor-default"
                   >
-                    {/* ADDED MOTION: Added group-hover rotation and pop-up */}
                     <div
                       className={`bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:-translate-y-2 group-hover:rotate-6 transition-all duration-300 shadow-md`}
                     >
