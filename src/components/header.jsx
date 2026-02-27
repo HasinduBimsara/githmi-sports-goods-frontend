@@ -11,7 +11,7 @@ import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { MdOutlineContactSupport, MdReviews } from "react-icons/md";
 import { HiHome, HiShoppingBag } from "react-icons/hi";
 import { Link, useLocation } from "react-router-dom";
-// import UserData from "./userData"; // Commented out to show Auth buttons
+import ShinyText from "./ShinyText";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,7 +71,7 @@ export default function Header() {
       >
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            {/* Logo */}
+            {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-3 group">
               <div className="relative">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500 group-hover:rotate-12">
@@ -80,12 +80,15 @@ export default function Header() {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent uppercase">
-                  Githmi Sports Goods
+                <h1 className="text-4xl font-bold uppercase tracking-tight">
+                  {/* ✨ SHINY TEXT COMPONENT ✨ */}
+                  <ShinyText
+                    text="Githmi Sports Goods"
+                    disabled={false}
+                    speed={3}
+                    className={darkMode ? "text-[#a855f7]" : "text-[#4f46e5]"}
+                  />
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
-                  Sport Goods
-                </p>
               </div>
             </Link>
 
@@ -138,11 +141,9 @@ export default function Header() {
               >
                 <BsCart4 className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300" />
                 {cartCount > 0 && (
-                  <>
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
-                      {cartCount}
-                    </span>
-                  </>
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
+                    {cartCount}
+                  </span>
                 )}
               </Link>
 
@@ -258,7 +259,7 @@ export default function Header() {
                 <Link
                   to="/cart"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 mt-2"
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
@@ -295,6 +296,9 @@ export default function Header() {
                     <span className="font-medium text-gray-700 dark:text-gray-300 text-sm">
                       {darkMode ? "Dark Mode" : "Light Mode"}
                     </span>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Switch theme
+                    </p>
                   </div>
                 </div>
                 <button
@@ -340,7 +344,7 @@ export default function Header() {
         </div>
       )}
 
-      {/* Global styles */}
+      {/* Global styles for custom scrollbar */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
