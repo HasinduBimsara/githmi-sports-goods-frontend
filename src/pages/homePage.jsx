@@ -111,7 +111,7 @@ export default function HomePage() {
           <div className="slider-track">
             {products.map((product, index) => (
               <div className="slide" key={product.id || index}>
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow border border-gray-100">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700 group">
                   <div className="h-64 overflow-hidden relative">
                     <img
                       src={
@@ -120,26 +120,28 @@ export default function HomePage() {
                         "https://placehold.co/300x400"
                       }
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md text-gray-400 hover:text-red-500 transition-colors">
+                    {/* ADDED MOTION: Hover scale and rotate on the top-right badge */}
+                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-gray-400 dark:text-gray-300 hover:text-red-500 hover:scale-125 hover:rotate-12 cursor-pointer transition-all duration-300 z-20">
                       <FaFire className={badgeColor} />
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-grow">
+                  <div className="p-4 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
                     <p
                       className={`text-xs font-bold uppercase tracking-wider mb-1 ${badgeColor}`}
                     >
                       {product.category || "Trending"}
                     </p>
-                    <h3 className="font-bold text-gray-900 text-lg mb-2 line-clamp-1">
+                    <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-1">
                       {product.name}
                     </h3>
                     <div className="mt-auto flex justify-between items-center">
-                      <span className="text-xl font-bold text-gray-900">
+                      <span className="text-xl font-bold text-gray-900 dark:text-white">
                         ${product.price}
                       </span>
-                      <button className="bg-gray-900 text-white p-2 rounded-xl hover:bg-blue-600 transition-colors">
+                      {/* ADDED MOTION: Hover scale and pop up on the shopping bag */}
+                      <button className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:scale-110 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-sm hover:shadow-md">
                         <FaShoppingBag />
                       </button>
                     </div>
@@ -154,25 +156,25 @@ export default function HomePage() {
   };
 
   return (
-    <div className="w-full font-sans">
-      {/* 1. LINE-WISE CATEGORY STRIP (Moved to top, modern bullet design) */}
-      <div className="w-full bg-white border-b border-gray-200 shadow-sm">
+    <div className="w-full font-sans dark:bg-gray-900 transition-colors duration-300">
+      {/* 1. LINE-WISE CATEGORY STRIP */}
+      <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-center overflow-x-auto py-3 hide-scrollbar">
             <div className="flex items-center space-x-3 sm:space-x-5 whitespace-nowrap">
-              <span className="text-sm font-black text-gray-900 uppercase tracking-wider">
+              <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider transition-colors">
                 Top Sports:
               </span>
               {sportsCategories.map((cat, index) => (
                 <React.Fragment key={index}>
                   <Link
                     to="/products"
-                    className="text-sm font-bold text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:-translate-y-0.5 inline-block transition-all duration-300"
                   >
                     {cat}
                   </Link>
                   {index < sportsCategories.length - 1 && (
-                    <span className="text-gray-300 text-lg leading-none select-none">
+                    <span className="text-gray-300 dark:text-gray-700 text-lg leading-none select-none transition-colors">
                       •
                     </span>
                   )}
@@ -183,46 +185,16 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 2. Hero Section */}
-      {/* <section
-        className="relative w-full h-[500px] overflow-hidden"
-        style={{
-          backgroundImage: 'url("/login-bg.jpg")', // Ensure this exists in your public folder
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl z-10">
-            <h1 className="text-5xl md:text-6xl font-black text-white mb-4 leading-tight uppercase italic tracking-tight">
-              Level Up Your Game
-            </h1>
-            <p className="text-xl text-gray-200 mb-8 max-w-xl font-medium">
-              Premium sports equipment, apparel, and accessories for champions.
-            </p>
-            <div className="flex gap-4">
-              <Link
-                to="/products"
-                className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:-translate-y-1 transition-all duration-300 shadow-lg"
-              >
-                Shop Now <FaArrowRight className="ml-3" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       {/* 3. Flash Deals */}
-      <section className="pt-2 pb-8 bg-gradient-to-b from-red-50 to-white overflow-hidden">
+      <section className="pt-8 pb-8 bg-gradient-to-b from-red-50 to-white dark:from-red-900/10 dark:to-gray-900 overflow-hidden transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-red-200">
-              <FaBolt className="text-2xl text-red-600" />
+          {/* ADDED MOTION: group class wraps the header */}
+          <div className="flex items-center mb-6 group cursor-default">
+            <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-red-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12">
+              <FaBolt className="text-2xl text-red-600 dark:text-red-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 Flash Deals
               </h2>
               <p className="text-red-500 font-medium mt-1">Ends in 24 hours!</p>
@@ -239,17 +211,18 @@ export default function HomePage() {
       </section>
 
       {/* 4. New Arrivals */}
-      <section className="pt-8 pb-8 bg-gradient-to-b from-white to-blue-50 overflow-hidden">
+      <section className="pt-8 pb-8 bg-gradient-to-b from-white to-blue-50 dark:from-gray-900 dark:to-blue-900/10 overflow-hidden transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-blue-200">
-              <FaBoxOpen className="text-2xl text-blue-600" />
+          {/* ADDED MOTION: group class wraps the header */}
+          <div className="flex items-center mb-6 group cursor-default">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-blue-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:-translate-y-1">
+              <FaBoxOpen className="text-2xl text-blue-600 dark:text-blue-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 New Arrivals
               </h2>
-              <p className="text-gray-500 font-medium mt-1">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 Fresh gear just dropped
               </p>
             </div>
@@ -265,17 +238,18 @@ export default function HomePage() {
       </section>
 
       {/* 5. Featured Products */}
-      <section className="pt-8 pb-8 bg-white overflow-hidden border-t border-gray-100">
+      <section className="pt-8 pb-8 bg-white dark:bg-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-indigo-200">
-              <MdTrendingUp className="text-2xl text-purple-600" />
+          {/* ADDED MOTION: group class wraps the header */}
+          <div className="flex items-center mb-6 group cursor-default">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-indigo-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:translate-x-1 group-hover:-translate-y-1">
+              <MdTrendingUp className="text-2xl text-purple-600 dark:text-purple-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 Featured Products
               </h2>
-              <p className="text-gray-500 font-medium mt-1">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 Handpicked items just for you
               </p>
             </div>
@@ -294,17 +268,18 @@ export default function HomePage() {
       </section>
 
       {/* 6. Trending Now */}
-      <section className="pt-8 pb-8 bg-gradient-to-b from-gray-50 to-white overflow-hidden border-t border-gray-100">
+      <section className="pt-8 pb-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-200">
-              <FaFire className="text-2xl text-orange-500" />
+          {/* ADDED MOTION: group class wraps the header */}
+          <div className="flex items-center mb-6 group cursor-default">
+            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12">
+              <FaFire className="text-2xl text-orange-500 dark:text-orange-400" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 Trending Now
               </h2>
-              <p className="text-gray-500 font-medium mt-1">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 What everyone is buying right now
               </p>
             </div>
@@ -323,17 +298,18 @@ export default function HomePage() {
       </section>
 
       {/* 7. Top Rated */}
-      <section className="pt-8 pb-16 bg-gradient-to-t from-yellow-50 to-white overflow-hidden border-t border-gray-100">
+      <section className="pt-8 pb-16 bg-gradient-to-t from-yellow-50 to-white dark:from-yellow-900/10 dark:to-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200">
-              <FaTrophy className="text-2xl text-yellow-600" />
+          {/* ADDED MOTION: group class wraps the header */}
+          <div className="flex items-center mb-6 group cursor-default">
+            <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[15deg]">
+              <FaTrophy className="text-2xl text-yellow-600 dark:text-yellow-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 Top Rated
               </h2>
-              <p className="text-gray-500 font-medium mt-1">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 5-star customer favorites
               </p>
             </div>
@@ -349,13 +325,12 @@ export default function HomePage() {
       </section>
 
       {/* 8. CTA Banner + Features Integrated */}
-      <section className="py-0 bg-white border-t border-gray-100">
-        <div className="container mx-auto px-0">
-          {/* Main CTA Block */}
-          <div className="bg-gray-900 overflow-hidden shadow-2xl relative flex flex-col lg:flex-row">
+      <section className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
+        <div className="container mx-auto px-4">
+          <div className="bg-gray-900 dark:bg-gray-800 rounded-[2rem] overflow-hidden shadow-2xl relative flex flex-col lg:flex-row transition-colors duration-300">
             {/* Left side text/cta */}
             <div className="lg:w-1/2 p-12 relative z-10 flex flex-col justify-center">
-              <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full mb-8 w-max border border-white/20">
+              <div className="inline-flex items-center px-4 py-2 bg-white/10 dark:bg-gray-700/50 rounded-full mb-8 w-max border border-white/20 dark:border-gray-600">
                 <FaTag className="mr-2 text-yellow-400" />
                 <span className="font-semibold text-sm text-white">
                   Limited Time Offer
@@ -365,35 +340,38 @@ export default function HomePage() {
                 Get <span className="text-yellow-400">25% OFF</span> <br />
                 Your First Order
               </h2>
-              <p className="text-gray-300 text-lg mb-8 max-w-md">
+              <p className="text-gray-300 dark:text-gray-400 text-lg mb-8 max-w-md">
                 Sign up today to unlock exclusive discounts, early access to
                 sales, and premium support.
               </p>
               <Link
                 to="/register"
-                className="px-10 py-4 bg-white text-gray-900 font-bold text-lg rounded-xl hover:-translate-y-1 transition-all inline-flex items-center w-max shadow-lg"
+                className="group px-10 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold text-lg rounded-xl hover:-translate-y-1 transition-all inline-flex items-center w-max shadow-lg"
               >
-                Sign Up Free <FaArrowRight className="ml-3" />
+                Sign Up Free
+                {/* ADDED MOTION: Arrow slides right on hover */}
+                <FaArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-2" />
               </Link>
             </div>
 
             {/* Right side features block */}
-            <div className="lg:w-1/2 bg-gray-800 p-8 lg:p-12 relative z-10 border-3 border-gray-700">
-              <h3 className="text-2xl font-bold text-white mb-8 border-b border-gray-700 pb-4">
+            <div className="lg:w-1/2 bg-gray-800 dark:bg-gray-900/50 p-8 lg:p-12 relative z-10 border-l border-gray-700 dark:border-gray-800 transition-colors duration-300">
+              <h3 className="text-2xl font-bold text-white mb-8 border-b border-gray-700 dark:border-gray-700 pb-4">
                 Why Shop With Us?
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
                 {features.map((feature, index) => (
                   <div
                     key={index}
-                    className="flex flex-col items-start text-left group"
+                    className="flex flex-col items-start text-left group cursor-default"
                   >
+                    {/* ADDED MOTION: Added group-hover rotation and pop-up */}
                     <div
-                      className={`bg-white text-gray-900 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}
+                      className={`bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:-translate-y-2 group-hover:rotate-6 transition-all duration-300 shadow-md`}
                     >
                       {feature.icon}
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-1">
+                    <h4 className="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">
                       {feature.title}
                     </h4>
                     <p className="text-gray-400 text-sm leading-snug">
@@ -411,8 +389,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Hide Scrollbar for category strip */}
-      <style jsx>{`
+      {/* Safe inline styles to prevent Vite crash */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -420,7 +400,9 @@ export default function HomePage() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      `}</style>
+      `,
+        }}
+      />
     </div>
   );
 }

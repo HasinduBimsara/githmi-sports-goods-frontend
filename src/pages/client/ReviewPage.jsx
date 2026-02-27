@@ -1,23 +1,88 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
-// FIXED: Goes up two levels to reach src/components/loader
 import Loader from "../../components/loader";
 import {
   FaStar,
   FaUserCircle,
   FaPaperPlane,
   FaArrowRight,
+  FaQuoteLeft,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-// Ensure this path points to where your ProductSlider.css is saved!
 import "../ProductSlider.css";
 
+// ==========================================
+// 1. HELPER COMPONENTS
+// ==========================================
+const renderStars = (rating) => {
+  const safeRating = Number(rating) || 5;
+  return (
+    <div className="flex items-center space-x-1">
+      {[...Array(5)].map((_, i) => (
+        <FaStar
+          key={i}
+          className={`text-xs md:text-sm transition-colors duration-300 ${
+            i < safeRating
+              ? "text-yellow-400 drop-shadow-sm"
+              : "text-gray-300 dark:text-gray-600"
+          }`}
+        />
+      ))}
+    </div>
+  );
+};
+
+const HappyCustomerSlider = ({ customers }) => {
+  if (!customers || !Array.isArray(customers) || customers.length === 0)
+    return null;
+
+  return (
+    // Reduced min-h-[500px] to min-h-[340px] to remove massive dead space!
+    <div className="slider-body bg-transparent min-h-[340px] py-2">
+      <div className="slider-wrapper">
+        <div className="slider-track">
+          {customers.map((customer, index) => (
+            <div className="slide" key={customer?.id || index}>
+              <div className="inner-card bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden h-full flex flex-col items-center border border-gray-100 dark:border-gray-700 transition-all duration-300">
+                <div className="w-full h-40 overflow-hidden mb-2 relative">
+                  <img
+                    src={customer?.image || "https://placehold.co/300x300"}
+                    alt={customer?.name || "Customer"}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="p-3 flex flex-col items-center flex-grow w-full">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-base text-center line-clamp-1 mb-1 transition-colors duration-300">
+                    {customer?.name || "Happy Customer"}
+                  </h3>
+                  <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium mb-2 text-center line-clamp-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full transition-colors duration-300">
+                    {customer?.product || "Sports Gear"}
+                  </p>
+                  <div className="mt-auto mb-1">
+                    {renderStars(customer?.rating)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// 2. MAIN PAGE COMPONENT
+// ==========================================
 export default function ReviewPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [happyCustomers, setHappyCustomers] = useState([]);
+  const [activeField, setActiveField] = useState(null);
 
   const [newReview, setNewReview] = useState({
     productId: "",
@@ -28,7 +93,6 @@ export default function ReviewPage() {
     email: "",
   });
 
-  // Mock data to match the beautiful layout from the image design
   const defaultReviews = [
     {
       _id: "1",
@@ -37,13 +101,13 @@ export default function ReviewPage() {
       rating: 5,
       date: "2024-08-15",
       comment:
-        "Githmi Sports has completely revolutionized how we approach our gear. The quality of the cricket bats is incredibly accurate to professional standards, and the fast delivery ensures we get the best deals before the season starts. This platform is the future of sports trading. Highly recommended!",
+        "Githmi Sports has completely revolutionized how we approach our gear. The quality of the cricket bats is incredibly accurate to professional standards, and the fast delivery ensures we get the best deals.",
       avatar: "https://i.pravatar.cc/150?u=nasim",
     },
     {
       _id: "2",
       name: "Nazmul Haque",
-      role: "Director, Eastern Sports Industries",
+      role: "Director, Eastern Sports",
       rating: 5,
       date: "2024-08-15",
       comment:
@@ -53,11 +117,11 @@ export default function ReviewPage() {
     {
       _id: "3",
       name: "Fahmida Islam",
-      role: "Managing Director, Global Athletics Ltd.",
+      role: "Managing Director, Global Athletics",
       rating: 5,
       date: "2024-08-15",
       comment:
-        "The customer service feature on Githmi Sports is exceptional. It allows us to connect with experts who understand our exact needs.",
+        "The customer service feature is exceptional. It allows us to connect with experts who understand our exact needs.",
       avatar: "https://i.pravatar.cc/150?u=fahmida",
     },
     {
@@ -70,16 +134,6 @@ export default function ReviewPage() {
         "The bundle deals feature is a standout. It simplifies the entire process of getting a team ready for a tournament.",
       avatar: "https://i.pravatar.cc/150?u=raihan",
     },
-    {
-      _id: "5",
-      name: "Rafiul Islam",
-      role: "CEO of Apex Fitness",
-      rating: 5,
-      date: "2024-08-15",
-      comment:
-        "Githmi Sports has revolutionized how we equip our gym. Unbeatable prices and top-tier durability on all machines.",
-      avatar: "https://i.pravatar.cc/150?u=rafiul",
-    },
   ];
 
   const fetchReviews = useCallback(() => {
@@ -87,13 +141,19 @@ export default function ReviewPage() {
     axios
       .get(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`)
       .then((response) => {
-        // If API is empty, use the beautiful mock data to match the design
-        setReviews(response.data.length > 0 ? response.data : defaultReviews);
+        if (
+          response.data &&
+          Array.isArray(response.data) &&
+          response.data.length > 0
+        ) {
+          setReviews(response.data);
+        } else {
+          setReviews(defaultReviews);
+        }
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching reviews:", error);
-        // Fallback to mock data on error so the page still looks good
         setReviews(defaultReviews);
         setLoading(false);
       });
@@ -102,13 +162,12 @@ export default function ReviewPage() {
   useEffect(() => {
     fetchReviews();
 
-    // Generate mock data for the 3D Slider at the bottom
     const generateCustomers = () =>
       Array.from({ length: 18 }, (_, i) => ({
         id: `customer-${i}`,
-        name: `Happy Customer ${i + 1}`,
+        name: `Customer ${i + 1}`,
         product: `Pro Sports Gear ${i + 1}`,
-        image: `https://i.pravatar.cc/300?img=${(i % 50) + 1}`, // Random avatars
+        image: `https://i.pravatar.cc/300?img=${(i % 50) + 1}`,
         rating: 5,
       }));
     setHappyCustomers(generateCustomers());
@@ -139,216 +198,148 @@ export default function ReviewPage() {
       });
   };
 
-  const renderStars = (rating) => {
-    return (
-      <div className="flex items-center space-x-1">
-        {[...Array(5)].map((_, i) => (
-          <FaStar
-            key={i}
-            className={`text-sm ${i < rating ? "text-yellow-400" : "text-gray-200"}`}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  // The 3D Slider Component (Reused from HomePage)
-  const HappyCustomerSlider = ({ customers }) => {
-    if (!customers || customers.length === 0) return null;
-
-    return (
-      <div className="slider-body bg-transparent min-h-[200px]">
-        <div className="slider-wrapper pt-1 pb-1">
-          <div className="slider-track">
-            {customers.map((customer, index) => (
-              <div
-                className="slide"
-                key={customer.id || index}
-                style={{ width: "300px", height: "450px" }}
-              >
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col items-center border border-gray-100 transition-all duration-300">
-                  <div className="w-full h-full full overflow-hidden mb-4 border-4 border-orange-100">
-                    <img
-                      src={customer.image}
-                      alt={customer.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-bold text-blue-900 text-lg text-center line-clamp-1">
-                    {customer.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 mb-3 text-center line-clamp-1">
-                    Purchased: {customer.product}
-                  </p>
-                  <div className="mt-auto mb-3">
-                    {renderStars(customer.rating)}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-indigo-50 to-orange-50">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8f6fb] to-[#fff6f0] p-4 md:p-10 font-sans">
-      <div className="max-w-7xl mx-auto">
-        {/* Top Header Section (Matching Image Design) */}
-        <div className="flex flex-col md:flex-row justify-between items-center bg-transparent mb-16 px-4">
-          {/* Left Stats */}
-          <div className="text-center md:text-left mb-8 md:mb-0">
-            <h1 className="text-6xl md:text-7xl font-bold text-[#e87030] mb-2 tracking-tight">
+    <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
+      {/* Animated Background Blobs */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-300 dark:bg-blue-900/40 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob transition-colors duration-700"></div>
+        <div className="absolute top-40 -right-40 w-96 h-96 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 transition-colors duration-700"></div>
+      </div>
+
+      <div className="relative mx-auto flex-col max-w-7xl px-4 py-6">
+        {/* ========== COMPACT TOP HEADER BANNER ========== */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex flex-col md:flex-row justify-between items-center rounded-2xl p-4 md:p-6 mb-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 gap-4">
+          <div className="flex items-center text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 tracking-tight drop-shadow-sm mr-4">
               550+
             </h1>
-            <p className="text-xl md:text-2xl font-bold text-[#1e285a]">
-              Reviews from Industry Leaders
-            </p>
+            <div className="flex flex-col">
+              <p className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-300">
+                Five-Star Reviews
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                Trusted by athletes globally.
+              </p>
+            </div>
           </div>
 
-          {/* Right Action Area */}
-          <div className="flex flex-col items-center md:items-start">
-            {/* Overlapping Avatars */}
-            <div className="flex -space-x-3 mb-4">
-              <img
-                className="w-10 h-10 rounded-full border-2 border-white bg-blue-100 object-cover"
-                src="https://i.pravatar.cc/150?img=1"
-                alt="User"
-              />
-              <img
-                className="w-10 h-10 rounded-full border-2 border-white bg-red-100 object-cover"
-                src="https://i.pravatar.cc/150?img=2"
-                alt="User"
-              />
-              <img
-                className="w-10 h-10 rounded-full border-2 border-white bg-yellow-100 object-cover"
-                src="https://i.pravatar.cc/150?img=3"
-                alt="User"
-              />
-              <img
-                className="w-10 h-10 rounded-full border-2 border-white bg-green-100 object-cover"
-                src="https://i.pravatar.cc/150?img=4"
-                alt="User"
-              />
-              <img
-                className="w-10 h-10 rounded-full border-2 border-white bg-purple-100 object-cover"
-                src="https://i.pravatar.cc/150?img=5"
-                alt="User"
-              />
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex -space-x-3">
+              {[1, 2, 3, 4].map((img) => (
+                <img
+                  key={img}
+                  className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-800 shadow-sm object-cover"
+                  src={`https://i.pravatar.cc/150?img=${img}`}
+                  alt="User"
+                />
+              ))}
+              <div className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-800 shadow-sm bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center text-blue-600 font-bold text-[10px] z-10">
+                +10k
+              </div>
             </div>
 
-            <p className="text-gray-800 font-medium mb-6 text-center md:text-left">
-              10,000+ users already using
-              <br />
-              our services.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-[#e87030] hover:bg-[#d46020] text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
-                Get a free trial <FaArrowRight className="ml-2 text-sm" />
-              </button>
+            <div className="flex gap-2">
               <button
                 onClick={() =>
                   document
                     .getElementById("write-review")
                     .scrollIntoView({ behavior: "smooth" })
                 }
-                className="bg-transparent border-2 border-[#e87030] text-[#e87030] hover:bg-[#fff6f0] font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                className="bg-white dark:bg-gray-800 border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 font-bold py-2 px-5 rounded-xl shadow-sm transition-all duration-300 text-sm"
               >
-                Write a review <FaArrowRight className="ml-2 text-sm" />
+                Write Review
               </button>
             </div>
           </div>
         </div>
 
-        {/* Masonry Review Grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mb-20">
-          {reviews.map((review) => (
-            <div
-              key={review._id}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 break-inside-avoid hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center space-x-2">
-                  {renderStars(review.rating)}
-                  <span className="text-gray-500 text-xs font-medium ml-1">
-                    ({review.rating}/5)
-                  </span>
-                </div>
-                <span className="text-gray-400 text-xs">
-                  {review.date || new Date().toISOString().split("T")[0]}
-                </span>
-              </div>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                "{review.comment}"
-              </p>
-
-              <div className="flex items-center mt-auto">
-                {review.avatar ? (
-                  <img
-                    src={review.avatar}
-                    alt={review.name}
-                    className="w-10 h-10 rounded-full mr-3 border border-gray-200 object-cover"
-                  />
-                ) : (
-                  <FaUserCircle className="text-4xl text-gray-300 mr-3" />
-                )}
-                <div>
-                  <h4 className="font-bold text-gray-900 text-sm">
-                    {review.name}
-                  </h4>
-                  <p className="text-xs text-gray-500">
-                    {review.role || "Verified Buyer"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* 3D Happy Customer Swapping Slider */}
-        <div className="mt-10 mb-20 bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-white/60 shadow-lg overflow-hidden">
-          <div className="text-center mb-2">
-            <h2 className="text-3xl font-bold text-[#1e285a]">
-              Meet Our Happy Customers
+        {/* ========== SWAPPER SLIDER (NOW IMMEDIATELY VISIBLE) ========== */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+              Community Favorites
             </h2>
-            <p className="text-gray-500 mt-2">
-              Thousands of athletes trust Githmi Sports globally.
-            </p>
+            <Link
+              to="/products"
+              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Shop their gear &rarr;
+            </Link>
           </div>
-          {/* Renders the rotating slider */}
           <HappyCustomerSlider customers={happyCustomers} />
         </div>
 
-        {/* Minimalist Write Review Form */}
+        {/* ========== MASONRY REVIEW GRID ========== */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4 mb-8">
+          {Array.isArray(reviews) &&
+            reviews.map((review, index) => (
+              <div
+                key={review?._id || index}
+                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 break-inside-avoid hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex flex-col">
+                    {renderStars(review?.rating)}
+                  </div>
+                  <FaQuoteLeft className="text-xl text-blue-100 dark:text-gray-700 group-hover:text-blue-200 dark:group-hover:text-gray-600 transition-colors duration-300" />
+                </div>
+
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-6 italic transition-colors duration-300">
+                  "{review?.comment || "Great product!"}"
+                </p>
+
+                <div className="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                  {review?.avatar ? (
+                    <img
+                      src={review.avatar}
+                      alt={review?.name || "User"}
+                      className="w-10 h-10 rounded-full mr-3 border border-white dark:border-gray-800 shadow-sm object-cover transition-colors duration-300"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full mr-3 bg-gradient-to-br from-blue-100 to-purple-100 text-blue-600 flex items-center justify-center shadow-sm">
+                      <FaUserCircle className="text-xl" />
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="font-bold text-sm text-gray-900 dark:text-white transition-colors duration-300">
+                      {review?.name || "Verified Customer"}
+                    </h4>
+                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium transition-colors duration-300">
+                      {review?.role || "Verified Buyer"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+
+        {/* ========== WRITE REVIEW FORM ========== */}
         <div
           id="write-review"
-          className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-10 border border-gray-100"
+          className="max-w-3xl mx-auto w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 transition-colors duration-300"
         >
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-[#1e285a] mb-2">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
               Share Your Experience
             </h2>
-            <p className="text-gray-500">
-              Your feedback helps us improve our sporting goods.
+            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
+              Your feedback helps us improve and serve you better.
             </p>
           </div>
 
-          <form onSubmit={handleSubmitReview} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmitReview} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Your Name
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                  Your Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -356,14 +347,20 @@ export default function ReviewPage() {
                   onChange={(e) =>
                     setNewReview({ ...newReview, name: e.target.value })
                   }
+                  onFocus={() => setActiveField("name")}
+                  onBlur={() => setActiveField(null)}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#e87030] outline-none transition"
+                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all duration-300 border-2 ${
+                    activeField === "name"
+                      ? "border-blue-500 shadow-sm"
+                      : "border-transparent dark:border-gray-700"
+                  }`}
                   placeholder="John Doe"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Email Address
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                  Email Address <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
@@ -371,27 +368,33 @@ export default function ReviewPage() {
                   onChange={(e) =>
                     setNewReview({ ...newReview, email: e.target.value })
                   }
+                  onFocus={() => setActiveField("email")}
+                  onBlur={() => setActiveField(null)}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#e87030] outline-none transition"
+                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all duration-300 border-2 ${
+                    activeField === "email"
+                      ? "border-blue-500 shadow-sm"
+                      : "border-transparent dark:border-gray-700"
+                  }`}
                   placeholder="john@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                 Rating
               </label>
-              <div className="flex items-center space-x-2 bg-gray-50 w-max px-4 py-2 rounded-xl border border-gray-200">
+              <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 w-max px-4 py-2 rounded-xl border border-transparent dark:border-gray-700 transition-colors duration-300">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
                     onClick={() => setNewReview({ ...newReview, rating: star })}
-                    className={`text-2xl transition-transform hover:scale-110 ${
+                    className={`text-2xl transition-transform hover:scale-125 ${
                       star <= newReview.rating
-                        ? "text-yellow-400"
-                        : "text-gray-300"
+                        ? "text-yellow-400 drop-shadow-md"
+                        : "text-gray-300 dark:text-gray-600"
                     }`}
                   >
                     <FaStar />
@@ -401,8 +404,8 @@ export default function ReviewPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Review Title
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                Review Title <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -410,24 +413,36 @@ export default function ReviewPage() {
                 onChange={(e) =>
                   setNewReview({ ...newReview, title: e.target.value })
                 }
+                onFocus={() => setActiveField("title")}
+                onBlur={() => setActiveField(null)}
                 required
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#e87030] outline-none transition"
-                placeholder="Brief summary of your experience"
+                className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all duration-300 border-2 ${
+                  activeField === "title"
+                    ? "border-blue-500 shadow-sm"
+                    : "border-transparent dark:border-gray-700"
+                }`}
+                placeholder="Brief summary"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
-                Detailed Review
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+                Detailed Review <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={newReview.comment}
                 onChange={(e) =>
                   setNewReview({ ...newReview, comment: e.target.value })
                 }
+                onFocus={() => setActiveField("comment")}
+                onBlur={() => setActiveField(null)}
                 required
-                rows="5"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#e87030] outline-none transition resize-none"
+                rows="4"
+                className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white p-4 rounded-xl outline-none transition-all duration-300 border-2 resize-none ${
+                  activeField === "comment"
+                    ? "border-blue-500 shadow-sm"
+                    : "border-transparent dark:border-gray-700"
+                }`}
                 placeholder="What did you love about your purchase?"
               ></textarea>
             </div>
@@ -435,13 +450,13 @@ export default function ReviewPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[#1e285a] hover:bg-[#141b3d] text-white font-bold py-4 rounded-xl shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex justify-center items-center disabled:opacity-70"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl shadow-md transform hover:-translate-y-1 transition-all duration-300 flex justify-center items-center disabled:opacity-70 mt-2"
             >
               {submitting ? (
                 <span className="animate-pulse">Submitting...</span>
               ) : (
                 <>
-                  Submit Review <FaPaperPlane className="ml-2" />
+                  Submit Review <FaPaperPlane className="ml-2 text-sm" />
                 </>
               )}
             </button>

@@ -51,16 +51,33 @@ export default function RegisterPage() {
       });
   }
 
+  // Exact theme from your login inputs
+  const inputTheme =
+    "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300";
+
+  const passwordTheme =
+    "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 tracking-widest";
+
   return (
+    // ADDED pt-20 (80px padding top) to push content below the navbar
     <div className="w-full h-screen bg-[url(/login-bg.jpg)] bg-cover bg-center flex">
-      <div className="w-[50%] h-full"></div>
-      <div className="w-[50%] h-full flex justify-center items-center">
-        <div className="w-[450px] h-auto py-8 px-4 backdrop-blur-xl shadow-xl rounded-xl flex flex-col items-center">
+      <div className="w-[90%] h-full hidden lg:block"></div>
+
+      {/* Added py-10 so the form doesn't hit the very top/bottom on small screens */}
+      <div className="w-full lg:w-[50%] h-160 flex justify-center items-center px-4 py-5">
+        <div className="w-[450px] h-145 py-5 backdrop-blur-xl bg-white/20 dark:bg-[#242a38]/95 shadow-2xl rounded-2xl flex flex-col justify-center items-center transition-colors duration-500 border border-white/40 dark:border-gray-700/50">
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 transition-colors">
+            Create Account
+          </h2>
+          <p className="text-gray-800 dark:text-gray-400 mb-6 text-sm font-medium transition-colors">
+            Please enter your details to register
+          </p>
+
           <input
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className="w-[400px] h-[50px] border border-white rounded-xl text-center m-[5px]"
+            className={inputTheme}
             type="text"
             placeholder="First Name"
           />
@@ -68,7 +85,7 @@ export default function RegisterPage() {
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className="w-[400px] h-[50px] border border-white rounded-xl text-center m-[5px]"
+            className={inputTheme}
             type="text"
             placeholder="Last Name"
           />
@@ -76,43 +93,47 @@ export default function RegisterPage() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-[400px] h-[50px] border border-white rounded-xl text-center m-[5px]"
+            className={inputTheme}
             type="email"
-            placeholder="Email"
+            placeholder="Email Address"
           />
           <input
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="w-[400px] h-[50px] border border-white rounded-xl text-center m-[5px]"
+            className={inputTheme}
             type="text"
-            placeholder="Phone"
+            placeholder="Phone Number"
           />
           <input
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-[400px] h-[50px] border border-white rounded-xl text-center m-[5px]"
+            className={passwordTheme}
             type="password"
-            placeholder="Password"
+            placeholder="........"
           />
           <input
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-[400px] h-[50px] border border-white rounded-xl text-center m-[5px]"
+            className={passwordTheme}
             type="password"
-            placeholder="Confirm Password"
+            placeholder="........"
           />
+
+          {/* BUTTON: Removed dark mode overrides so it stays solid blue always */}
           <button
             onClick={handleRegister}
-            className="w-[400px] h-[50px] bg-blue-500 text-white rounded-xl cursor-pointer mt-2"
+            disabled={loading}
+            className="w-[400px] h-[50px] bg-blue-600 text-white font-bold rounded-xl cursor-pointer mt-[15px] shadow-lg hover:opacity-90 transition-all duration-300 disabled:opacity-70"
           >
             {loading ? "Registering..." : "Register"}
           </button>
-          <p className="text-gray-600 text-center m-[10px]">
+
+          <p className="text-gray-900 dark:text-gray-400 text-sm font-medium mt-[20px] transition-colors">
             Already have an account? &nbsp;
-            <span className="text-blue-500 cursor-pointer hover:text-blue-700">
+            <span className="text-blue-800 dark:text-[#3b82f6] cursor-pointer hover:underline font-bold">
               <Link to={"/login"}>Login Now</Link>
             </span>
           </p>
