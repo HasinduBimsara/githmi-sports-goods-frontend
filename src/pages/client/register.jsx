@@ -53,10 +53,10 @@ export default function RegisterPage() {
 
   // Exact theme from your login inputs
   const inputTheme =
-    "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300";
+    "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] transition-all duration-300";
 
   const passwordTheme =
-    "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 tracking-widest";
+    "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] transition-all duration-300 tracking-widest";
 
   return (
     // ADDED pt-20 (80px padding top) to push content below the navbar
@@ -122,18 +122,18 @@ export default function RegisterPage() {
             placeholder="........"
           />
 
-          {/* BUTTON: Removed dark mode overrides so it stays solid blue always */}
+          {/* SMART MOTION THEME BUTTON */}
           <button
             onClick={handleRegister}
             disabled={loading}
-            className="w-[400px] h-[50px] bg-blue-600 text-white font-bold rounded-xl cursor-pointer mt-[15px] shadow-lg hover:opacity-90 transition-all duration-300 disabled:opacity-70"
+            className="w-[400px] h-[50px] bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold rounded-xl cursor-pointer mt-[15px] shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 disabled:opacity-70 disabled:hover:translate-y-0 disabled:active:scale-100"
           >
             {loading ? "Registering..." : "Register"}
           </button>
 
           <p className="text-gray-900 dark:text-gray-400 text-sm font-medium mt-[20px] transition-colors">
             Already have an account? &nbsp;
-            <span className="text-blue-800 dark:text-[#3b82f6] cursor-pointer hover:underline font-bold">
+            <span className="text-[#4f46e5] dark:text-[#a855f7] cursor-pointer hover:underline font-bold">
               <Link to={"/login"}>Login Now</Link>
             </span>
           </p>

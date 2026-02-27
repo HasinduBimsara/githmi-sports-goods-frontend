@@ -11,7 +11,7 @@ import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { MdOutlineContactSupport, MdReviews } from "react-icons/md";
 import { HiHome, HiShoppingBag } from "react-icons/hi";
 import { Link, useLocation } from "react-router-dom";
-import UserData from "./userData";
+// import UserData from "./userData"; // Commented out to show Auth buttons
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -112,10 +112,10 @@ export default function Header() {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-3 md:space-x-4">
-              {/* NEW: Modern Pill Theme Toggle */}
+              {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="w-16 h-8 bg-gray-900 dark:bg-gray-200 rounded-full p-1 flex items-center transition-colors duration-300 shadow-inner"
+                className="hidden sm:flex w-16 h-8 bg-gray-900 dark:bg-gray-200 rounded-full p-1 items-center transition-colors duration-300 shadow-inner"
                 aria-label="Toggle theme"
               >
                 <div
@@ -142,14 +142,24 @@ export default function Header() {
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
                       {cartCount}
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 rounded-xl transition-all duration-300"></div>
                   </>
                 )}
               </Link>
 
-              {/* User Profile */}
-              <div className="hidden md:block">
-                <UserData />
+              {/* PROJECT COMMON BUTTONS: Login & Register (Desktop) */}
+              <div className="hidden md:flex items-center space-x-3 pl-2 border-l border-gray-200 dark:border-gray-700">
+                <Link
+                  to="/login"
+                  className="bg-transparent border-2 border-[#4f46e5] dark:border-[#a855f7] text-[#4f46e5] dark:text-[#a855f7] hover:bg-[#eff6ff] dark:hover:bg-gray-800 font-bold py-2 px-5 rounded-xl shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300 text-sm whitespace-nowrap"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300 text-sm whitespace-nowrap"
+                >
+                  Register
+                </Link>
               </div>
 
               {/* Mobile Menu Button */}
@@ -170,176 +180,160 @@ export default function Header() {
         <div className="fixed inset-0 z-[9999] lg:hidden">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Menu Panel */}
-          <div className="absolute right-0 top-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300">
-            <div className="h-full flex flex-col">
-              {/* Menu Header */}
-              <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                    <BsBoxSeam className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-gray-900 dark:text-white">
-                      Menu
-                    </h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Navigation
-                    </p>
-                  </div>
+          <div className="absolute right-0 top-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300 flex flex-col">
+            {/* Menu Header */}
+            <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <BsBoxSeam className="w-6 h-6 text-white" />
                 </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <RxCross2 className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-                </button>
+                <div>
+                  <h2 className="font-bold text-gray-900 dark:text-white">
+                    Menu
+                  </h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Navigation
+                  </p>
+                </div>
               </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <RxCross2 className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+              </button>
+            </div>
 
-              {/* Mobile Navigation */}
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="space-y-2">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setIsOpen(false)}
-                      className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 ${
+            {/* Mobile Navigation Links */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-200 ${
+                      isActive(item.path)
+                        ? "bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-l-4 border-blue-500"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         isActive(item.path)
-                          ? "bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-l-4 border-blue-500"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                          ? "bg-gradient-to-r from-blue-500 to-purple-500"
+                          : "bg-gray-100 dark:bg-gray-800"
                       }`}
                     >
-                      <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <span
+                        className={`text-lg ${
                           isActive(item.path)
-                            ? "bg-gradient-to-r from-blue-500 to-purple-500"
-                            : "bg-gray-100 dark:bg-gray-800"
+                            ? "text-white"
+                            : "text-gray-600 dark:text-gray-400"
                         }`}
                       >
-                        <span
-                          className={`text-lg ${
-                            isActive(item.path)
-                              ? "text-white"
-                              : "text-gray-600 dark:text-gray-400"
-                          }`}
-                        >
-                          {item.icon}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <span
-                          className={`font-medium ${
-                            isActive(item.path)
-                              ? "text-blue-600 dark:text-blue-400"
-                              : "text-gray-700 dark:text-gray-300"
-                          }`}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
-                      {isActive(item.path) && (
-                        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                      )}
-                    </Link>
-                  ))}
-
-                  {/* Cart in Mobile Menu */}
-                  <Link
-                    to="/cart"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                        <BsCart4 className="text-lg text-gray-600 dark:text-gray-400" />
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">
-                          Shopping Cart
-                        </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {cartCount} items
-                        </p>
-                      </div>
-                    </div>
-                    {cartCount > 0 && (
-                      <span className="w-6 h-6 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                        {cartCount}
+                        {item.icon}
                       </span>
-                    )}
+                    </div>
+                    <div className="flex-1">
+                      <span
+                        className={`font-medium ${
+                          isActive(item.path)
+                            ? "text-blue-600 dark:text-blue-400"
+                            : "text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
                   </Link>
-                </div>
+                ))}
 
-                {/* Theme Toggle in Mobile */}
-                <div className="mt-8 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center shadow-sm">
-                      {darkMode ? (
-                        <BsMoonFill className="text-lg text-purple-400" />
-                      ) : (
-                        <BsSunFill className="text-lg text-yellow-500" />
-                      )}
+                {/* Mobile Cart */}
+                <Link
+                  to="/cart"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                      <BsCart4 className="text-lg text-gray-600 dark:text-gray-400" />
                     </div>
                     <div>
                       <span className="font-medium text-gray-700 dark:text-gray-300">
-                        {darkMode ? "Dark Mode" : "Light Mode"}
+                        Shopping Cart
                       </span>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Switch theme
+                        {cartCount} items
                       </p>
                     </div>
                   </div>
-
-                  {/* NEW: Mobile Modern Pill Theme Toggle */}
-                  <button
-                    onClick={toggleTheme}
-                    className="w-14 h-7 bg-gray-900 dark:bg-gray-200 rounded-full p-1 flex items-center transition-colors duration-300 shadow-inner"
-                  >
-                    <div
-                      className={`w-5 h-5 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center transform transition-transform duration-300 ${
-                        darkMode ? "translate-x-7" : "translate-x-0"
-                      }`}
-                    >
-                      {darkMode ? (
-                        <BsMoonFill className="text-gray-900 dark:text-white text-[10px]" />
-                      ) : (
-                        <BsSunFill className="text-gray-900 dark:text-white text-[10px]" />
-                      )}
-                    </div>
-                  </button>
-                </div>
-
-                {/* User Info in Mobile */}
-                <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                      <BsPersonCircle className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        Welcome!
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Sign in for better experience
-                      </p>
-                    </div>
-                    <BsChevronDown className="text-gray-400" />
-                  </div>
-                </div>
+                  {cartCount > 0 && (
+                    <span className="w-6 h-6 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               </div>
 
-              {/* Menu Footer */}
-              <div className="p-6 border-t border-gray-200 dark:border-gray-800">
-                <div className="text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    © 2024 Githmi Sports Goods. All rights reserved.
-                  </p>
+              {/* Theme Toggle (Mobile) */}
+              <div className="mt-8 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 flex items-center justify-center shadow-sm">
+                    {darkMode ? (
+                      <BsMoonFill className="text-lg text-purple-400" />
+                    ) : (
+                      <BsSunFill className="text-lg text-yellow-500" />
+                    )}
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-300 text-sm">
+                      {darkMode ? "Dark Mode" : "Light Mode"}
+                    </span>
+                  </div>
                 </div>
+                <button
+                  onClick={toggleTheme}
+                  className="w-14 h-7 bg-gray-900 dark:bg-gray-200 rounded-full p-1 flex items-center transition-colors duration-300 shadow-inner"
+                >
+                  <div
+                    className={`w-5 h-5 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center transform transition-transform duration-300 ${
+                      darkMode ? "translate-x-7" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* PROJECT COMMON BUTTONS: Login & Register (Mobile) */}
+              <div className="mt-6 flex flex-col gap-3">
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full bg-transparent border-2 border-[#4f46e5] dark:border-[#a855f7] text-[#4f46e5] dark:text-[#a855f7] hover:bg-[#eff6ff] dark:hover:bg-gray-800 font-bold py-3 rounded-xl shadow-sm transform active:scale-95 transition-all duration-300 text-center"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full bg-gradient-to-r from-[#4f46e5] to-[#a855f7] text-white font-bold py-3.5 rounded-xl shadow-md transform active:scale-95 transition-all duration-300 text-center"
+                >
+                  Register
+                </Link>
+              </div>
+            </div>
+
+            {/* Menu Footer */}
+            <div className="p-6 border-t border-gray-200 dark:border-gray-800">
+              <div className="text-center">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  © 2024 Githmi Sports Goods.
+                </p>
               </div>
             </div>
           </div>
@@ -347,7 +341,9 @@ export default function Header() {
       )}
 
       {/* Global styles */}
-      <style jsx global>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         :root {
           --scrollbar-thumb: #cbd5e1;
           --scrollbar-track: #f1f5f9;
@@ -357,14 +353,14 @@ export default function Header() {
           --scrollbar-track: #1e293b;
         }
         ::-webkit-scrollbar {
-          width: 10px;
+          width: 8px;
         }
         ::-webkit-scrollbar-track {
           background: var(--scrollbar-track);
         }
         ::-webkit-scrollbar-thumb {
           background: var(--scrollbar-thumb);
-          border-radius: 5px;
+          border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
           background: #94a3b8;
@@ -372,13 +368,9 @@ export default function Header() {
         .dark ::-webkit-scrollbar-thumb:hover {
           background: #64748b;
         }
-        * {
-          transition:
-            background-color 0.3s ease,
-            border-color 0.3s ease,
-            color 0.3s ease;
-        }
-      `}</style>
+      `,
+        }}
+      />
     </>
   );
 }
