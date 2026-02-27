@@ -3,9 +3,7 @@ import {
   BsCart4,
   BsSunFill,
   BsMoonFill,
-  BsChevronDown,
-  BsPersonCircle,
-  BsBoxSeam,
+  BsPersonCircle, // Kept if you plan to use it later
 } from "react-icons/bs";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { MdOutlineContactSupport, MdReviews } from "react-icons/md";
@@ -73,14 +71,16 @@ export default function Header() {
           <div className="flex items-center justify-between">
             {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500 group-hover:rotate-12">
-                  <BsBoxSeam className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="relative flex-shrink-0">
+                {/* Dynamically switching logo based on dark mode */}
+                <img
+                  src={darkMode ? "public/logo.png" : "public/logo.png"}
+                  alt="Githmi Sports Goods Logo"
+                  className="h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
-              <div>
-                <h1 className="text-4xl font-bold uppercase tracking-tight">
+              <div className="hidden sm:block">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight">
                   {/* ✨ SHINY TEXT COMPONENT ✨ */}
                   <ShinyText
                     text="Githmi Sports Goods"
@@ -190,12 +190,15 @@ export default function Header() {
             {/* Menu Header */}
             <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                  <BsBoxSeam className="w-6 h-6 text-white" />
-                </div>
+                {/* Updated Mobile Menu Logo */}
+                <img
+                  src={darkMode ? "/logo-white.png" : "/logo.png"}
+                  alt="Logo"
+                  className="h-10 w-auto object-contain"
+                />
                 <div>
                   <h2 className="font-bold text-gray-900 dark:text-white">
-                    Menu
+                    Githmi Sports
                   </h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Navigation
