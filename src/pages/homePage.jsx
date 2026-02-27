@@ -12,12 +12,13 @@ import {
   FaBolt,
   FaTrophy,
   FaBoxOpen,
-  FaFacebook, // Added
-  FaInstagram, // Added
-  FaWhatsapp, // Added
+  FaFacebook,
+  FaInstagram,
+  FaWhatsapp,
 } from "react-icons/fa";
 import { MdTrendingUp } from "react-icons/md";
 import Loader from "../components/loader";
+import ShinyText from "../components/ShinyText"; // Ensure this path points to where ShinyText.jsx is
 import "./ProductSlider.css";
 
 export default function HomePage() {
@@ -55,10 +56,6 @@ export default function HomePage() {
       setTopRated(generateMockData("top", "Top Rated", 59.99));
 
       setLoading(false);
-
-      /* * TO USE YOUR BACKEND LATER, REPLACE MOCK DATA WITH THIS LOGIC:
-       * const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/`);
-       */
     } catch (error) {
       console.error("Error fetching products:", error);
       setLoading(false);
@@ -92,7 +89,6 @@ export default function HomePage() {
     },
   ];
 
-  // Modern, Sports-focused categories for the top line
   const sportsCategories = [
     "Cricket",
     "Football",
@@ -104,7 +100,6 @@ export default function HomePage() {
     "Athletics",
   ];
 
-  // 100% Crash-Proof Slider Component
   const ProductSlider = ({ products, badgeColor = "text-orange-500" }) => {
     if (!products || products.length === 0) return null;
 
@@ -125,7 +120,6 @@ export default function HomePage() {
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {/* ADDED MOTION: Hover scale and rotate on the top-right badge */}
                     <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-gray-400 dark:text-gray-300 hover:text-red-500 hover:scale-125 hover:rotate-12 cursor-pointer transition-all duration-300 z-20">
                       <FaFire className={badgeColor} />
                     </div>
@@ -143,7 +137,6 @@ export default function HomePage() {
                       <span className="text-xl font-bold text-gray-900 dark:text-white">
                         ${product.price}
                       </span>
-                      {/* ADDED MOTION: Hover scale and pop up on the shopping bag */}
                       <button className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:scale-110 hover:-translate-y-1 active:scale-95 transition-all duration-300 shadow-sm hover:shadow-md">
                         <FaShoppingBag />
                       </button>
@@ -196,8 +189,19 @@ export default function HomePage() {
               <FaBolt className="text-2xl text-red-600 dark:text-red-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                Flash Deals
+              <h2 className="text-3xl font-black tracking-tight">
+                <ShinyText
+                  text="Flash Deals"
+                  speed={3}
+                  delay={0.3}
+                  color="#b11616"
+                  shineColor="#ffbb00"
+                  spread={120}
+                  direction="right"
+                  yoyo={true}
+                  pauseOnHover={true}
+                  disabled={false}
+                />
               </h2>
               <p className="text-red-500 font-medium mt-1">Ends in 24 hours!</p>
             </div>
@@ -220,8 +224,19 @@ export default function HomePage() {
               <FaBoxOpen className="text-2xl text-blue-600 dark:text-blue-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                New Arrivals
+              <h2 className="text-3xl font-black tracking-tight">
+                <ShinyText
+                  text="New Arrivals"
+                  speed={3}
+                  delay={0.3}
+                  color="#00206b"
+                  shineColor="#00ffd5"
+                  spread={120}
+                  direction="right"
+                  yoyo={true}
+                  pauseOnHover={true}
+                  disabled={false}
+                />
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 Fresh gear just dropped
@@ -246,8 +261,19 @@ export default function HomePage() {
               <MdTrendingUp className="text-2xl text-purple-600 dark:text-purple-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                Featured Products
+              <h2 className="text-3xl font-black tracking-tight">
+                <ShinyText
+                  text="Featured Products"
+                  speed={3}
+                  delay={0.3}
+                  color="#ba00c7"
+                  shineColor="#ff9500"
+                  spread={120}
+                  direction="right"
+                  yoyo={true}
+                  pauseOnHover={true}
+                  disabled={false}
+                />
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 Handpicked items just for you
@@ -275,8 +301,20 @@ export default function HomePage() {
               <FaFire className="text-2xl text-orange-500 dark:text-orange-400" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                Trending Now
+              <h2 className="text-3xl font-black tracking-tight">
+                {/* ✨ SHINY TEXT FOR TRENDING NOW ✨ */}
+                <ShinyText
+                  text="Trending Now"
+                  speed={3}
+                  delay={0.3}
+                  color="#ffd500" // Vibrant Yellow
+                  shineColor="#00ff1e" // Bright Green shine
+                  spread={120}
+                  direction="right"
+                  yoyo={true}
+                  pauseOnHover={true}
+                  disabled={false}
+                />
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 What everyone is buying right now
@@ -300,18 +338,32 @@ export default function HomePage() {
       <section className="pt-8 pb-16 bg-gradient-to-t from-yellow-50 to-white dark:from-yellow-900/10 dark:to-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
           <div className="flex items-center mb-6 group cursor-default">
+            {/* Animated Trophy Icon */}
             <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200 dark:shadow-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[15deg]">
               <FaTrophy className="text-2xl text-yellow-600 dark:text-yellow-500" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                Top Rated
+              <h2 className="text-3xl font-black tracking-tight">
+                {/* ✨ SHINY TEXT FOR TOP RATED ✨ */}
+                <ShinyText
+                  text="Top Rated"
+                  speed={3}
+                  delay={0.3}
+                  color="#d4af37" // Classic Gold Base
+                  shineColor="#ffffff" // Bright White Shine
+                  spread={120}
+                  direction="right"
+                  yoyo={true}
+                  pauseOnHover={true}
+                  disabled={false}
+                />
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
                 5-star customer favorites
               </p>
             </div>
           </div>
+
           {loading ? (
             <div className="flex justify-center py-12">
               <Loader />
@@ -326,7 +378,6 @@ export default function HomePage() {
       <section className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
           <div className="bg-gray-900 dark:bg-gray-800 rounded-[2rem] overflow-hidden shadow-2xl relative flex flex-col lg:flex-row transition-colors duration-300">
-            {/* Left side text/cta */}
             <div className="lg:w-1/2 p-12 relative z-10 flex flex-col justify-center">
               <div className="inline-flex items-center px-4 py-2 bg-white/10 dark:bg-gray-700/50 rounded-full mb-8 w-max border border-white/20 dark:border-gray-600">
                 <FaTag className="mr-2 text-yellow-400" />
@@ -347,46 +398,36 @@ export default function HomePage() {
                 className="group px-10 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold text-lg rounded-xl hover:-translate-y-1 transition-all inline-flex items-center w-max shadow-lg"
               >
                 Sign Up Free
-                {/* ADDED MOTION: Arrow slides right on hover */}
                 <FaArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-2" />
               </Link>
 
-              {/* ===== NEW SOCIAL MEDIA SECTION ===== */}
               <div className="mt-10 pt-8 border-t border-white/10 dark:border-gray-700/50">
                 <p className="text-white/70 dark:text-gray-400 text-xs font-bold mb-4 uppercase tracking-widest">
                   Connect With Us
                 </p>
                 <div className="flex gap-4">
                   <a
-                    href="https://web.facebook.com/p/Githmi-Sports-Goods-61559424647331/?_rdc=1&_rdr#"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="#"
                     className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-blue-200 dark:hover:shadow-blue-900 transition-all duration-300"
                   >
                     <FaFacebook />
                   </a>
                   <a
-                    href="https://www.instagram.com/githmisportsshop/"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="#"
                     className="w-12 h-12 rounded-2xl bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400 flex items-center justify-center text-xl hover:bg-pink-600 dark:hover:bg-pink-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-pink-200 dark:hover:shadow-pink-900 transition-all duration-300"
                   >
                     <FaInstagram />
                   </a>
                   <a
-                    href="https://wa.me/94778041167"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="#"
                     className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 flex items-center justify-center text-xl hover:bg-green-500 dark:hover:bg-green-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-green-200 dark:hover:shadow-green-900 transition-all duration-300"
                   >
                     <FaWhatsapp />
                   </a>
                 </div>
               </div>
-              {/* ==================================== */}
             </div>
 
-            {/* Right side features block */}
             <div className="lg:w-1/2 bg-gray-800 dark:bg-gray-900/50 p-8 lg:p-12 relative z-10 border-l border-gray-700 dark:border-gray-800 transition-colors duration-300">
               <h3 className="text-2xl font-bold text-white mb-8 border-b border-gray-700 dark:border-gray-700 pb-4">
                 Why Shop With Us?
@@ -412,15 +453,12 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-
-            {/* Decorative Background Elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
           </div>
         </div>
       </section>
 
-      {/* Safe inline styles to prevent Vite crash */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
