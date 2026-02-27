@@ -1,189 +1,359 @@
 import { TbTrash } from "react-icons/tb";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { BsArrowLeft, BsShieldCheck } from "react-icons/bs";
+import { FaUser, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
-	const location = useLocation();
-	const [cart, setCart] = useState(location.state.items);
-	const [cartRefresh, setCartRefresh] = useState(false);
-    const [name, setName] = useState("");
-    const [address, setAddress] = useState("");
-    const [phone, setPhone] = useState("");
-	const navigate = useNavigate();
-   function placeOrder(){
-    
-        const orderData = {
-            name : name,
-            address : address,
-            phoneNumber :phone,
-            billItems : []        
-        }
-        for(let i = 0; i< cart.length; i++){
-            orderData.billItems[i] = {
-                productId : cart[i].productId,
-                quantity : cart[i].quantity
-            }
-        }
-        const token = localStorage.getItem("token");
-        axios.post(import.meta.env.VITE_BACKEND_URL + "/api/order", orderData, {
-            headers: {
-                Authorization: "Bearer " + token,
-            },            
-        }).then(()=>{
-            toast.success("Order placed successfully");
-            navigate("/");
-        }).catch((error)=>{
-            console.log(error);
-            toast.error("Order placement failed");
-        })
-   }
+  const location = useLocation();
+  const navigate = useNavigate();
 
-	function getTotal() {
-		let total = 0;
-		cart.forEach((item) => {
-			total += item.price * item.quantity;
-		});
-		return total;
-	}
-	function getTotalForLabelledPrice() {
-		let total = 0;
-		cart.forEach((item) => {
-			total += item.labeledPrice * item.quantity;
-		});
-		return total;
-	}
+  // CRASH FIX: Added fallback in case user reloads the page directly on /checkout
+  const [cart, setCart] = useState(location.state?.items || []);
 
-	return (
-		<div className="w-full h-full flex justify-center p-[40px] ">
-			<div className="w-[700px]">
-				{cart.map((item, index) => {
-					return (
-						<div
-							key={index}
-							className="w-full h-[100px] bg-white shadow-2xl my-[5px] flex justify-between items-center relative"
-						>
-							<button
-								className="absolute right-[-50px] bg-red-500 w-[40px] h-[40px] rounded-full text-white flex justify-center items-center shadow cursor-pointer"
-								onClick={() => {
-									const newCart = cart.filter(
-										(product) => product.productId !== item.productId
-									);
-									setCart(newCart);
-								}}
-							>
-								<TbTrash />
-							</button>
-							<img
-								src={item.image}
-								className="h-full aspect-square object-cover"
-							/>
-							<div className="h-full max-w-[300px] w-[300px] overflow-hidden">
-								<h1 className="text-xl font-bold">{item.name}</h1>
-								<h2 className="text-lg text-gray-500">
-									{item.altNames.join(" | ")}
-								</h2>
-								<h2 className="text-lg text-gray-500">
-									LKR: {item.price.toFixed(2)}
-								</h2>
-							</div>
-							<div className="h-full w-[100px] flex justify-center items-center">
-								<button
-									className="text-2xl w-[30px] h-[30px] bg-black text-white rounded-full flex justify-center items-center cursor-pointer mx-[5px]"
-									onClick={() => {
-										const newCart = cart;
-										newCart[index].quantity -= 1;
-										if (newCart[index].quantity <= 0)
-											newCart[index].quantity = 1;
-										setCart(newCart);
-										setCartRefresh(!cartRefresh);
-									}}
-								>
-									-
-								</button>
-								<h1 className="text-xl font-bold">{item.quantity}</h1>
-								<button
-									className="text-2xl w-[30px] h-[30px] bg-black text-white rounded-full flex justify-center items-center cursor-pointer mx-[5px]"
-									onClick={() => {
-										const newCart = cart;
-										newCart[index].quantity += 1;
-										setCart(newCart);
-										setCartRefresh(!cartRefresh);
-									}}
-								>
-									+
-								</button>
-							</div>
-							<div className="h-full w-[100px] flex justify-center items-center">
-								<h1 className="text-xl w-full text-end pr-2">
-									{(item.price * item.quantity).toFixed(2)}
-								</h1>
-							</div>
-						</div>
-					);
-				})}
-				<div className="w-full  flex justify-end">
-					<h1 className="w-[100px] text-xl  text-end pr-2">Total</h1>
-					<h1 className="w-[100px] text-xl  text-end pr-2">
-						{getTotalForLabelledPrice().toFixed(2)}
-					</h1>
-				</div>
-				<div className="w-full  flex justify-end">
-					<h1 className="w-[100px] text-xl  text-end pr-2">Discount</h1>
-					<h1 className="w-[100px] text-xl border-b-[2px] text-end pr-2">
-						{(getTotalForLabelledPrice() - getTotal()).toFixed(2)}
-					</h1>
-				</div>
-				<div className="w-full  flex justify-end">
-					<h1 className="w-[100px] text-xl  text-end pr-2">Net total</h1>
-					<h1 className="w-[100px] text-xl  text-end pr-2 border-b-[4px] border-double ">
-						{getTotal().toFixed(2)}
-					</h1>
-				</div>
-                <div className="w-full  flex justify-end">
-                    <h1 className="w-[100px] text-xl  text-end pr-2">Name</h1>
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function placeOrder(e) {
+    e.preventDefault(); // Prevent form submission reload
+
+    if (!name || !address || !phone) {
+      toast.error("Please fill in all shipping details");
+      return;
+    }
+
+    if (cart.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const orderData = {
+      name: name,
+      address: address,
+      phoneNumber: phone,
+      billItems: cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    };
+
+    const token = localStorage.getItem("token");
+
+    axios
+      .post(import.meta.env.VITE_BACKEND_URL + "/api/order", orderData, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then(() => {
+        toast.success("Order placed successfully! 🎉");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error?.response?.data?.message || "Order placement failed");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  }
+
+  // STATE FIX: Properly update React state without mutating directly
+  const handleUpdateQuantity = (index, delta) => {
+    setCart((prevCart) => {
+      const newCart = [...prevCart];
+      const newQuantity = newCart[index].quantity + delta;
+      newCart[index] = {
+        ...newCart[index],
+        quantity: Math.max(1, newQuantity),
+      };
+      return newCart;
+    });
+  };
+
+  const handleRemoveItem = (productId) => {
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.productId !== productId),
+    );
+  };
+
+  function getTotal() {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  }
+
+  function getTotalForLabelledPrice() {
+    return cart.reduce(
+      (total, item) =>
+        total + (item.labeledPrice || item.price) * item.quantity,
+      0,
+    );
+  }
+
+  // Handle empty state gracefully
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-[80vh] flex flex-col justify-center items-center bg-[#f8f6fb] dark:bg-gray-900 transition-colors duration-300 px-4">
+        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 text-center">
+          No items to checkout
+        </h2>
+        <Link
+          to="/products"
+          className="bg-gradient-to-r from-[#4f46e5] to-[#a855f7] text-white font-bold py-3.5 px-8 rounded-xl shadow-lg transform hover:-translate-y-1 transition-all flex items-center"
+        >
+          <BsArrowLeft className="mr-2" /> Back to Shop
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen bg-[#f8f6fb] dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300 py-10">
+      {/* Animated Background Blobs */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 -left-40 w-96 h-96 bg-blue-300 dark:bg-blue-900/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-40 -right-40 w-96 h-96 bg-purple-300 dark:bg-purple-900/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
+              Checkout
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              Complete your order details below
+            </p>
+          </div>
+          <Link
+            to="/cart"
+            className="hidden md:flex items-center text-sm font-bold text-[#4f46e5] dark:text-[#a855f7] hover:underline"
+          >
+            <BsArrowLeft className="mr-2" /> Return to Cart
+          </Link>
+        </div>
+
+        <form onSubmit={placeOrder} className="flex flex-col lg:flex-row gap-8">
+          {/* ========== LEFT: SHIPPING & ITEMS ========== */}
+          <div className="lg:w-2/3 space-y-8">
+            {/* Shipping Information Card */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Shipping Information
+              </h2>
+              <div className="space-y-5">
+                {/* Name Input */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
-                        className="w-[200px] text-xl border-b-[2px] text-end pr-2"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 border-transparent dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 focus:border-[#4f46e5] dark:focus:border-[#4f46e5] focus:bg-white dark:focus:bg-gray-800 shadow-sm"
+                      placeholder="Enter your full name"
                     />
-				</div>
-                
-                <div className="w-full  flex justify-end">
-                    <h1 className="w-[100px] text-xl  text-end pr-2">Phone</h1>
-                    <input
-                        className="w-[200px] text-xl border-b-[2px] text-end pr-2"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                    />
+                  </div>
                 </div>
-                <div className="w-full  flex justify-end">
-                    <h1 className="w-[100px] text-xl  text-end pr-2">Address</h1>
+
+                {/* Phone Input */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Phone Number <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <FaPhone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
-                        className="w-[200px] text-xl border-b-[2px] text-end pr-2"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 border-transparent dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 focus:border-[#4f46e5] dark:focus:border-[#4f46e5] focus:bg-white dark:focus:bg-gray-800 shadow-sm"
+                      placeholder="Enter your phone number"
                     />
+                  </div>
                 </div>
-                <div className="w-full  flex justify-end">
-                    <h1 className="w-[100px] text-xl  text-end pr-2">Address</h1>
+
+                {/* Address Input */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Delivery Address <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <FaMapMarkerAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
-                        className="w-[200px] text-xl border-b-[2px] text-end pr-2"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                      type="text"
+                      required
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 border-transparent dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 focus:border-[#4f46e5] dark:focus:border-[#4f46e5] focus:bg-white dark:focus:bg-gray-800 shadow-sm"
+                      placeholder="Enter full delivery address"
                     />
+                  </div>
                 </div>
-                
-				<div className="w-full  flex justify-end mt-4">
-					<button
-						className="w-[170px] text-xl  text-center shadow pr-2 bg-pink-400 text-white h-[40px] rounded-lg cursor-pointer"
-						onClick={placeOrder}
-					>
-						Place Order
-					</button>
-				</div>
-			</div>
-		</div>
-	);
+              </div>
+            </div>
+
+            {/* Order Items Review */}
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Review Items
+              </h2>
+              <div className="space-y-4">
+                {cart.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 border border-transparent dark:border-gray-700 transition-colors duration-300 group"
+                  >
+                    <div className="w-full sm:w-20 h-20 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                      <img
+                        src={item.image || "https://placehold.co/150x150"}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+
+                    <div className="flex-1 w-full text-center sm:text-left">
+                      <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1">
+                        {item.name}
+                      </h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        {item.altNames?.join(" | ") || "Standard"}
+                      </p>
+                      <p className="text-[#4f46e5] dark:text-[#a855f7] font-bold text-sm">
+                        LKR {item.price.toFixed(2)}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                      {/* Quantity Adjuster */}
+                      <div className="flex items-center bg-white dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <button
+                          type="button"
+                          className="w-7 h-7 flex justify-center items-center rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-90 font-bold"
+                          onClick={() => handleUpdateQuantity(index, -1)}
+                        >
+                          -
+                        </button>
+                        <span className="w-6 text-center font-bold text-gray-900 dark:text-white text-sm">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          className="w-7 h-7 flex justify-center items-center rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-90 font-bold"
+                          onClick={() => handleUpdateQuantity(index, 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Remove Button */}
+                      <button
+                        type="button"
+                        className="w-9 h-9 flex justify-center items-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors active:scale-90"
+                        onClick={() => handleRemoveItem(item.productId)}
+                        title="Remove item"
+                      >
+                        <TbTrash className="text-lg" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ========== RIGHT: ORDER SUMMARY ========== */}
+          <div className="lg:w-1/3">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-xl border border-gray-100 dark:border-gray-700 sticky top-24 transition-colors duration-300">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Order Summary
+              </h2>
+
+              <div className="space-y-4 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-6">
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Subtotal ({cart.length} items)</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    LKR {getTotalForLabelledPrice().toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Discount</span>
+                  <span className="font-medium text-green-500">
+                    - LKR {(getTotalForLabelledPrice() - getTotal()).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Shipping</span>
+                  <span className="font-medium text-gray-900 dark:text-white uppercase text-xs tracking-wider bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    Free
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center mb-8">
+                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                  Total
+                </span>
+                <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#4f46e5] to-[#a855f7]">
+                  LKR {getTotal().toFixed(2)}
+                </span>
+              </div>
+
+              {/* Secure Checkout Banner */}
+              <div className="flex items-center justify-center gap-2 mb-6 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                <BsShieldCheck className="text-green-500 text-lg" />
+                Payments are secure and encrypted
+              </div>
+
+              {/* PROJECT COMMON BUTTON: Place Order */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-indigo-500/40 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex justify-center items-center text-lg disabled:opacity-70 disabled:hover:translate-y-0 disabled:active:scale-100"
+              >
+                {isSubmitting ? (
+                  <span className="animate-pulse">Processing Order...</span>
+                ) : (
+                  "Place Order"
+                )}
+              </button>
+
+              <Link
+                to="/cart"
+                className="mt-6 md:hidden flex justify-center items-center text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <BsArrowLeft className="mr-2" /> Return to Cart
+              </Link>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {/* Global CSS for Blobs */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        @keyframes blob {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+      `,
+        }}
+      />
+    </div>
+  );
 }
