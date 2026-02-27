@@ -410,7 +410,7 @@ export default function ContactPage() {
                   <FaInstagram />
                 </a>
                 <a
-                  href="#"
+                  href="https://wa.me/94778041167"
                   className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 flex items-center justify-center text-xl hover:bg-green-500 dark:hover:bg-green-500 hover:text-white dark:hover:text-white hover:-translate-y-2 hover:shadow-lg hover:shadow-green-200 dark:hover:shadow-green-900 transition-all duration-300"
                 >
                   <FaWhatsapp />
