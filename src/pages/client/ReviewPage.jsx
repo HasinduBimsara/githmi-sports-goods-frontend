@@ -39,32 +39,19 @@ const HappyCustomerSlider = ({ customers }) => {
     return null;
 
   return (
-    // Reduced min-h-[500px] to min-h-[340px] to remove massive dead space!
-    <div className="slider-body bg-transparent min-h-[340px] py-2">
+    // Reduced height slightly since text is removed
+    <div className="slider-body bg-transparent min-h-[250px] py-2">
       <div className="slider-wrapper">
         <div className="slider-track">
           {customers.map((customer, index) => (
             <div className="slide" key={customer?.id || index}>
-              <div className="inner-card bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden h-full flex flex-col items-center border border-gray-100 dark:border-gray-700 transition-all duration-300">
-                <div className="w-full h-40 overflow-hidden mb-2 relative">
-                  <img
-                    src={customer?.image || "https://placehold.co/300x300"}
-                    alt={customer?.name || "Customer"}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                </div>
-                <div className="p-3 flex flex-col items-center flex-grow w-full">
-                  <h3 className="font-bold text-gray-900 dark:text-white text-base text-center line-clamp-1 mb-1 transition-colors duration-300">
-                    {customer?.name || "Happy Customer"}
-                  </h3>
-                  <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium mb-2 text-center line-clamp-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full transition-colors duration-300">
-                    {customer?.product || "Sports Gear"}
-                  </p>
-                  <div className="mt-auto mb-1">
-                    {renderStars(customer?.rating)}
-                  </div>
-                </div>
+              {/* Card now only contains the full-cover image */}
+              <div className="inner-card bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden h-full border border-gray-100 dark:border-gray-700 transition-all duration-300">
+                <img
+                  src={customer?.image || "https://placehold.co/300x300"}
+                  alt={customer?.name || "Customer"}
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                />
               </div>
             </div>
           ))}
@@ -214,7 +201,7 @@ export default function ReviewPage() {
         <div className="absolute top-40 -right-40 w-96 h-96 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 transition-colors duration-700"></div>
       </div>
 
-      <div className="relative mx-auto flex-col max-w-7xl px-4 py-6">
+      <div className="relative mx-auto flex-col max-w-[1200px]">
         {/* ========== COMPACT TOP HEADER BANNER ========== */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex flex-col md:flex-row justify-between items-center rounded-2xl p-4 md:p-6 mb-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 gap-4">
           <div className="flex items-center text-center md:text-left">
@@ -261,11 +248,11 @@ export default function ReviewPage() {
           </div>
         </div>
 
-        {/* ========== SWAPPER SLIDER (NOW IMMEDIATELY VISIBLE) ========== */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
+        {/* ========== SWAPPER SLIDER (IMAGE ONLY) ========== */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-2 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-              Community Favorites
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+              Happy Customers
             </h2>
             <Link
               to="/products"
