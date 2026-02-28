@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../components/loader";
+import ShinyText from "../../components/ShinyText";
 import {
   FaStar,
   FaUserCircle,
@@ -249,21 +250,38 @@ export default function ReviewPage() {
         </div>
 
         {/* ========== SWAPPER SLIDER (IMAGE ONLY) ========== */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-2 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-              Happy Customers
+        {/* ========== SWAPPER SLIDER (IMAGE ONLY) ========== */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-4 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
+          {/* FIX: Changed mb-6 to mb-2 to remove the massive gap */}
+          <div className="relative flex flex-col md:flex-row items-center justify-center mb-2 pt-2">
+            {/* FIX: Removed py-2 and changed leading-normal to leading-tight to shrink vertical height */}
+            <h2 className="text-4xl md:text-5xl font-bold transition-colors duration-300 text-center px-4 leading-tight whitespace-nowrap">
+              <ShinyText
+                text="Happy Customers"
+                speed={3}
+                delay={0.3}
+                color="#fff700"
+                shineColor="#ff0000"
+                spread={120}
+                direction="right"
+                yoyo={true}
+                pauseOnHover={true}
+                disabled={false}
+              />
             </h2>
+
             <Link
               to="/products"
-              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+              className="group mt-3 md:mt-0 md:absolute md:right-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center"
             >
-              Shop their gear &rarr;
+              Shop their gear
+              <FaArrowRight className="ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
             </Link>
           </div>
+
+          {/* Ensure your HappyCustomerSlider component doesn't have excess top margin inside its own file */}
           <HappyCustomerSlider customers={happyCustomers} />
         </div>
-
         {/* ========== MASONRY REVIEW GRID ========== */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4 mb-8">
           {Array.isArray(reviews) &&
