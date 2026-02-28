@@ -173,7 +173,7 @@ export default function ContactPage() {
           <div className="lg:w-5/12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight transition-colors">
               Get In{" "}
-              <span className="text-[#4f46e5] dark:text-blue-400">Touch</span>
+              <span className="text-[#4f46e5] dark:text-purple-800">Touch</span>
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base leading-relaxed transition-colors">
               We'd love to hear from you! Whether you have questions, need
@@ -205,7 +205,9 @@ export default function ContactPage() {
                 Our Contact Info
               </h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors">
-                +94 778041167
+                <span className="text-[#4f46e5] dark:text-yellow-200">
+                  +94 778041167
+                </span>
               </p>
               <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors">
                 githmisports@gmail.com
