@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GrGoogle } from "react-icons/gr";
 import loginBg from "../assets/login-bg.jpg"; // Ensure this path is correct
-
+import ShinyText from "../components/ShinyText";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,9 +71,22 @@ export default function LoginPage() {
 
       <div className="w-full lg:w-[50%] h-149 flex justify-center items-center px-4 py-10">
         <div className="w-[450px] h-auto py-10 backdrop-blur-xl bg-white/20 dark:bg-[#242a38]/95 shadow-2xl rounded-2xl flex flex-col justify-center items-center transition-colors duration-500 border border-white/40 dark:border-gray-700/50">
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 transition-colors">
-            Welcome Back
+          <h2 className="text-3xl font-black mb-2 transition-colors">
+            {/* ✨ SHINY TEXT EFFECT ADDED HERE ✨ */}
+            <ShinyText
+              text="Welcome Back"
+              speed={2.5}
+              delay={0}
+              color="#ae00ff"
+              shineColor="#ff7300"
+              spread={120}
+              direction="right"
+              yoyo
+              pauseOnHover
+              disabled={false}
+            />
           </h2>
+
           <p className="text-gray-800 dark:text-gray-400 mb-6 text-sm font-medium transition-colors">
             Please enter your details to sign in
           </p>
