@@ -1,3 +1,4 @@
+import ShinyText from "../../components/ShinyText"; // Ensure this path matches your folder structure
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -51,7 +52,6 @@ export default function RegisterPage() {
       });
   }
 
-  // Exact theme from your login inputs
   const inputTheme =
     "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] transition-all duration-300";
 
@@ -59,16 +59,27 @@ export default function RegisterPage() {
     "w-[400px] h-[50px] bg-white/50 dark:bg-[#f0f4f9] border border-white dark:border-transparent rounded-xl text-center m-[5px] text-gray-900 placeholder-gray-700 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4f46e5] transition-all duration-300 tracking-widest";
 
   return (
-    // ADDED pt-20 (80px padding top) to push content below the navbar
     <div className="w-full h-screen bg-[url(/login-bg.jpg)] bg-cover bg-center flex">
       <div className="w-[90%] h-full hidden lg:block"></div>
 
-      {/* Added py-10 so the form doesn't hit the very top/bottom on small screens */}
       <div className="w-full lg:w-[50%] h-160 flex justify-center items-center px-4 py-5">
         <div className="w-[450px] h-145 py-5 backdrop-blur-xl bg-white/20 dark:bg-[#242a38]/95 shadow-2xl rounded-2xl flex flex-col justify-center items-center transition-colors duration-500 border border-white/40 dark:border-gray-700/50">
-          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 transition-colors">
-            Create Account
+          <h2 className="text-3xl font-black mb-2 transition-colors">
+            {/* ✨ SHINY TEXT EFFECT ADDED HERE ✨ */}
+            <ShinyText
+              text="Create Account"
+              speed={2.5}
+              delay={0}
+              color="#ae00ff"
+              shineColor="#ff7300"
+              spread={120}
+              direction="right"
+              yoyo
+              pauseOnHover
+              disabled={false}
+            />
           </h2>
+
           <p className="text-gray-800 dark:text-gray-400 mb-6 text-sm font-medium transition-colors">
             Please enter your details to register
           </p>
@@ -122,7 +133,6 @@ export default function RegisterPage() {
             placeholder="........"
           />
 
-          {/* SMART MOTION THEME BUTTON */}
           <button
             onClick={handleRegister}
             disabled={loading}
