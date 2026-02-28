@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
-import {
-  BsCart4,
-  BsSunFill,
-  BsMoonFill,
-  BsPersonCircle, // Kept if you plan to use it later
-} from "react-icons/bs";
+import { BsCart4, BsSunFill, BsMoonFill } from "react-icons/bs";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
-import { MdOutlineContactSupport, MdReviews } from "react-icons/md";
-import { HiHome, HiShoppingBag } from "react-icons/hi";
+import { FiHome, FiBox, FiPhoneCall, FiHeart } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 import ShinyText from "./ShinyText";
 
@@ -50,10 +44,22 @@ export default function Header() {
   };
 
   const navItems = [
-    { path: "/", label: "Home", icon: <HiHome /> },
-    { path: "/products", label: "Products", icon: <HiShoppingBag /> },
-    { path: "/contact", label: "Contact", icon: <MdOutlineContactSupport /> },
-    { path: "/reviews", label: "Reviews", icon: <MdReviews /> },
+    { path: "/", label: "Home", icon: <FiHome className="text-lg mb-[2px]" /> },
+    {
+      path: "/products",
+      label: "Products",
+      icon: <FiBox className="text-lg mb-[2px]" />,
+    },
+    {
+      path: "/contact",
+      label: "Contact",
+      icon: <FiPhoneCall className="text-lg mb-[2px]" />,
+    },
+    {
+      path: "/reviews",
+      label: "Reviews",
+      icon: <FiHeart className="text-lg mb-[2px]" />,
+    },
   ];
 
   const cartCount = 3; // This should come from your cart state
@@ -74,7 +80,7 @@ export default function Header() {
               <div className="relative flex-shrink-0">
                 {/* Dynamically switching logo based on dark mode */}
                 <img
-                  src={darkMode ? "public/logo.png" : "public/logo.png"}
+                  src={darkMode ? "/logo.png" : "/logo.png"}
                   alt="Githmi Sports Goods Logo"
                   className="h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
                 />
