@@ -62,11 +62,11 @@ export default function RegisterPage() {
   return (
     <div className="w-full min-h-screen bg-[url('/login-bg.jpg')] bg-cover bg-center flex transition-colors duration-300">
       {/* Left side spacer - hidden on mobile, takes 50% on large screens */}
-      <div className="w-[50%] h-full hidden lg:block"></div>
+      <div className="w-[90%] h-full hidden lg:block"></div>
 
       {/* Right side form container - Added pt-[100px] so it clears the navbar */}
-      <div className="w-full lg:w-[50%] min-h-screen flex justify-center items-center px-4 pt-[100px] pb-10 sm:px-6 lg:px-8">
-        {/* Glassmorphism Card: Fluid width (w-full max-w-md) for mobile responsiveness */}
+      <div className="w-full lg:w-[45%] h-230 flex justify-center items-center px-4 pb-10 sm:px-6 lg:px-8">
+        {/* Glassmorphism Card: Fluid widt (w-full max-w-md) for mobile responsiveness */}
         <div className="w-full max-w-md p-8 sm:p-10 backdrop-blur-xl bg-white/20 dark:bg-[#242a38]/95 shadow-2xl rounded-3xl flex flex-col justify-center items-center transition-colors duration-500 border border-white/40 dark:border-gray-700/50">
           <h2 className="text-3xl sm:text-4xl font-black mb-2 transition-colors text-center">
             {/* ✨ SHINY TEXT EFFECT ✨ */}
