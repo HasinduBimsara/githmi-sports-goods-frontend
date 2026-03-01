@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GrGoogle } from "react-icons/gr";
-import ShinyText from "../components/ShinyText";
+import ShinyText from "../components/ShinyText"; // Ensure this path is correct
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -65,10 +65,11 @@ export default function LoginPage() {
   return (
     <div className="w-full min-h-screen bg-[url('/login-bg.jpg')] bg-cover bg-center flex transition-colors duration-300">
       {/* Left side spacer - hidden on mobile, takes 50% on large screens */}
-      <div className="w-[50%] h-full hidden lg:block"></div>
+      <div className="w-[70%] h-full hidden lg:block"></div>
 
       {/* Right side form container - takes 100% on mobile, 50% on large screens */}
-      <div className="w-full lg:w-[50%] min-h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8">
+      {/* FIX: Changed py-10 to pt-[100px] pb-10 to push the card safely below your fixed Header */}
+      <div className="w-full lg:w-[40%] min-h-screen flex justify-center items-center px-4 pt-[100px] pb-10 sm:px-6 lg:px-8">
         {/* Glassmorphism Card: Fluid width (w-full) maxing out at 448px (max-w-md) */}
         <div className="w-full max-w-md p-8 sm:p-10 backdrop-blur-xl bg-white/20 dark:bg-[#242a38]/95 shadow-2xl rounded-3xl flex flex-col justify-center items-center transition-colors duration-500 border border-white/40 dark:border-gray-700/50">
           <h2 className="text-3xl sm:text-4xl font-black mb-2 transition-colors text-center">
