@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GrGoogle } from "react-icons/gr";
-import loginBg from "../assets/login-bg.jpg"; // Ensure this path is correct
-import ShinyText from "../components/ShinyText";
+import ShinyText from "../components/ShinyText"; // Fixed path: Only one set of dots needed from src/pages
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,16 +63,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      className="w-full min-h-screen bg-cover bg-center flex transition-colors duration-300"
-      style={{ backgroundImage: `url(${loginBg})` }}
-    >
+    // FIX: Removed the style={{ backgroundImage... }} and used Tailwind's bg-[url] like your Register Page!
+    <div className="w-full min-h-screen bg-[url('/login-bg.jpg')] bg-cover bg-center flex transition-colors duration-300">
       <div className="w-[90%] h-full hidden lg:block"></div>
 
       <div className="w-full lg:w-[50%] h-149 flex justify-center items-center px-4 py-10">
         <div className="w-[450px] h-auto py-10 backdrop-blur-xl bg-white/20 dark:bg-[#242a38]/95 shadow-2xl rounded-2xl flex flex-col justify-center items-center transition-colors duration-500 border border-white/40 dark:border-gray-700/50">
           <h2 className="text-3xl font-black mb-2 transition-colors">
-            {/* ✨ SHINY TEXT EFFECT ADDED HERE ✨ */}
+            {/* ✨ SHINY TEXT EFFECT ✨ */}
             <ShinyText
               text="Welcome Back"
               speed={2.5}
@@ -105,7 +103,7 @@ export default function LoginPage() {
             placeholder="........"
           />
 
-          {/* 🔥 UPDATED LOGIN BUTTON: Gradient Theme + Smart Motion 🔥 */}
+          {/* 🔥 LOGIN BUTTON 🔥 */}
           <button
             onClick={handleLogin}
             disabled={loading}
@@ -126,7 +124,7 @@ export default function LoginPage() {
             <div className="flex-1 border-t border-gray-400 dark:border-gray-600 transition-colors"></div>
           </div>
 
-          {/* 🔥 UPDATED GOOGLE BUTTON: Gradient Theme + Smart Motion 🔥 */}
+          {/* 🔥 GOOGLE BUTTON 🔥 */}
           <button
             className="w-[400px] h-[50px] bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold rounded-xl cursor-pointer flex justify-center items-center shadow-lg transform hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 disabled:opacity-70"
             onClick={loginWithGoogle}
