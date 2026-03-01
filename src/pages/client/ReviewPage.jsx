@@ -40,13 +40,11 @@ const HappyCustomerSlider = ({ customers }) => {
     return null;
 
   return (
-    // Reduced height slightly since text is removed
-    <div className="slider-body bg-transparent min-h-[250px] py-2">
+    <div className="slider-body bg-transparent min-h-[200px] md:min-h-[250px] py-2">
       <div className="slider-wrapper">
         <div className="slider-track">
           {customers.map((customer, index) => (
             <div className="slide" key={customer?.id || index}>
-              {/* Card now only contains the full-cover image */}
               <div className="inner-card bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden h-full border border-gray-100 dark:border-gray-700 transition-all duration-300">
                 <img
                   src={customer?.image || "https://placehold.co/300x300"}
@@ -202,11 +200,12 @@ export default function ReviewPage() {
         <div className="absolute top-40 -right-40 w-96 h-96 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 transition-colors duration-700"></div>
       </div>
 
-      <div className="relative mx-auto flex-col max-w-[1200px]">
+      {/* FIX: Added pt-24 (top padding) to clear sticky navbar, and px-4 sm:px-6 for mobile margins */}
+      <div className="relative mx-auto flex flex-col max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* ========== COMPACT TOP HEADER BANNER ========== */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex flex-col md:flex-row justify-between items-center rounded-2xl p-4 md:p-6 mb-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 gap-4">
-          <div className="flex items-center text-center md:text-left">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 tracking-tight drop-shadow-sm mr-4">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex flex-col md:flex-row justify-between items-center rounded-2xl p-5 md:p-6 mb-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 gap-4">
+          <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-4">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 tracking-tight drop-shadow-sm">
               550+
             </h1>
             <div className="flex flex-col">
@@ -219,7 +218,7 @@ export default function ReviewPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0">
             <div className="hidden sm:flex -space-x-3">
               {[1, 2, 3, 4].map((img) => (
                 <img
@@ -234,28 +233,24 @@ export default function ReviewPage() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("write-review")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
-                className="bg-white dark:bg-gray-800 border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 font-bold py-2 px-5 rounded-xl shadow-sm transition-all duration-300 text-sm"
-              >
-                Write Review
-              </button>
-            </div>
+            <button
+              onClick={() =>
+                document
+                  .getElementById("write-review")
+                  .scrollIntoView({ behavior: "smooth" })
+              }
+              className="w-full sm:w-auto bg-white dark:bg-gray-800 border border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all duration-300 text-sm"
+            >
+              Write Review
+            </button>
           </div>
         </div>
 
         {/* ========== SWAPPER SLIDER (IMAGE ONLY) ========== */}
-        {/* ========== SWAPPER SLIDER (IMAGE ONLY) ========== */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-4 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
-          {/* FIX: Changed mb-6 to mb-2 to remove the massive gap */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
           <div className="relative flex flex-col md:flex-row items-center justify-center mb-2 pt-2">
-            {/* FIX: Removed py-2 and changed leading-normal to leading-tight to shrink vertical height */}
-            <h2 className="text-4xl md:text-5xl font-bold transition-colors duration-300 text-center px-4 leading-tight whitespace-nowrap">
+            {/* FIX: Reduced mobile font size to text-3xl, removed whitespace-nowrap on mobile so it wraps instead of breaking the screen */}
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold transition-colors duration-300 text-center px-2 sm:px-4 leading-tight whitespace-normal sm:whitespace-nowrap">
               <ShinyText
                 text="Happy Customers"
                 speed={3}
@@ -272,23 +267,23 @@ export default function ReviewPage() {
 
             <Link
               to="/products"
-              className="group mt-3 md:mt-0 md:absolute md:right-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center"
+              className="group mt-2 md:mt-0 md:absolute md:right-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center bg-blue-50 dark:bg-gray-800 md:bg-transparent px-4 py-2 md:px-0 md:py-0 rounded-full"
             >
               Shop their gear
-              <FaArrowRight className="ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+              <FaArrowRight className="ml-2 opacity-100 md:opacity-0 md:-translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
             </Link>
           </div>
 
-          {/* Ensure your HappyCustomerSlider component doesn't have excess top margin inside its own file */}
           <HappyCustomerSlider customers={happyCustomers} />
         </div>
+
         {/* ========== MASONRY REVIEW GRID ========== */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4 mb-8">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4 sm:space-y-6 mb-10">
           {Array.isArray(reviews) &&
             reviews.map((review, index) => (
               <div
                 key={review?._id || index}
-                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 break-inside-avoid hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
+                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 break-inside-avoid hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex flex-col">
@@ -313,11 +308,11 @@ export default function ReviewPage() {
                       <FaUserCircle className="text-xl" />
                     </div>
                   )}
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900 dark:text-white transition-colors duration-300">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate transition-colors duration-300">
                       {review?.name || "Verified Customer"}
                     </h4>
-                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium transition-colors duration-300">
+                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate transition-colors duration-300">
                       {review?.role || "Verified Buyer"}
                     </p>
                   </div>
@@ -329,19 +324,19 @@ export default function ReviewPage() {
         {/* ========== WRITE REVIEW FORM ========== */}
         <div
           id="write-review"
-          className="max-w-3xl mx-auto w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-md p-6 md:p-8 border border-gray-100 dark:border-gray-700 transition-colors duration-300"
+          className="max-w-3xl mx-auto w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-md p-5 sm:p-6 md:p-8 border border-gray-100 dark:border-gray-700 transition-colors duration-300"
         >
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
               Share Your Experience
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
+            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 px-2">
               Your feedback helps us improve and serve you better.
             </p>
           </div>
 
           <form onSubmit={handleSubmitReview} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Your Name <span className="text-red-500">*</span>
@@ -390,7 +385,7 @@ export default function ReviewPage() {
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                 Rating
               </label>
-              <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 w-max px-4 py-2 rounded-xl border border-transparent dark:border-gray-700 transition-colors duration-300">
+              <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 w-full sm:w-max px-4 py-3 sm:py-2 rounded-xl border border-transparent dark:border-gray-700 transition-colors duration-300 justify-center sm:justify-start">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
@@ -455,7 +450,7 @@ export default function ReviewPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl shadow-md transform hover:-translate-y-1 transition-all duration-300 flex justify-center items-center disabled:opacity-70 mt-2"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 sm:py-4 rounded-xl shadow-md transform hover:-translate-y-1 active:scale-95 transition-all duration-300 flex justify-center items-center disabled:opacity-70 mt-4"
             >
               {submitting ? (
                 <span className="animate-pulse">Submitting...</span>
