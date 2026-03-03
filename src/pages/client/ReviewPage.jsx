@@ -40,7 +40,8 @@ const HappyCustomerSlider = ({ customers }) => {
     return null;
 
   return (
-    <div className="slider-body bg-transparent min-h-[200px] md:min-h-[250px] py-2">
+    // FIX: Removed min-height and padding to tighten vertical space
+    <div className="slider-body bg-transparent py-0">
       <div className="slider-wrapper">
         <div className="slider-track">
           {customers.map((customer, index) => (
@@ -100,26 +101,6 @@ export default function ReviewPage() {
         "Githmi Sports is more than just a store; it's a complete ecosystem for the sports industry. We source all our academy equipment here.",
       avatar: "https://i.pravatar.cc/150?u=nazmul",
     },
-    {
-      _id: "3",
-      name: "Fahmida Islam",
-      role: "Managing Director, Global Athletics",
-      rating: 5,
-      date: "2024-08-15",
-      comment:
-        "The customer service feature is exceptional. It allows us to connect with experts who understand our exact needs.",
-      avatar: "https://i.pravatar.cc/150?u=fahmida",
-    },
-    {
-      _id: "4",
-      name: "Raihan Karim",
-      role: "Founder, Karim Tennis Solutions",
-      rating: 5,
-      date: "2024-08-15",
-      comment:
-        "The bundle deals feature is a standout. It simplifies the entire process of getting a team ready for a tournament.",
-      avatar: "https://i.pravatar.cc/150?u=raihan",
-    },
   ];
 
   const fetchReviews = useCallback(() => {
@@ -127,11 +108,7 @@ export default function ReviewPage() {
     axios
       .get(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`)
       .then((response) => {
-        if (
-          response.data &&
-          Array.isArray(response.data) &&
-          response.data.length > 0
-        ) {
+        if (response.data?.length > 0) {
           setReviews(response.data);
         } else {
           setReviews(defaultReviews);
@@ -147,14 +124,11 @@ export default function ReviewPage() {
 
   useEffect(() => {
     fetchReviews();
-
     const generateCustomers = () =>
       Array.from({ length: 18 }, (_, i) => ({
         id: `customer-${i}`,
         name: `Customer ${i + 1}`,
-        product: `Pro Sports Gear ${i + 1}`,
         image: `https://i.pravatar.cc/300?img=${(i % 50) + 1}`,
-        rating: 5,
       }));
     setHappyCustomers(generateCustomers());
   }, [fetchReviews]);
@@ -177,8 +151,7 @@ export default function ReviewPage() {
         fetchReviews();
         setSubmitting(false);
       })
-      .catch((error) => {
-        console.error("Submission error:", error);
+      .catch(() => {
         toast.error("Failed to submit review");
         setSubmitting(false);
       });
@@ -194,16 +167,11 @@ export default function ReviewPage() {
 
   return (
     <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300">
-      {/* Animated Background Blobs */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-300 dark:bg-blue-900/40 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob transition-colors duration-700"></div>
-        <div className="absolute top-40 -right-40 w-96 h-96 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 transition-colors duration-700"></div>
-      </div>
-
-      {/* FIX: Added pt-24 (top padding) to clear sticky navbar, and px-4 sm:px-6 for mobile margins */}
-      <div className="relative mx-auto flex flex-col max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        {/* ========== COMPACT TOP HEADER BANNER ========== */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex flex-col md:flex-row justify-between items-center rounded-2xl p-5 md:p-6 mb-6 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 gap-4">
+      {/* FIX: Set pt-0 to remove gap with navbar (or pt-2 for a subtle gap) */}
+      <div className="relative mx-auto flex flex-col max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-0 pb-12">
+        {/* ========== TOP BANNER ========== */}
+        {/* FIX: Removed mb-6 to mb-2 to pull slider upward */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md flex flex-col md:flex-row justify-between items-center rounded-2xl p-4 md:p-6 mb-2 mt-2 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 gap-4">
           <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-2 sm:gap-4">
             <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 tracking-tight drop-shadow-sm">
               550+
@@ -246,11 +214,11 @@ export default function ReviewPage() {
           </div>
         </div>
 
-        {/* ========== SWAPPER SLIDER (IMAGE ONLY) ========== */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
-          <div className="relative flex flex-col md:flex-row items-center justify-center mb-2 pt-2">
-            {/* FIX: Reduced mobile font size to text-3xl, removed whitespace-nowrap on mobile so it wraps instead of breaking the screen */}
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold transition-colors duration-300 text-center px-2 sm:px-4 leading-tight whitespace-normal sm:whitespace-nowrap">
+        {/* ========== SWAPPER SLIDER ========== */}
+        {/* FIX: Tightened padding and margins */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl py-3 px-4 sm:p-5 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
+          <div className="relative flex flex-col mb- md:flex-row items-center justify-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold transition-colors duration-300 text-center px-2 leading-tight whitespace-normal sm:whitespace-nowrap">
               <ShinyText
                 text="Happy Customers"
                 speed={3}
@@ -277,48 +245,43 @@ export default function ReviewPage() {
           <HappyCustomerSlider customers={happyCustomers} />
         </div>
 
-        {/* ========== MASONRY REVIEW GRID ========== */}
+        {/* ========== REVIEWS GRID ========== */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4 sm:space-y-6 mb-10">
-          {Array.isArray(reviews) &&
-            reviews.map((review, index) => (
-              <div
-                key={review?._id || index}
-                className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 break-inside-avoid hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex flex-col">
-                    {renderStars(review?.rating)}
+          {reviews.map((review, index) => (
+            <div
+              key={review?._id || index}
+              className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 break-inside-avoid hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
+            >
+              <div className="flex justify-between items-start mb-4">
+                {renderStars(review?.rating)}
+                <FaQuoteLeft className="text-xl text-blue-100 dark:text-gray-700 group-hover:text-blue-200 dark:group-hover:text-gray-600 transition-colors duration-300" />
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-6 italic transition-colors duration-300">
+                "{review?.comment}"
+              </p>
+              <div className="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+                {review?.avatar ? (
+                  <img
+                    src={review.avatar}
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
+                    alt="User"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full mr-3 bg-blue-100 text-blue-600 flex items-center justify-center">
+                    <FaUserCircle className="text-xl" />
                   </div>
-                  <FaQuoteLeft className="text-xl text-blue-100 dark:text-gray-700 group-hover:text-blue-200 dark:group-hover:text-gray-600 transition-colors duration-300" />
-                </div>
-
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-6 italic transition-colors duration-300">
-                  "{review?.comment || "Great product!"}"
-                </p>
-
-                <div className="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors duration-300">
-                  {review?.avatar ? (
-                    <img
-                      src={review.avatar}
-                      alt={review?.name || "User"}
-                      className="w-10 h-10 rounded-full mr-3 border border-white dark:border-gray-800 shadow-sm object-cover transition-colors duration-300"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full mr-3 bg-gradient-to-br from-blue-100 to-purple-100 text-blue-600 flex items-center justify-center shadow-sm">
-                      <FaUserCircle className="text-xl" />
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate transition-colors duration-300">
-                      {review?.name || "Verified Customer"}
-                    </h4>
-                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate transition-colors duration-300">
-                      {review?.role || "Verified Buyer"}
-                    </p>
-                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate">
+                    {review?.name || "Verified Customer"}
+                  </h4>
+                  <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate">
+                    {review?.role || "Verified Buyer"}
+                  </p>
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
 
         {/* ========== WRITE REVIEW FORM ========== */}
@@ -327,10 +290,10 @@ export default function ReviewPage() {
           className="max-w-3xl mx-auto w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-md p-5 sm:p-6 md:p-8 border border-gray-100 dark:border-gray-700 transition-colors duration-300"
         >
           <div className="text-center mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Share Your Experience
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 px-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Your feedback helps us improve and serve you better.
             </p>
           </div>
@@ -338,8 +301,8 @@ export default function ReviewPage() {
           <form onSubmit={handleSubmitReview} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
-                  Your Name <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  Your Name *
                 </label>
                 <input
                   type="text"
@@ -350,17 +313,13 @@ export default function ReviewPage() {
                   onFocus={() => setActiveField("name")}
                   onBlur={() => setActiveField(null)}
                   required
-                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all duration-300 border-2 ${
-                    activeField === "name"
-                      ? "border-blue-500 shadow-sm"
-                      : "border-transparent dark:border-gray-700"
-                  }`}
+                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all border-2 ${activeField === "name" ? "border-blue-500 shadow-sm" : "border-transparent dark:border-gray-700"}`}
                   placeholder="John Doe"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
-                  Email Address <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  Email Address *
                 </label>
                 <input
                   type="email"
@@ -371,31 +330,23 @@ export default function ReviewPage() {
                   onFocus={() => setActiveField("email")}
                   onBlur={() => setActiveField(null)}
                   required
-                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all duration-300 border-2 ${
-                    activeField === "email"
-                      ? "border-blue-500 shadow-sm"
-                      : "border-transparent dark:border-gray-700"
-                  }`}
+                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all border-2 ${activeField === "email" ? "border-blue-500 shadow-sm" : "border-transparent dark:border-gray-700"}`}
                   placeholder="john@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
                 Rating
               </label>
-              <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 w-full sm:w-max px-4 py-3 sm:py-2 rounded-xl border border-transparent dark:border-gray-700 transition-colors duration-300 justify-center sm:justify-start">
+              <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 w-full sm:w-max px-4 py-3 sm:py-2 rounded-xl border border-transparent dark:border-gray-700">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
                     onClick={() => setNewReview({ ...newReview, rating: star })}
-                    className={`text-2xl transition-transform hover:scale-125 ${
-                      star <= newReview.rating
-                        ? "text-yellow-400 drop-shadow-md"
-                        : "text-gray-300 dark:text-gray-600"
-                    }`}
+                    className={`text-2xl transition-transform hover:scale-125 ${star <= newReview.rating ? "text-yellow-400 drop-shadow-md" : "text-gray-300 dark:text-gray-600"}`}
                   >
                     <FaStar />
                   </button>
@@ -404,30 +355,8 @@ export default function ReviewPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
-                Review Title <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={newReview.title}
-                onChange={(e) =>
-                  setNewReview({ ...newReview, title: e.target.value })
-                }
-                onFocus={() => setActiveField("title")}
-                onBlur={() => setActiveField(null)}
-                required
-                className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all duration-300 border-2 ${
-                  activeField === "title"
-                    ? "border-blue-500 shadow-sm"
-                    : "border-transparent dark:border-gray-700"
-                }`}
-                placeholder="Brief summary"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
-                Detailed Review <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                Detailed Review *
               </label>
               <textarea
                 value={newReview.comment}
@@ -438,11 +367,7 @@ export default function ReviewPage() {
                 onBlur={() => setActiveField(null)}
                 required
                 rows="4"
-                className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white p-4 rounded-xl outline-none transition-all duration-300 border-2 resize-none ${
-                  activeField === "comment"
-                    ? "border-blue-500 shadow-sm"
-                    : "border-transparent dark:border-gray-700"
-                }`}
+                className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white p-4 rounded-xl outline-none transition-all border-2 resize-none ${activeField === "comment" ? "border-blue-500 shadow-sm" : "border-transparent dark:border-gray-700"}`}
                 placeholder="What did you love about your purchase?"
               ></textarea>
             </div>
@@ -450,7 +375,7 @@ export default function ReviewPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 sm:py-4 rounded-xl shadow-md transform hover:-translate-y-1 active:scale-95 transition-all duration-300 flex justify-center items-center disabled:opacity-70 mt-4"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 sm:py-4 rounded-xl shadow-md transform hover:-translate-y-1 active:scale-95 transition-all flex justify-center items-center disabled:opacity-70 mt-4"
             >
               {submitting ? (
                 <span className="animate-pulse">Submitting...</span>
