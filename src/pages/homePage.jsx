@@ -126,9 +126,9 @@ export default function HomePage() {
                       <FaFire className={badgeColor} />
                     </div>
                   </div>
-                  <div className="p-4 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
+                  <div className="p-2 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider mb-1 ${badgeColor}`}
+                      className={`text-xs font-bold uppercase tracking-wider ${badgeColor}`}
                     >
                       {product.category || "Trending"}
                     </p>
