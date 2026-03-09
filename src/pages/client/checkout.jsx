@@ -38,7 +38,7 @@ export default function CheckoutPage() {
       address: address,
       phoneNumber: phone,
       billItems: cart.map((item) => ({
-        productId: item.productId,
+        productId: item.productId ?? item.id,
         quantity: item.quantity,
       })),
     };
@@ -79,7 +79,7 @@ export default function CheckoutPage() {
 
   const handleRemoveItem = (productId) => {
     setCart((prevCart) =>
-      prevCart.filter((item) => item.productId !== productId),
+      prevCart.filter((item) => (item.productId ?? item.id) !== productId),
     );
   };
 
@@ -261,7 +261,9 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         className="w-9 h-9 flex justify-center items-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors active:scale-90"
-                        onClick={() => handleRemoveItem(item.productId)}
+                        onClick={() =>
+                          handleRemoveItem(item.productId ?? item.id)
+                        }
                         title="Remove item"
                       >
                         <TbTrash className="text-lg" />
