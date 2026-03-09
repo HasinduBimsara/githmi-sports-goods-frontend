@@ -143,7 +143,7 @@ export default function CartPage() {
                   <button
                     className="w-10 h-10 flex justify-center items-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors active:scale-90"
                     onClick={() => {
-                      removeFromCart(item.productId);
+                      removeFromCart(item.productId ?? item.id);
                       setCartLoaded(false);
                     }}
                     title="Remove item"
