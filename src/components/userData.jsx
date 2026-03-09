@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 
 export default function UserData() {
   const [user, setUser] = useState(null);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     if (token != null) {
       axios
         .get(import.meta.env.VITE_BACKEND_URL + "/api/user/current", {
@@ -48,7 +49,7 @@ export default function UserData() {
             onClick={() => {
               localStorage.removeItem("token");
               setUser(null);
-              window.location = "/login";
+              window.location.href = "/login";
             }}
           >
             Logout
