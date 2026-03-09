@@ -220,19 +220,14 @@ export default function ContactPage() {
         <div className="relative w-full h-[350px] md:h-[400px] rounded-3xl overflow-hidden shadow-xl border border-white/50 dark:border-gray-700 transition-colors duration-300">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.187913225468!2d80.05147557576697!3d6.238946393749361!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae1819d52fae46f%3A0x4bf0a602cbb009ac!2sGithmi%20Sports%20Goods!5e0!3m2!1sen!2slk!4v1772206875264!5m2!1sen!2slk"
-            width="600"
-            height="450"
-            style="border:0;"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrades"
             width="100%"
             height="100%"
-            style={{ border: 0, filter: "contrast(1.2)" }} // Added slight contrast filter for modern look
-            allowFullScreen=""
+            style={{ border: 0, filter: "contrast(1.2)" }}
+            allowFullScreen
             loading="lazy"
+            referrerPolicy="no-referrer-when-downgrades"
             title="Location Map"
-            className="absolute inset-0 dark:opacity-80" // Dims map slightly in dark mode
+            className="absolute inset-0 dark:opacity-80"
           ></iframe>
           <a
             href="https://www.google.com/maps/dir//Githmi+Sports+Goods+Ambalangoda/@6.2389464,80.0540505,16z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3ae1819d52fae46f:0x4bf0a602cbb009ac"
