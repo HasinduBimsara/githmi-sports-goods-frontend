@@ -4,16 +4,20 @@ export default function ProductCard({ product }) {
   // Safe check in case product data is delayed
   if (!product) return null;
 
+  const productId = product.productId ?? product.id;
+  const productImage = product.image ?? product.images?.[0] ?? "https://placehold.co/300x300";
+  const labeledPrice = product.labeledPrice ?? product.price;
+
   return (
     <Link
-      to={`/overview/${product.productId}`}
+      to={`/overview/${productId}`}
       className="flex flex-col w-full max-w-[300px] mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 dark:border-gray-700"
     >
       {/* 📸 Image Container (Responsive Height + Zoom Hover Effect) */}
       <div className="relative w-full h-[180px] sm:h-[220px] overflow-hidden bg-gray-50 dark:bg-gray-900">
         <img
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          src={product.images[0]}
+          src={productImage}
           alt={product.name}
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
@@ -24,7 +28,7 @@ export default function ProductCard({ product }) {
         <div>
           {/* Product ID */}
           <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">
-            {product.productId}
+            {productId}
           </p>
 
           {/* Product Name (line-clamp-2 ensures long titles don't break the card on mobile) */}
@@ -40,9 +44,9 @@ export default function ProductCard({ product }) {
           </span>
 
           {/* Labeled (Discounted) Price */}
-          {product.price < product.labeledPrice && (
+          {product.price < labeledPrice && (
             <span className="line-through text-gray-400 dark:text-gray-500 text-xs sm:text-sm font-medium">
-              LKR {product.labeledPrice.toFixed(2)}
+              LKR {labeledPrice.toFixed(2)}
             </span>
           )}
         </div>
