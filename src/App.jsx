@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import AdminPage from "./pages/adminPage";
 import LoginPage from "./pages/loginPage";
 import Testing from "./pages/testing";
 import { Toaster } from "react-hot-toast";
@@ -24,32 +23,23 @@ function App() {
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <BrowserRouter>
           <Toaster position="top-right" />
-
-          {/* Header outside Routes so it shows on ALL pages except admin */}
           <Header />
 
           <Routes>
-            {/* Admin pages - no header needed as AdminPage has its own */}
-            <Route path="/admin/*" element={<AdminPage />} />
-
-            {/* Auth pages - header will show but you can hide it in CSS if needed */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forget" element={<ForgetPassword />} />
 
-            {/* Product-related pages */}
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/overview/:id" element={<ProductOverview />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
 
-            {/* Other pages */}
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/reviews" element={<ReviewPage />} />
             <Route path="/testing" element={<Testing />} />
             <Route path="/r" element={<ResponsiveTesting />} />
 
-            {/* Home page - should be last */}
             <Route path="/*" element={<HomePage />} />
           </Routes>
         </BrowserRouter>

@@ -83,7 +83,6 @@ src/
 ├── components/        # Reusable UI components (Header, Loader, ShinyText, etc.)
 ├── pages/             # Page components
 │   ├── client/        # Public facing pages (Home, Products, Contact, Reviews)
-│   ├── admin/         # Admin dashboard pages (if applicable)
 │   ├── LoginPage.jsx  
 │   └── RegisterPage.jsx
 ├── App.jsx            # Main application router
