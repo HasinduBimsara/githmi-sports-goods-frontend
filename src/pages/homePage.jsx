@@ -1,69 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaArrowRight,
-  FaShoppingBag,
-  FaTruck,
-  FaShieldAlt,
-  FaHeadset,
-  FaFire,
-  FaTag,
   FaBolt,
-  FaTrophy,
   FaBoxOpen,
-  FaFacebook,
-  FaInstagram,
-  FaWhatsapp,
+  FaFire,
+  FaHeadset,
+  FaShieldAlt,
+  FaShoppingBag,
+  FaTag,
+  FaTruck,
 } from "react-icons/fa";
-import { MdTrendingUp } from "react-icons/md";
+import toast from "react-hot-toast";
 import Loader from "../components/loader";
 import ShinyText from "../components/ShinyText";
 import "./ProductSlider.css";
+import { addToCart } from "../utils/cart";
+import { fetchProducts } from "../utils/products";
 
 export default function HomePage() {
-  const [flashDeals, setFlashDeals] = useState([]);
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [trendingProducts, setTrendingProducts] = useState([]);
-  const [topRated, setTopRated] = useState([]);
+  const [discountedProducts, setDiscountedProducts] = useState([]);
+  const [latestProducts, setLatestProducts] = useState([]);
+  const [availableProducts, setAvailableProducts] = useState([]);
+  const [catalogTags, setCatalogTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    fetchProducts();
-  }, []);
+    let active = true;
 
-  const fetchProducts = async () => {
-    try {
-      const generateMockData = (prefix, category, basePrice) =>
-        Array.from({ length: 18 }, (_, i) => ({
-          id: `${prefix}-${i}`,
-          name: `${category} Gear ${i + 1}`,
-          price: (basePrice + i * 2.5).toFixed(2),
-          image: `https://placehold.co/300x400/1A1A1A/FFF?text=${prefix}+${i + 1}`,
-          category: category,
-        }));
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        const products = await fetchProducts();
 
-      setFlashDeals(generateMockData("flash", "Flash Deal", 15.99));
-      setNewArrivals(generateMockData("new", "New Arrival", 49.99));
-      setFeaturedProducts(generateMockData("feat", "Featured", 39.99));
-      setTrendingProducts(generateMockData("trend", "Trending", 25.99));
-      setTopRated(generateMockData("top", "Top Rated", 59.99));
+        if (!active) {
+          return;
+        }
 
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setLoading(false);
+        const deals = products.filter(
+          (product) => product.labeledPrice > product.price,
+        );
+        const inStock = products.filter((product) => product.stock > 0);
+
+        setDiscountedProducts((deals.length > 0 ? deals : products).slice(0, 18));
+        setLatestProducts(products.slice(0, 18));
+        setAvailableProducts((inStock.length > 0 ? inStock : products).slice(0, 18));
+        setCatalogTags(
+          Array.from(
+            new Set(products.flatMap((product) => product.altNames || []).filter(Boolean)),
+          ).slice(0, 8),
+        );
+        setError(
+          products.length === 0
+            ? "Products will appear here after they are added from the admin side."
+            : "",
+        );
+      } catch (loadError) {
+        console.error("Error fetching products:", loadError);
+
+        if (active) {
+          setDiscountedProducts([]);
+          setLatestProducts([]);
+          setAvailableProducts([]);
+          setCatalogTags([]);
+          setError("We could not load the admin catalog right now.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
     }
-  };
+
+    window.scrollTo(0, 0);
+    loadProducts();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const features = [
     {
       icon: (
         <FaTruck className="text-3xl transition-transform duration-500 group-hover:translate-x-3" />
       ),
-      title: "Free Delivery",
-      description: "Free shipping on orders over $50",
+      title: "Fast Delivery",
+      description: "Admin-published products delivered directly to your door.",
       shinyColor: "#3b82f6",
       shinyShine: "#ffffff",
     },
@@ -71,8 +95,8 @@ export default function HomePage() {
       icon: (
         <FaShieldAlt className="text-3xl transition-transform duration-500 group-hover:scale-125" />
       ),
-      title: "Secure Payment",
-      description: "100% secure encrypted payments",
+      title: "Verified Catalog",
+      description: "Products and pricing come from the managed admin catalog.",
       shinyColor: "#22c55e",
       shinyShine: "#ffffff",
     },
@@ -80,8 +104,8 @@ export default function HomePage() {
       icon: (
         <FaHeadset className="text-3xl transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
       ),
-      title: "24/7 Support",
-      description: "Round-the-clock customer support",
+      title: "Customer Support",
+      description: "Get help with your orders and product selection anytime.",
       shinyColor: "#a855f7",
       shinyShine: "#ffffff",
     },
@@ -89,57 +113,82 @@ export default function HomePage() {
       icon: (
         <FaShoppingBag className="text-3xl transition-transform duration-500 group-hover:-translate-y-2 group-hover:bounce" />
       ),
-      title: "Easy Returns",
-      description: "30-day return policy",
+      title: "Trusted Checkout",
+      description: "Secure checkout flow for every published item.",
       shinyColor: "#f97316",
       shinyShine: "#ffffff",
     },
   ];
 
-  const sportsCategories = [
-    "Cricket",
-    "Football",
-    "Fitness & Gym",
-    "Tennis",
-    "Badminton",
-    "Swimming",
-    "Basketball",
-    "Athletics",
-  ];
+  const ProductSlider = ({ products, badgeColor, emptyMessage }) => {
+    if (!products || products.length === 0) {
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 text-center shadow-sm">
+          <p className="text-gray-500 dark:text-gray-400">{emptyMessage}</p>
+        </div>
+      );
+    }
 
-  const ProductSlider = ({ products, badgeColor = "text-orange-500" }) => {
-    if (!products || products.length === 0) return null;
     return (
       <div className="slider-body">
         <div className="slider-wrapper">
           <div className="slider-track">
             {products.map((product, index) => (
-              <div className="slide" key={product.id || index}>
+              <div className="slide" key={product.productId || index}>
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700 group">
-                  <div className="h-64 overflow-hidden relative">
+                  <Link
+                    to={`/overview/${product.productId}`}
+                    className="h-64 overflow-hidden relative block"
+                  >
                     <img
-                      src={product.image || "https://placehold.co/300x400"}
+                      src={product.image}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-gray-400 dark:text-gray-300 hover:text-red-500 transition-all duration-300 z-20 hover:scale-125 hover:rotate-12">
+                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-gray-400 dark:text-gray-300 z-20">
                       <FaFire className={badgeColor} />
                     </div>
-                  </div>
-                  <div className="p-2 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
-                    <p
-                      className={`text-xs font-bold uppercase tracking-wider ${badgeColor}`}
-                    >
-                      {product.category || "Trending"}
+                  </Link>
+
+                  <div className="p-4 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
+                    <p className={`text-xs font-bold uppercase tracking-wider ${badgeColor}`}>
+                      {product.altNames?.[0] || "Sports Gear"}
                     </p>
-                    <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <div className="mt-auto flex justify-between items-center">
-                      <span className="text-xl font-bold text-gray-900 dark:text-white">
-                        ${product.price}
-                      </span>
-                      <button className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-sm active:scale-90 hover:-translate-y-1">
+                    <Link to={`/overview/${product.productId}`}>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+                      {product.description}
+                    </p>
+
+                    <div className="mt-auto flex justify-between items-end gap-3">
+                      <div>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white block">
+                          LKR {product.price.toFixed(2)}
+                        </span>
+                        {product.labeledPrice > product.price && (
+                          <span className="text-sm text-gray-400 line-through">
+                            LKR {product.labeledPrice.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          if (product.stock <= 0) {
+                            toast.error("This product is currently out of stock");
+                            return;
+                          }
+
+                          addToCart(product, 1);
+                          toast.success(`${product.name} added to cart`);
+                        }}
+                        className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-sm active:scale-90 hover:-translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0"
+                        aria-label={`Add ${product.name} to cart`}
+                        disabled={product.stock <= 0}
+                      >
                         <FaShoppingBag />
                       </button>
                     </div>
@@ -155,44 +204,55 @@ export default function HomePage() {
 
   return (
     <div className="w-full font-sans dark:bg-gray-900 transition-colors duration-300">
-      {/* 1. TOP CATEGORY STRIP WITH SHINY EFFECT */}
-      <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex items-center justify-center overflow-x-auto py-3 hide-scrollbar">
-            <div className="flex items-center space-x-3 sm:space-x-5 whitespace-nowrap">
-              <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
-                Top Sports:
-              </span>
-              {sportsCategories.map((cat, index) => (
-                <React.Fragment key={index}>
-                  <Link
-                    to="/products"
-                    className="hover:-translate-y-0.5 inline-block transition-all duration-300"
-                  >
-                    <ShinyText
-                      text={cat}
-                      speed={4}
-                      delay={index * 0.2}
-                      color="#4b5563"
-                      shineColor="#4f46e5"
-                      spread={50}
-                      direction="right"
-                      yoyo={true}
-                      pauseOnHover={true}
-                      disabled={false}
-                    />
-                  </Link>
-                  {index < sportsCategories.length - 1 && (
-                    <span className="text-gray-300 dark:text-gray-700">•</span>
-                  )}
-                </React.Fragment>
-              ))}
+      {catalogTags.length > 0 && (
+        <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+          <div className="container mx-auto px-4 max-w-7xl">
+            <div className="flex items-center justify-center overflow-x-auto py-3 hide-scrollbar">
+              <div className="flex items-center space-x-3 sm:space-x-5 whitespace-nowrap">
+                <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
+                  Catalog Tags:
+                </span>
+                {catalogTags.map((tag, index) => (
+                  <React.Fragment key={tag}>
+                    <Link
+                      to="/products"
+                      className="hover:-translate-y-0.5 inline-block transition-all duration-300"
+                    >
+                      <ShinyText
+                        text={tag}
+                        speed={4}
+                        delay={index * 0.2}
+                        color="#4b5563"
+                        shineColor="#4f46e5"
+                        spread={50}
+                        direction="right"
+                        yoyo
+                        pauseOnHover
+                        disabled={false}
+                      />
+                    </Link>
+                    {index < catalogTags.length - 1 && (
+                      <span className="text-gray-300 dark:text-gray-700">|</span>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* 2. FLASH DEALS */}
+      {error && !loading && latestProducts.length === 0 && (
+        <section className="pt-10 px-4">
+          <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 text-center shadow-sm">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">
+              Admin catalog is empty
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400">{error}</p>
+          </div>
+        </section>
+      )}
+
       <section className="pt-8 pb-8 bg-gradient-to-b from-red-50 to-white dark:from-red-900/10 dark:to-gray-900 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center mb-6 group cursor-default">
@@ -202,7 +262,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-3xl font-black tracking-tight">
                 <ShinyText
-                  text="Flash Deals"
+                  text="Best Deals"
                   speed={3}
                   delay={0.3}
                   color="#b11616"
@@ -214,7 +274,9 @@ export default function HomePage() {
                   disabled={false}
                 />
               </h2>
-              <p className="text-red-500 font-medium mt-1">Ends in 24 hours!</p>
+              <p className="text-red-500 font-medium mt-1">
+                Discounted products published from the admin catalog.
+              </p>
             </div>
           </div>
           {loading ? (
@@ -222,12 +284,15 @@ export default function HomePage() {
               <Loader />
             </div>
           ) : (
-            <ProductSlider products={flashDeals} badgeColor="text-red-500" />
+            <ProductSlider
+              products={discountedProducts}
+              badgeColor="text-red-500"
+              emptyMessage="Discounted products will appear here after they are added by admin."
+            />
           )}
         </div>
       </section>
 
-      {/* 3. NEW ARRIVALS */}
       <section className="pt-8 pb-8 bg-gradient-to-b from-white to-blue-50 dark:from-gray-900 dark:to-blue-900/10 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center mb-6 group cursor-default">
@@ -237,7 +302,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-3xl font-black tracking-tight">
                 <ShinyText
-                  text="New Arrivals"
+                  text="Latest Products"
                   speed={3}
                   delay={0.3}
                   color="#00206b"
@@ -250,7 +315,7 @@ export default function HomePage() {
                 />
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
-                Fresh gear just dropped
+                Newly available items from the managed product list.
               </p>
             </div>
           </div>
@@ -259,22 +324,25 @@ export default function HomePage() {
               <Loader />
             </div>
           ) : (
-            <ProductSlider products={newArrivals} badgeColor="text-blue-500" />
+            <ProductSlider
+              products={latestProducts}
+              badgeColor="text-blue-500"
+              emptyMessage="Latest products will appear here after they are added by admin."
+            />
           )}
         </div>
       </section>
 
-      {/* 4. TOP RATED */}
       <section className="pt-8 pb-16 bg-gradient-to-t from-yellow-50 to-white dark:from-yellow-900/10 dark:to-gray-900 overflow-hidden border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
           <div className="flex items-center mb-6 group cursor-default">
             <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-yellow-200 transition-transform duration-500 group-hover:scale-125 group-hover:rotate-[20deg]">
-              <FaTrophy className="text-2xl text-yellow-600 dark:text-yellow-500" />
+              <FaShieldAlt className="text-2xl text-yellow-600 dark:text-yellow-500" />
             </div>
             <div>
               <h2 className="text-3xl font-black tracking-tight">
                 <ShinyText
-                  text="Top Rated"
+                  text="Ready To Ship"
                   speed={3}
                   delay={0.3}
                   color="#d4af37"
@@ -287,7 +355,7 @@ export default function HomePage() {
                 />
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
-                5-star customer favorites
+                In-stock products currently available for checkout.
               </p>
             </div>
           </div>
@@ -296,12 +364,15 @@ export default function HomePage() {
               <Loader />
             </div>
           ) : (
-            <ProductSlider products={topRated} badgeColor="text-yellow-500" />
+            <ProductSlider
+              products={availableProducts}
+              badgeColor="text-yellow-500"
+              emptyMessage="In-stock products will appear here after they are added by admin."
+            />
           )}
         </div>
       </section>
 
-      {/* 5. CTA BANNER + FEATURES */}
       <section className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
           <div className="bg-gray-900 dark:bg-gray-800 rounded-[2rem] overflow-hidden shadow-2xl relative flex flex-col lg:flex-row transition-colors duration-300">
@@ -309,24 +380,23 @@ export default function HomePage() {
               <div className="inline-flex items-center px-4 py-2 bg-white/10 dark:bg-gray-700/50 rounded-full mb-8 w-max border border-white/20 dark:border-gray-600">
                 <FaTag className="mr-2 text-yellow-400 animate-pulse" />
                 <span className="font-semibold text-sm text-white">
-                  Limited Time Offer
+                  Managed Catalog
                 </span>
               </div>
               <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white uppercase italic">
-                Get <span className="text-yellow-400">25% OFF</span> <br /> Your
-                First Order
+                Browse Products <br /> Added By <span className="text-yellow-400">Admin</span>
               </h2>
               <p className="text-gray-300 dark:text-gray-400 text-lg mb-8 max-w-md leading-relaxed">
-                Sign up today to unlock exclusive discounts, early access to
-                sales, and premium support.
+                The storefront now displays products directly from the admin-managed
+                catalog instead of hardcoded frontend data.
               </p>
 
               <Link
-                to="/register"
+                to="/products"
                 className="group px-10 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold text-lg rounded-xl hover:-translate-y-1 active:scale-95 transition-all inline-flex items-center w-max shadow-lg overflow-hidden"
               >
                 <ShinyText
-                  text="Sign Up Free"
+                  text="Explore Catalog"
                   speed={3}
                   delay={0.3}
                   color="#4f46e5"
@@ -351,9 +421,7 @@ export default function HomePage() {
                     key={index}
                     className="flex flex-col items-start text-left group"
                   >
-                    <div
-                      className={`bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:bg-blue-500 group-hover:text-white shadow-md active:scale-90`}
-                    >
+                    <div className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 group-hover:bg-blue-500 group-hover:text-white shadow-md active:scale-90">
                       {feature.icon}
                     </div>
                     <h4 className="text-lg font-bold mb-1">
@@ -381,7 +449,8 @@ export default function HomePage() {
 
       <style
         dangerouslySetInnerHTML={{
-          __html: `.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`,
+          __html:
+            ".hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }",
         }}
       />
     </div>
