@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   FaHeart,
   FaShieldAlt,
@@ -14,11 +14,23 @@ import { fetchProductById } from "../../utils/products";
 
 export default function ProductOverview() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const ensureLoggedInForCart = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login or register to add items to cart");
+      navigate("/login");
+      return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     let active = true;
@@ -221,6 +233,10 @@ export default function ProductOverview() {
                 onClick={() => {
                   if (product.stock <= 0) {
                     toast.error("This product is currently out of stock");
+                    return;
+                  }
+
+                  if (!ensureLoggedInForCart()) {
                     return;
                   }
 
