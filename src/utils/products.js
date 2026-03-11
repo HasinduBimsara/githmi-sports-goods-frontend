@@ -40,7 +40,7 @@ export function normalizeProduct(product) {
     return null;
   }
 
-  const productId = product.productId ?? product.id ?? "";
+  const productId = product.productId ?? product.id ?? product._id ?? "";
   const price = toNumber(product.price);
   const labeledPrice = toNumber(product.labeledPrice, price);
   const stock = toNumber(product.stock);
