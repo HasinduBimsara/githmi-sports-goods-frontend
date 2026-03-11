@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { TbTrash } from "react-icons/tb";
 import { BsArrowLeft, BsCartX } from "react-icons/bs";
+import toast from "react-hot-toast";
 import getCart, {
   addToCart,
   getTotal,
@@ -13,6 +14,17 @@ export default function CartPage() {
   const [cartLoaded, setCartLoaded] = useState(false);
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
+  const ensureLoggedInForCart = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login or register to update your cart");
+      navigate("/login");
+      return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     if (!cartLoaded) {
@@ -112,6 +124,9 @@ export default function CartPage() {
                     <button
                       className="w-8 h-8 flex justify-center items-center rounded-lg text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:shadow-sm transition-all active:scale-90 font-bold"
                       onClick={() => {
+                        if (!ensureLoggedInForCart()) {
+                          return;
+                        }
                         addToCart(item, -1);
                         setCartLoaded(false);
                       }}
@@ -124,6 +139,9 @@ export default function CartPage() {
                     <button
                       className="w-8 h-8 flex justify-center items-center rounded-lg text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:shadow-sm transition-all active:scale-90 font-bold"
                       onClick={() => {
+                        if (!ensureLoggedInForCart()) {
+                          return;
+                        }
                         addToCart(item, 1);
                         setCartLoaded(false);
                       }}
@@ -143,6 +161,9 @@ export default function CartPage() {
                   <button
                     className="w-10 h-10 flex justify-center items-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors active:scale-90"
                     onClick={() => {
+                      if (!ensureLoggedInForCart()) {
+                        return;
+                      }
                       removeFromCart(item.productId ?? item.id);
                       setCartLoaded(false);
                     }}
@@ -193,6 +214,9 @@ export default function CartPage() {
               {/* PROJECT COMMON BUTTON: Checkout */}
               <button
                 onClick={() => {
+                  if (!ensureLoggedInForCart()) {
+                    return;
+                  }
                   navigate("/checkout", {
                     state: { items: cart },
                   });
