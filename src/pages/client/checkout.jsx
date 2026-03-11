@@ -1,25 +1,22 @@
-import { TbTrash } from "react-icons/tb";
 import { useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { TbTrash } from "react-icons/tb";
 import { BsArrowLeft, BsShieldCheck } from "react-icons/bs";
-import { FaUser, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhone, FaUser } from "react-icons/fa";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();
-
-  // CRASH FIX: Added fallback in case user reloads the page directly on /checkout
   const [cart, setCart] = useState(location.state?.items || []);
-
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function placeOrder(e) {
-    e.preventDefault(); // Prevent form submission reload
+  function placeOrder(event) {
+    event.preventDefault();
 
     if (!name || !address || !phone) {
       toast.error("Please fill in all shipping details");
@@ -31,32 +28,42 @@ export default function CheckoutPage() {
       return;
     }
 
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login before placing an order");
+      navigate("/login");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const orderData = {
-      name: name,
-      address: address,
+      name,
+      address,
       phoneNumber: phone,
-      billItems: cart.map((item) => ({
-        productId: item.productId ?? item.id,
+      items: cart.map((item) => ({
+        productId: item.productId ?? item.id ?? item._id,
         quantity: item.quantity,
       })),
     };
 
-    const token = localStorage.getItem("token");
-
     axios
-      .post(import.meta.env.VITE_BACKEND_URL + "/api/order", orderData, {
+      .post(`${import.meta.env.VITE_BACKEND_URL}/api/order`, orderData, {
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then(() => {
-        toast.success("Order placed successfully! 🎉");
+        localStorage.setItem("cart", JSON.stringify([]));
+        toast.success("Order placed successfully!");
         navigate("/");
       })
       .catch((error) => {
         console.error(error);
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          navigate("/login");
+        }
         toast.error(error?.response?.data?.message || "Order placement failed");
       })
       .finally(() => {
@@ -64,22 +71,23 @@ export default function CheckoutPage() {
       });
   }
 
-  // STATE FIX: Properly update React state without mutating directly
   const handleUpdateQuantity = (index, delta) => {
     setCart((prevCart) => {
-      const newCart = [...prevCart];
-      const newQuantity = newCart[index].quantity + delta;
-      newCart[index] = {
-        ...newCart[index],
-        quantity: Math.max(1, newQuantity),
+      const nextCart = [...prevCart];
+      const nextQuantity = nextCart[index].quantity + delta;
+      nextCart[index] = {
+        ...nextCart[index],
+        quantity: Math.max(1, nextQuantity),
       };
-      return newCart;
+      return nextCart;
     });
   };
 
   const handleRemoveItem = (productId) => {
     setCart((prevCart) =>
-      prevCart.filter((item) => (item.productId ?? item.id) !== productId),
+      prevCart.filter(
+        (item) => (item.productId ?? item.id ?? item._id) !== productId,
+      ),
     );
   };
 
@@ -95,7 +103,6 @@ export default function CheckoutPage() {
     );
   }
 
-  // Handle empty state gracefully
   if (cart.length === 0) {
     return (
       <div className="min-h-[80vh] flex flex-col justify-center items-center bg-[#f8f6fb] dark:bg-gray-900 transition-colors duration-300 px-4">
@@ -114,14 +121,12 @@ export default function CheckoutPage() {
 
   return (
     <div className="relative min-h-screen bg-[#f8f6fb] dark:bg-gray-900 font-sans overflow-hidden transition-colors duration-300 py-10">
-      {/* Animated Background Blobs */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 -left-40 w-96 h-96 bg-blue-300 dark:bg-blue-900/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
         <div className="absolute top-40 -right-40 w-96 h-96 bg-purple-300 dark:bg-purple-900/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
@@ -140,15 +145,12 @@ export default function CheckoutPage() {
         </div>
 
         <form onSubmit={placeOrder} className="flex flex-col lg:flex-row gap-8">
-          {/* ========== LEFT: SHIPPING & ITEMS ========== */}
           <div className="lg:w-2/3 space-y-8">
-            {/* Shipping Information Card */}
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Shipping Information
               </h2>
               <div className="space-y-5">
-                {/* Name Input */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                     Full Name <span className="text-red-500">*</span>
@@ -159,14 +161,13 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(event) => setName(event.target.value)}
                       className="w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 border-transparent dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 focus:border-[#4f46e5] dark:focus:border-[#4f46e5] focus:bg-white dark:focus:bg-gray-800 shadow-sm"
                       placeholder="Enter your full name"
                     />
                   </div>
                 </div>
 
-                {/* Phone Input */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                     Phone Number <span className="text-red-500">*</span>
@@ -177,14 +178,13 @@ export default function CheckoutPage() {
                       type="tel"
                       required
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(event) => setPhone(event.target.value)}
                       className="w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 border-transparent dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 focus:border-[#4f46e5] dark:focus:border-[#4f46e5] focus:bg-white dark:focus:bg-gray-800 shadow-sm"
                       placeholder="Enter your phone number"
                     />
                   </div>
                 </div>
 
-                {/* Address Input */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                     Delivery Address <span className="text-red-500">*</span>
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       value={address}
-                      onChange={(e) => setAddress(e.target.value)}
+                      onChange={(event) => setAddress(event.target.value)}
                       className="w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3.5 pl-11 pr-4 rounded-xl outline-none transition-all duration-300 border-2 border-transparent dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 focus:border-[#4f46e5] dark:focus:border-[#4f46e5] focus:bg-white dark:focus:bg-gray-800 shadow-sm"
                       placeholder="Enter full delivery address"
                     />
@@ -204,7 +204,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Order Items Review */}
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Review Items
@@ -212,7 +211,7 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 {cart.map((item, index) => (
                   <div
-                    key={index}
+                    key={item.productId ?? item.id ?? item._id ?? index}
                     className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 border border-transparent dark:border-gray-700 transition-colors duration-300 group"
                   >
                     <div className="w-full sm:w-20 h-20 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -236,7 +235,6 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                      {/* Quantity Adjuster */}
                       <div className="flex items-center bg-white dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700 shadow-sm">
                         <button
                           type="button"
@@ -257,12 +255,11 @@ export default function CheckoutPage() {
                         </button>
                       </div>
 
-                      {/* Remove Button */}
                       <button
                         type="button"
                         className="w-9 h-9 flex justify-center items-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors active:scale-90"
                         onClick={() =>
-                          handleRemoveItem(item.productId ?? item.id)
+                          handleRemoveItem(item.productId ?? item.id ?? item._id)
                         }
                         title="Remove item"
                       >
@@ -275,7 +272,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* ========== RIGHT: ORDER SUMMARY ========== */}
           <div className="lg:w-1/3">
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-xl border border-gray-100 dark:border-gray-700 sticky top-24 transition-colors duration-300">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -312,13 +308,11 @@ export default function CheckoutPage() {
                 </span>
               </div>
 
-              {/* Secure Checkout Banner */}
               <div className="flex items-center justify-center gap-2 mb-6 text-xs text-gray-500 dark:text-gray-400 font-medium">
                 <BsShieldCheck className="text-green-500 text-lg" />
                 Payments are secure and encrypted
               </div>
 
-              {/* PROJECT COMMON BUTTON: Place Order */}
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -342,7 +336,6 @@ export default function CheckoutPage() {
         </form>
       </div>
 
-      {/* Global CSS for Blobs */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
