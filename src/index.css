@@ -10,6 +10,18 @@
   --color-accent: #ff6363;
 }
 
+@layer base {
+  :root {
+    --auth-title-color: #4f46e5;
+    --auth-title-shine: #a855f7;
+  }
+
+  .dark {
+    --auth-title-color: #a855f7;
+    --auth-title-shine: #f59e0b;
+  }
+}
+
 /* Base styles to ensure the entire page background changes smoothly */
 @layer base {
   body {
