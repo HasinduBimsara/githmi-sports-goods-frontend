@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { BsCart4, BsSunFill, BsMoonFill } from "react-icons/bs";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
+import { FaUserCircle } from "react-icons/fa";
 import { FiHome, FiBox, FiPhoneCall, FiHeart } from "react-icons/fi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ShinyText from "./ShinyText";
+import getCart from "../utils/cart";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +15,12 @@ export default function Header() {
     return savedTheme === "dark";
   });
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const userMenuRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Apply theme to entire document
   useEffect(() => {
@@ -32,6 +40,67 @@ export default function Header() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const getCartCount = () =>
+    getCart().reduce(
+      (total, item) => total + Number(item?.quantity ?? 0),
+      0,
+    );
+
+  const loadUser = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/user/current`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUser(response.data.user || null);
+      })
+      .catch(() => {
+        setUser(null);
+      });
+  };
+
+  useEffect(() => {
+    setUserMenuOpen(false);
+    loadUser();
+    setCartCount(getCartCount());
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      setCartCount(getCartCount());
+    };
+    window.addEventListener("cart:updated", handleCartUpdate);
+    return () => window.removeEventListener("cart:updated", handleCartUpdate);
+  }, []);
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      loadUser();
+    };
+    window.addEventListener("auth:changed", handleAuthChange);
+    return () => window.removeEventListener("auth:changed", handleAuthChange);
+  }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
   const toggleTheme = () => {
@@ -62,7 +131,21 @@ export default function Header() {
     },
   ];
 
-  const cartCount = 3; // This should come from your cart state
+  const displayName = user
+    ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
+      user.name ||
+      user.email ||
+      "Account"
+    : "Account";
+  const avatarUrl =
+    user?.profilePicture || user?.avatar || user?.image || null;
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("cart");
+    setUser(null);
+    setUserMenuOpen(false);
+    navigate("/login");
+  };
 
   return (
     <>
@@ -153,21 +236,81 @@ export default function Header() {
                 )}
               </Link>
 
-              {/* PROJECT COMMON BUTTONS: Login & Register (Desktop) */}
-              <div className="hidden md:flex items-center space-x-3 pl-2 border-l border-gray-200 dark:border-gray-700">
-                <Link
-                  to="/login"
-                  className="bg-transparent border-2 border-[#4f46e5] dark:border-[#a855f7] text-[#4f46e5] dark:text-[#a855f7] hover:bg-[#eff6ff] dark:hover:bg-gray-800 font-bold py-2 px-5 rounded-xl shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300 text-sm whitespace-nowrap"
+              {/* Auth / User (Desktop) */}
+              {user ? (
+                <div
+                  ref={userMenuRef}
+                  className="relative hidden md:flex items-center pl-2 border-l border-gray-200 dark:border-gray-700"
                 >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300 text-sm whitespace-nowrap"
-                >
-                  Register
-                </Link>
-              </div>
+                  <button
+                    onClick={() => setUserMenuOpen((prev) => !prev)}
+                    className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt={displayName}
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <FaUserCircle className="text-xl text-gray-600 dark:text-gray-300" />
+                    )}
+                    <span className="hidden lg:inline max-w-[140px] truncate">
+                      {displayName}
+                    </span>
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-12 w-64 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl p-4">
+                      <div className="flex items-center gap-3">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={displayName}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <FaUserCircle className="text-xl text-gray-500 dark:text-gray-300" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-bold text-gray-900 dark:text-white truncate">
+                            {displayName}
+                          </p>
+                          {user?.email && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {user.email}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleLogout}
+                        className="mt-4 w-full rounded-xl bg-gray-900 dark:bg-gray-100 py-2 text-sm font-bold text-white dark:text-gray-900 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="hidden md:flex items-center space-x-3 pl-2 border-l border-gray-200 dark:border-gray-700">
+                  <Link
+                    to="/login"
+                    className="bg-transparent border-2 border-[#4f46e5] dark:border-[#a855f7] text-[#4f46e5] dark:text-[#a855f7] hover:bg-[#eff6ff] dark:hover:bg-gray-800 font-bold py-2 px-5 rounded-xl shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300 text-sm whitespace-nowrap"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-300 text-sm whitespace-nowrap"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
 
               {/* Mobile Menu Button */}
               <button
@@ -322,23 +465,60 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* PROJECT COMMON BUTTONS: Login & Register (Mobile) */}
-              <div className="mt-6 flex flex-col gap-3">
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full bg-transparent border-2 border-[#4f46e5] dark:border-[#a855f7] text-[#4f46e5] dark:text-[#a855f7] hover:bg-[#eff6ff] dark:hover:bg-gray-800 font-bold py-3 rounded-xl shadow-sm transform active:scale-95 transition-all duration-300 text-center"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full bg-gradient-to-r from-[#4f46e5] to-[#a855f7] text-white font-bold py-3.5 rounded-xl shadow-md transform active:scale-95 transition-all duration-300 text-center"
-                >
-                  Register
-                </Link>
-              </div>
+              {/* Auth / User (Mobile) */}
+              {user ? (
+                <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+                  <div className="flex items-center gap-3">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt={displayName}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                        <FaUserCircle className="text-xl text-gray-500 dark:text-gray-300" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-bold text-gray-900 dark:text-white truncate">
+                        {displayName}
+                      </p>
+                      {user?.email && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                    className="mt-4 w-full rounded-xl bg-gray-900 dark:bg-gray-100 py-3 text-sm font-bold text-white dark:text-gray-900 transition-all active:scale-95"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-6 flex flex-col gap-3">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full bg-transparent border-2 border-[#4f46e5] dark:border-[#a855f7] text-[#4f46e5] dark:text-[#a855f7] hover:bg-[#eff6ff] dark:hover:bg-gray-800 font-bold py-3 rounded-xl shadow-sm transform active:scale-95 transition-all duration-300 text-center"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full bg-gradient-to-r from-[#4f46e5] to-[#a855f7] text-white font-bold py-3.5 rounded-xl shadow-md transform active:scale-95 transition-all duration-300 text-center"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Menu Footer */}
