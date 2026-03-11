@@ -70,13 +70,13 @@ export default function LoginPage() {
         <>
           <p>
             Don't have an account yet?{" "}
-            <span className="font-bold text-[#4f46e5] transition-colors hover:underline">
+            <span className="font-bold text-[#4f46e5] transition-colors hover:underline dark:text-[#a855f7]">
               <Link to="/register">Register Now</Link>
             </span>
           </p>
           <p className="mt-3">
             Forget your password?{" "}
-            <span className="font-bold text-[#4f46e5] transition-colors hover:underline">
+            <span className="font-bold text-[#4f46e5] transition-colors hover:underline dark:text-[#a855f7]">
               <Link to="/forget">Reset Password</Link>
             </span>
           </p>
