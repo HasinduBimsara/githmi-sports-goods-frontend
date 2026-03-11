@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Loader from "../../components/loader";
-import ShinyText from "../../components/ShinyText";
 import {
   FaArrowRight,
   FaPaperPlane,
@@ -11,6 +9,8 @@ import {
   FaStar,
   FaUserCircle,
 } from "react-icons/fa";
+import Loader from "../../components/loader";
+import ShinyText from "../../components/ShinyText";
 import { fetchProducts } from "../../utils/products";
 import "../ProductSlider.css";
 
@@ -19,8 +19,6 @@ const initialReviewForm = {
   rating: 5,
   title: "",
   comment: "",
-  name: "",
-  email: "",
 };
 
 const renderStars = (rating) => {
@@ -104,6 +102,7 @@ async function fetchReviews() {
 }
 
 export default function ReviewPage() {
+  const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [catalogProducts, setCatalogProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,6 +110,7 @@ export default function ReviewPage() {
   const [error, setError] = useState("");
   const [activeField, setActiveField] = useState(null);
   const [reviewForm, setReviewForm] = useState(initialReviewForm);
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
 
   useEffect(() => {
     let active = true;
@@ -132,7 +132,7 @@ export default function ReviewPage() {
           setReviews(reviewsResult.value);
           setError(
             reviewsResult.value.length === 0
-              ? "Be the first user to add a review."
+              ? "Approved reviews will appear here once users submit them."
               : "",
           );
         } else {
@@ -148,7 +148,10 @@ export default function ReviewPage() {
             productId: prev.productId || productsResult.value[0]?.productId || "",
           }));
         } else {
-          console.error("Error fetching products for reviews:", productsResult.reason);
+          console.error(
+            "Error fetching products for reviews:",
+            productsResult.reason,
+          );
           setCatalogProducts([]);
         }
       } finally {
@@ -181,7 +184,15 @@ export default function ReviewPage() {
   const handleSubmitReview = async (event) => {
     event.preventDefault();
 
-    if (!reviewForm.name || !reviewForm.email || !reviewForm.comment) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login to submit a review");
+      navigate("/login");
+      return;
+    }
+
+    if (!reviewForm.title.trim() || !reviewForm.comment.trim()) {
       toast.error("Please fill in the required review fields");
       return;
     }
@@ -194,21 +205,29 @@ export default function ReviewPage() {
     try {
       setSubmitting(true);
 
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`, {
-        productId: reviewForm.productId,
-        rating: reviewForm.rating,
-        title: reviewForm.title,
-        comment: reviewForm.comment,
-        name: reviewForm.name,
-        email: reviewForm.email,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/reviews`,
+        {
+          productId: reviewForm.productId,
+          rating: reviewForm.rating,
+          title: reviewForm.title.trim(),
+          comment: reviewForm.comment.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-      toast.success("Review submitted successfully");
+      toast.success("Review submitted for approval");
 
       const updatedReviews = await fetchReviews();
       setReviews(updatedReviews);
       setError(
-        updatedReviews.length === 0 ? "Be the first user to add a review." : "",
+        updatedReviews.length === 0
+          ? "Approved reviews will appear here once users submit them."
+          : "",
       );
       setReviewForm({
         ...initialReviewForm,
@@ -217,6 +236,12 @@ export default function ReviewPage() {
       setActiveField(null);
     } catch (submitError) {
       console.error("Error submitting review:", submitError);
+      if (
+        submitError?.response?.status === 401 ||
+        submitError?.response?.status === 403
+      ) {
+        navigate("/login");
+      }
       toast.error(
         submitError?.response?.data?.message || "Failed to submit review",
       );
@@ -300,7 +325,7 @@ export default function ReviewPage() {
               No reviews yet
             </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-              {error || "Be the first user to share a review."}
+              {error || "Approved reviews will appear here once users submit them."}
             </p>
           </div>
         ) : (
@@ -362,7 +387,8 @@ export default function ReviewPage() {
               Add Your Review
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Share your experience with other customers.
+              Use your logged-in account to submit a review. New reviews appear
+              after admin approval.
             </p>
           </div>
 
@@ -390,53 +416,23 @@ export default function ReviewPage() {
               </select>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                  Your Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={reviewForm.name}
-                  onChange={handleInputChange}
-                  onFocus={() => setActiveField("name")}
-                  onBlur={() => setActiveField(null)}
-                  required
-                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all border-2 ${
-                    activeField === "name"
-                      ? "border-blue-500 shadow-sm"
-                      : "border-transparent dark:border-gray-700"
-                  }`}
-                  placeholder="John Doe"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={reviewForm.email}
-                  onChange={handleInputChange}
-                  onFocus={() => setActiveField("email")}
-                  onBlur={() => setActiveField(null)}
-                  required
-                  className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all border-2 ${
-                    activeField === "email"
-                      ? "border-blue-500 shadow-sm"
-                      : "border-transparent dark:border-gray-700"
-                  }`}
-                  placeholder="john@example.com"
-                />
-              </div>
+            <div className="rounded-xl border border-blue-100 bg-blue-50/80 px-4 py-3 text-sm text-blue-700">
+              {isLoggedIn ? (
+                "Your review will be linked to your account details."
+              ) : (
+                <>
+                  Please{" "}
+                  <Link to="/login" className="font-bold underline">
+                    log in
+                  </Link>{" "}
+                  before submitting a review.
+                </>
+              )}
             </div>
 
             <div>
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                Review Title
+                Review Title *
               </label>
               <input
                 type="text"
@@ -445,6 +441,7 @@ export default function ReviewPage() {
                 onChange={handleInputChange}
                 onFocus={() => setActiveField("title")}
                 onBlur={() => setActiveField(null)}
+                required
                 className={`w-full bg-gray-50 dark:bg-gray-900 text-sm text-gray-800 dark:text-white py-3 px-4 rounded-xl outline-none transition-all border-2 ${
                   activeField === "title"
                     ? "border-blue-500 shadow-sm"
@@ -501,14 +498,15 @@ export default function ReviewPage() {
 
             <button
               type="submit"
-              disabled={submitting || catalogProducts.length === 0}
+              disabled={submitting || catalogProducts.length === 0 || !isLoggedIn}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 sm:py-4 rounded-xl shadow-md transform hover:-translate-y-1 active:scale-95 transition-all flex justify-center items-center disabled:opacity-70 disabled:hover:translate-y-0"
             >
               {submitting ? (
                 <span className="animate-pulse">Submitting...</span>
               ) : (
                 <>
-                  Submit Review <FaPaperPlane className="ml-2 text-sm" />
+                  {isLoggedIn ? "Submit Review" : "Login to Review"}
+                  <FaPaperPlane className="ml-2 text-sm" />
                 </>
               )}
             </button>
