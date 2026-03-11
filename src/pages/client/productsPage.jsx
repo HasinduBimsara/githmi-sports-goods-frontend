@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaFilter, FaSearch, FaStar, FaShoppingCart } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader";
@@ -7,12 +7,24 @@ import { addToCart } from "../../utils/cart";
 import { fetchProducts } from "../../utils/products";
 
 export default function ProductsPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceLimit, setPriceLimit] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const ensureLoggedInForCart = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("Please login or register to add items to cart");
+      navigate("/login");
+      return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     let active = true;
@@ -263,6 +275,10 @@ export default function ProductsPage() {
                           onClick={() => {
                             if (product.stock <= 0) {
                               toast.error("This product is currently out of stock");
+                              return;
+                            }
+
+                            if (!ensureLoggedInForCart()) {
                               return;
                             }
 
