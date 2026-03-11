@@ -12,8 +12,25 @@ export default function getCart() {
   return cart;
 }
 
+function notifyCartUpdate(cart) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.dispatchEvent(
+    new CustomEvent("cart:updated", {
+      detail: {
+        count: cart.reduce(
+          (total, item) => total + Number(item?.quantity ?? 0),
+          0,
+        ),
+      },
+    }),
+  );
+}
+
 function getItemId(product) {
-  return product?.productId ?? product?.id;
+  return product?.productId ?? product?.id ?? product?._id;
 }
 
 function getItemImage(product) {
@@ -68,6 +85,7 @@ export function addToCart(product, qty) {
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
+  notifyCartUpdate(cart);
   return cart;
 }
 
@@ -75,6 +93,7 @@ export function removeFromCart(productId) {
   let cart = getCart();
   cart = cart.filter((product) => getItemId(product) !== productId);
   localStorage.setItem("cart", JSON.stringify(cart));
+  notifyCartUpdate(cart);
   return cart;
 }
 
