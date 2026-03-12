@@ -14,6 +14,17 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const paymentMethod =
+    location.state?.paymentMethod ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("paymentMethod")
+      : null) ||
+    "cod";
+  const paymentLabels = {
+    cod: "Cash on Delivery",
+    card: "Card Payment",
+  };
+  const paymentLabel = paymentLabels[paymentMethod] || "Cash on Delivery";
 
   function placeOrder(event) {
     event.preventDefault();
@@ -295,6 +306,12 @@ export default function CheckoutPage() {
                   <span>Shipping</span>
                   <span className="font-medium text-gray-900 dark:text-white uppercase text-xs tracking-wider bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
                     Free
+                  </span>
+                </div>
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Payment</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {paymentLabel}
                   </span>
                 </div>
               </div>
