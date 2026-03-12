@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { TbTrash } from "react-icons/tb";
-import { BsArrowLeft, BsCartX } from "react-icons/bs";
+import { BsArrowLeft, BsCartX, BsCash, BsCreditCard } from "react-icons/bs";
 import toast from "react-hot-toast";
 import getCart, {
   addToCart,
@@ -13,6 +13,12 @@ import getCart, {
 export default function CartPage() {
   const [cartLoaded, setCartLoaded] = useState(false);
   const [cart, setCart] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState(() => {
+    if (typeof window === "undefined") {
+      return "cod";
+    }
+    return localStorage.getItem("paymentMethod") || "cod";
+  });
   const navigate = useNavigate();
   const ensureLoggedInForCart = () => {
     const token = localStorage.getItem("token");
@@ -33,6 +39,28 @@ export default function CartPage() {
       setCartLoaded(true);
     }
   }, [cartLoaded]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    localStorage.setItem("paymentMethod", paymentMethod);
+  }, [paymentMethod]);
+
+  const paymentOptions = [
+    {
+      id: "cod",
+      label: "Cash on Delivery",
+      description: "Pay when your items arrive.",
+      icon: BsCash,
+    },
+    {
+      id: "card",
+      label: "Card Payment",
+      description: "Pay securely at checkout.",
+      icon: BsCreditCard,
+    },
+  ];
 
   // Handle Empty Cart State
   if (cartLoaded && cart.length === 0) {
@@ -178,61 +206,118 @@ export default function CartPage() {
 
           {/* ========== RIGHT: ORDER SUMMARY ========== */}
           <div className="lg:w-1/3">
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 sticky top-24 transition-colors duration-300">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                Order Summary
-              </h2>
-
-              <div className="space-y-4 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-6">
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Subtotal</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    LKR {getTotalForLabelledPrice().toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Discount</span>
-                  <span className="font-medium text-green-500">
-                    - LKR {(getTotalForLabelledPrice() - getTotal()).toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Tax & Shipping</span>
-                  <span className="text-xs italic">Calculated at checkout</span>
+            <div className="space-y-6 sticky top-24">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                  Payment Method
+                </h2>
+                <div className="space-y-3">
+                  {paymentOptions.map((option) => {
+                    const Icon = option.icon;
+                    const isSelected = paymentMethod === option.id;
+                    return (
+                      <label
+                        key={option.id}
+                        className={`flex items-center gap-3 rounded-2xl border p-3 cursor-pointer transition-all ${
+                          isSelected
+                            ? "border-[#4f46e5] bg-[#4f46e5]/5 dark:bg-[#4f46e5]/10"
+                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value={option.id}
+                          checked={isSelected}
+                          onChange={() => setPaymentMethod(option.id)}
+                          className="sr-only"
+                        />
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            isSelected
+                              ? "bg-[#4f46e5]/10 text-[#4f46e5] dark:text-[#a855f7]"
+                              : "bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-400"
+                          }`}
+                        >
+                          <Icon className="text-xl" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-sm text-gray-900 dark:text-white">
+                            {option.label}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {option.description}
+                          </p>
+                        </div>
+                        <span
+                          className={`w-4 h-4 rounded-full border-2 transition-all ${
+                            isSelected
+                              ? "border-[#4f46e5] bg-[#4f46e5]"
+                              : "border-gray-300 dark:border-gray-600"
+                          }`}
+                        />
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mb-8">
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
-                  Total
-                </span>
-                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#4f46e5] to-[#a855f7]">
-                  LKR {getTotal().toFixed(2)}
-                </span>
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Order Summary
+                </h2>
+
+                <div className="space-y-4 text-sm mb-6 border-b border-gray-100 dark:border-gray-700 pb-6">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Subtotal</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      LKR {getTotalForLabelledPrice().toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Discount</span>
+                    <span className="font-medium text-green-500">
+                      - LKR {(getTotalForLabelledPrice() - getTotal()).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span>Tax & Shipping</span>
+                    <span className="text-xs italic">Calculated at checkout</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center mb-8">
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    Total
+                  </span>
+                  <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#4f46e5] to-[#a855f7]">
+                    LKR {getTotal().toFixed(2)}
+                  </span>
+                </div>
+
+                {/* PROJECT COMMON BUTTON: Checkout */}
+                <button
+                  onClick={() => {
+                    if (!ensureLoggedInForCart()) {
+                      return;
+                    }
+                    navigate("/checkout", {
+                      state: { items: cart, paymentMethod },
+                    });
+                  }}
+                  className="w-full bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-indigo-500/40 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex justify-center items-center text-lg"
+                >
+                  Proceed to Checkout
+                </button>
+
+                {/* Mobile back link */}
+                <Link
+                  to="/products"
+                  className="mt-4 md:hidden flex justify-center items-center text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
+                  <BsArrowLeft className="mr-2" /> Continue Shopping
+                </Link>
               </div>
-
-              {/* PROJECT COMMON BUTTON: Checkout */}
-              <button
-                onClick={() => {
-                  if (!ensureLoggedInForCart()) {
-                    return;
-                  }
-                  navigate("/checkout", {
-                    state: { items: cart },
-                  });
-                }}
-                className="w-full bg-gradient-to-r from-[#4f46e5] to-[#a855f7] hover:from-[#4338ca] hover:to-[#9333ea] text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-indigo-500/40 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex justify-center items-center text-lg"
-              >
-                Proceed to Checkout
-              </button>
-
-              {/* Mobile back link */}
-              <Link
-                to="/products"
-                className="mt-4 md:hidden flex justify-center items-center text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <BsArrowLeft className="mr-2" /> Continue Shopping
-              </Link>
             </div>
           </div>
         </div>
