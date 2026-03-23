@@ -15,6 +15,11 @@ import ProductsPage from "./pages/client/productsPage";
 import ProductOverview from "./pages/client/productOverview";
 import CartPage from "./pages/client/cart";
 import CheckoutPage from "./pages/client/checkout";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 function App() {
   return (
@@ -29,6 +34,14 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forget" element={<ForgetPassword />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminUsers />} />
+            </Route>
 
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/overview/:id" element={<ProductOverview />} />
