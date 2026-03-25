@@ -18,6 +18,9 @@ const AdminProducts = () => {
     category: "General",
     description: "",
     images: "",
+    isBestDeal: false,
+    isLatest: false,
+    isReadyToShip: false,
   });
 
   const fetchProducts = async () => {
@@ -50,6 +53,9 @@ const AdminProducts = () => {
         category: product.category || "General",
         description: product.description || "",
         images: product.images ? product.images.join(", ") : "",
+        isBestDeal: product.isBestDeal || false,
+        isLatest: product.isLatest || false,
+        isReadyToShip: product.isReadyToShip || false,
       });
     } else {
       setEditingProduct(null);
@@ -62,6 +68,9 @@ const AdminProducts = () => {
         category: "General",
         description: "",
         images: "",
+        isBestDeal: false,
+        isLatest: false,
+        isReadyToShip: false,
       });
     }
     setIsModalOpen(true);
@@ -73,7 +82,38 @@ const AdminProducts = () => {
   };
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "name") {
+      if (value.trim().length > 2) {
+        const suggested = suggestCategory(value);
+        setFormData((prev) => ({ ...prev, category: suggested }));
+      } else {
+        setFormData((prev) => ({ ...prev, category: "General" }));
+      }
+    }
+  };
+
+  const suggestCategory = (productName) => {
+    const categories = {
+      "Footwear": ["shoe", "sneaker", "boot", "cleat", "running", "zoom", "pegasus", "spikes"],
+      "Football": ["football", "soccer", "shin guard", "messi", "ronaldo", "fifa"],
+      "Cricket": ["cricket", "bat", "pad", "helmet", "stump", "sg", "mrf", "kookaburra", "ball"],
+      "Basketball": ["basketball", "hoop", "jordan", "lebron", "lakers", "nba"],
+      "Racket Sports": ["tennis", "badminton", "racket", "shuttlecock", "squash", "yonex", "wilson"],
+      "Gym & Fitness": ["dumbbell", "weight", "gym", "yoga", "mat", "fitness", "treadmill", "plate"],
+      "Swimming": ["swim", "goggle", "cap", "speedo", "pool", "fins"],
+      "Apparel": ["jersey", "short", "shirt", "socks", "tracksuit", "jacket", "glove", "cap", "hat", "t-shirt"],
+      "Indoor Games": ["carrom", "board", "chess", "dart", "billiard", "snooker", "table tennis", "ping pong"]
+    };
+
+    for (const [category, keywords] of Object.entries(categories)) {
+      if (keywords.some(keyword => new RegExp(`\\b${keyword}\\b`, "i").test(productName))) {
+        return category;
+      }
+    }
+    return "General";
   };
 
   const handleSubmit = async (e) => {
@@ -269,7 +309,10 @@ const AdminProducts = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                    <span className="text-[10px] text-indigo-500 font-bold bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full">✨ AI Enabled</span>
+                  </div>
                   <input
                     type="text"
                     name="category"
@@ -290,6 +333,44 @@ const AdminProducts = () => {
                   placeholder="https://test.com/img1.jpg, https://test.com/img2.jpg"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 pb-2 mb-3">
+                  Homepage Display Sections
+                </label>
+                <div className="flex flex-wrap gap-6">
+                  <label className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isBestDeal"
+                      checked={formData.isBestDeal}
+                      onChange={(e) => setFormData({ ...formData, isBestDeal: e.target.checked })}
+                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="font-medium">Best Deals</span>
+                  </label>
+                  <label className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isLatest"
+                      checked={formData.isLatest}
+                      onChange={(e) => setFormData({ ...formData, isLatest: e.target.checked })}
+                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="font-medium">Latest Products</span>
+                  </label>
+                  <label className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isReadyToShip"
+                      checked={formData.isReadyToShip}
+                      onChange={(e) => setFormData({ ...formData, isReadyToShip: e.target.checked })}
+                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="font-medium">Ready To Ship</span>
+                  </label>
+                </div>
               </div>
 
               <div>

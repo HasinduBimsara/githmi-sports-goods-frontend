@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { FaFilter, FaSearch, FaStar, FaShoppingCart } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader";
@@ -8,8 +8,9 @@ import { fetchProducts } from "../../utils/products";
 
 export default function ProductsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "All");
   const [priceLimit, setPriceLimit] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +67,13 @@ export default function ProductsPage() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat) {
+      setSelectedCategory(cat);
+    }
+  }, [searchParams]);
 
   const categories = [
     "All",

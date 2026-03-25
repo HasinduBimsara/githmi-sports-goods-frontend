@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import {
   FaWhatsapp,
   FaPhone,
@@ -115,10 +116,13 @@ export default function ContactPage() {
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setUiState((prev) => ({ ...prev, isSubmitting: true }));
-    setTimeout(() => {
+    try {
+      const baseUrl = import.meta.env.VITE_BACKEND_URL;
+      await axios.post(`${baseUrl}/api/messages`, formData);
+
       setUiState((prev) => ({
         ...prev,
         isSubmitting: false,
@@ -127,9 +131,12 @@ export default function ContactPage() {
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       setTimeout(
         () => setUiState((prev) => ({ ...prev, isSubmitted: false })),
-        5000,
+        5000
       );
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to submit message:", error);
+      setUiState((prev) => ({ ...prev, isSubmitting: false }));
+    }
   };
 
   const handleChatSend = (e) => {

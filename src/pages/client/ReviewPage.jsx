@@ -220,13 +220,13 @@ export default function ReviewPage() {
         },
       );
 
-      toast.success("Review submitted for approval");
+      toast.success("Review submitted successfully!");
 
       const updatedReviews = await fetchReviews();
       setReviews(updatedReviews);
       setError(
         updatedReviews.length === 0
-          ? "Approved reviews will appear here once users submit them."
+          ? "Be the first to leave a review!"
           : "",
       );
       setReviewForm({
