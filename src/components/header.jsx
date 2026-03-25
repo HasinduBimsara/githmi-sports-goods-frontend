@@ -113,7 +113,7 @@ export default function Header() {
   };
 
   const navItems = [
-    { path: "/", label: "Home", icon: <FiHome className="text-lg mb-[2px]" /> },
+    { path: "/home", label: "Home", icon: <FiHome className="text-lg mb-[2px]" /> },
     {
       path: "/products",
       label: "Products",
@@ -159,7 +159,7 @@ export default function Header() {
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo Section */}
-            <Link to="/" className="flex items-center space-x-3 group">
+            <Link to="/home" className="flex items-center space-x-3 group">
               <div className="relative flex-shrink-0">
                 {/* Dynamically switching logo based on dark mode */}
                 <img
@@ -255,7 +255,7 @@ export default function Header() {
                     ) : (
                       <FaUserCircle className="text-xl text-gray-600 dark:text-gray-300" />
                     )}
-                    <span className="hidden lg:inline max-w-[140px] truncate">
+                    <span className="hidden lg:inline max-w-[220px] truncate">
                       {displayName}
                     </span>
                   </button>
