@@ -50,17 +50,16 @@ export default function HomePage() {
           return;
         }
 
-        const deals = products.filter(
-          (product) => product.labeledPrice > product.price,
-        );
-        const inStock = products.filter((product) => product.stock > 0);
+        const deals = products.filter((product) => product.isBestDeal);
+        const latest = products.filter((product) => product.isLatest);
+        const inStock = products.filter((product) => product.isReadyToShip);
 
-        setDiscountedProducts((deals.length > 0 ? deals : products).slice(0, 18));
-        setLatestProducts(products.slice(0, 18));
-        setAvailableProducts((inStock.length > 0 ? inStock : products).slice(0, 18));
+        setDiscountedProducts(deals.slice(0, 18));
+        setLatestProducts(latest.slice(0, 18));
+        setAvailableProducts(inStock.slice(0, 18));
         setCatalogTags(
           Array.from(
-            new Set(products.flatMap((product) => product.altNames || []).filter(Boolean)),
+            new Set(products.map((product) => product.category).filter(Boolean)),
           ).slice(0, 8),
         );
         setError(
@@ -164,7 +163,7 @@ export default function HomePage() {
 
                   <div className="p-4 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
                     <p className={`text-xs font-bold uppercase tracking-wider ${badgeColor}`}>
-                      {product.altNames?.[0] || "Sports Gear"}
+                      {product.category || "General"}
                     </p>
                     <Link to={`/overview/${product.productId}`}>
                       <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
@@ -226,12 +225,12 @@ export default function HomePage() {
             <div className="flex items-center justify-center overflow-x-auto py-3 hide-scrollbar">
               <div className="flex items-center space-x-3 sm:space-x-5 whitespace-nowrap">
                 <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
-                  Catalog Tags:
+                  Categories:
                 </span>
                 {catalogTags.map((tag, index) => (
                   <React.Fragment key={tag}>
                     <Link
-                      to="/products"
+                      to={`/products?category=${encodeURIComponent(tag)}`}
                       className="hover:-translate-y-0.5 inline-block transition-all duration-300"
                     >
                       <ShinyText
