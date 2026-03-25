@@ -20,6 +20,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminRoute from "./components/admin/AdminRoute";
+import AdminReviews from "./pages/admin/AdminReviews";
+import AdminMessages from "./pages/admin/AdminMessages";
 
 function App() {
   return (
@@ -36,11 +39,15 @@ function App() {
             <Route path="/forget" element={<ForgetPassword />} />
 
             {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="users" element={<AdminUsers />} />
+            <Route path="/admin" element={<AdminRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="messages" element={<AdminMessages />} />
+              </Route>
             </Route>
 
             <Route path="/products" element={<ProductsPage />} />
