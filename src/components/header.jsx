@@ -286,6 +286,16 @@ export default function Header() {
                         </div>
                       </div>
 
+                      {user?.role === "admin" && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="mt-4 block w-full rounded-xl bg-indigo-50 dark:bg-indigo-900/40 py-2.5 text-center text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/60"
+                        >
+                          Dashboard
+                        </Link>
+                      )}
+
                       <button
                         onClick={handleLogout}
                         className="mt-4 w-full rounded-xl bg-gray-900 dark:bg-gray-100 py-2 text-sm font-bold text-white dark:text-gray-900 transition-all hover:-translate-y-0.5 hover:shadow-md"
@@ -491,6 +501,17 @@ export default function Header() {
                       )}
                     </div>
                   </div>
+
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsOpen(false)}
+                      className="mt-4 block w-full rounded-xl bg-indigo-50 dark:bg-indigo-900/40 py-3 text-center text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-all active:scale-95"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+
                   <button
                     onClick={() => {
                       setIsOpen(false);
