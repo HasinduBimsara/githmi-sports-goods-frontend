@@ -1,14 +1,48 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { FiHome, FiBox, FiShoppingCart, FiUsers, FiLogOut } from "react-icons/fi";
+import { FiHome, FiBox, FiShoppingCart, FiUsers, FiLogOut, FiMessageSquare, FiMail } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const AdminLayout = () => {
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_BACKEND_URL;
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const response = await axios.get(`${baseUrl}/api/messages`, config);
+        const data = response.data.messages || [];
+        const unread = data.filter(msg => msg.status === "Unread").length;
+        setUnreadCount(unread);
+      } catch (error) {
+        console.error("Failed to fetch unread count:", error);
+      }
+    };
+    
+    fetchUnreadCount();
+    
+    // Automatically poll every 30 seconds for live badge updates
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [location.pathname]); // Re-fetch unread count every time admin changes pages
 
   const navItems = [
     { name: "Dashboard", path: "/admin", icon: <FiHome className="w-5 h-5" /> },
     { name: "Products", path: "/admin/products", icon: <FiBox className="w-5 h-5" /> },
     { name: "Orders", path: "/admin/orders", icon: <FiShoppingCart className="w-5 h-5" /> },
     { name: "Users", path: "/admin/users", icon: <FiUsers className="w-5 h-5" /> },
+    { name: "Reviews", path: "/admin/reviews", icon: <FiMessageSquare className="w-5 h-5" /> },
+    { 
+      name: "Inbox", 
+      path: "/admin/messages", 
+      icon: <FiMail className="w-5 h-5" />,
+      badge: unreadCount > 0 ? unreadCount : null
+    },
   ];
 
   const isActive = (path) => {
@@ -39,7 +73,12 @@ const AdminLayout = () => {
                   }`}
                 >
                   {item.icon}
-                  <span>{item.name}</span>
+                  <span className="flex-1">{item.name}</span>
+                  {item.badge && (
+                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                      {item.badge} New
+                    </span>
+                  )}
                 </Link>
               </li>
             ))}
