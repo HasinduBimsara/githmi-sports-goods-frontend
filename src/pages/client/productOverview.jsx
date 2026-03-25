@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader";
-import { addToCart } from "../../utils/cart";
+import getCart, { addToCart } from "../../utils/cart";
 import { fetchProductById } from "../../utils/products";
 
 export default function ProductOverview() {
@@ -241,16 +241,35 @@ export default function ProductOverview() {
                   }
 
                   addToCart(product, quantity);
-                  toast.success(`${product.name} added to cart`);
+                  navigate("/checkout", {
+                    state: { items: getCart() }
+                  });
                 }}
                 disabled={product.stock <= 0}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold h-14 rounded-xl shadow-lg transform hover:-translate-y-1 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:translate-y-0"
               >
-                <FaShoppingCart /> Add to Cart
+                Buy Now
               </button>
 
-              <button className="w-14 h-14 border-2 border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-500 transition-all">
-                <FaHeart className="text-xl" />
+              <button 
+                onClick={() => {
+                  if (product.stock <= 0) {
+                    toast.error("This product is currently out of stock");
+                    return;
+                  }
+
+                  if (!ensureLoggedInForCart()) {
+                    return;
+                  }
+
+                  addToCart(product, quantity);
+                  toast.success(`${product.name} added to cart`);
+                }}
+                disabled={product.stock <= 0}
+                className="w-14 h-14 border-2 border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-600 disabled:opacity-50 transition-all"
+                title="Add to Cart"
+              >
+                <FaShoppingCart className="text-xl" />
               </button>
             </div>
 
