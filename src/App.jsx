@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import LoginPage from "./pages/loginPage";
 import Testing from "./pages/testing";
@@ -23,15 +23,22 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminRoute from "./components/admin/AdminRoute";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminMessages from "./pages/admin/AdminMessages";
+import SplashPage from "./pages/SplashPage";
+
+function ConditionalHeader() {
+  const location = useLocation();
+  if (location.pathname === "/") return null;
+  return <Header />;
+}
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId="149381885055-vgt1mnbtecieslegomscgusp7tiu3kgv.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="797436517957-cvsurn88audvjb951j65grp8hia64pac.apps.googleusercontent.com">
       {/* GLOBAL THEME WRAPPER - This controls the background and text color globally */}
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <BrowserRouter>
           <Toaster position="top-right" />
-          <Header />
+          <ConditionalHeader />
 
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -60,6 +67,8 @@ function App() {
             <Route path="/testing" element={<Testing />} />
             <Route path="/r" element={<ResponsiveTesting />} />
 
+            <Route path="/" element={<SplashPage />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/*" element={<HomePage />} />
           </Routes>
         </BrowserRouter>
