@@ -219,6 +219,7 @@ export default function HomePage() {
 
   return (
     <div className="w-full font-sans dark:bg-gray-900 transition-colors duration-300">
+      {/* --- CATEGORIES TAGS --- */}
       {catalogTags.length > 0 && (
         <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
           <div className="container mx-auto px-4 max-w-7xl">
