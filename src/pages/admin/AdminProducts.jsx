@@ -355,7 +355,7 @@ const AdminProducts = () => {
                       onChange={(e) => setFormData({ ...formData, isLatest: e.target.checked })}
                       className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <span className="font-medium">Latest Products</span>
+                    <span className="font-medium">New Arrivals</span>
                   </label>
                   <label className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                     <input
@@ -365,7 +365,7 @@ const AdminProducts = () => {
                       onChange={(e) => setFormData({ ...formData, isReadyToShip: e.target.checked })}
                       className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <span className="font-medium">Ready To Ship</span>
+                    <span className="font-medium">Limited Stock</span>
                   </label>
                 </div>
               </div>
