@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiPlus, FiX } from "react-icons/fi";
+import ImageUploader from "../../components/admin/ImageUploader";
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -52,7 +53,7 @@ const AdminProducts = () => {
         stock: product.stock || "",
         category: product.category || "General",
         description: product.description || "",
-        images: product.images ? product.images.join(", ") : "",
+        images: product.images || [],
         isBestDeal: product.isBestDeal || false,
         isLatest: product.isLatest || false,
         isReadyToShip: product.isReadyToShip || false,
@@ -67,7 +68,7 @@ const AdminProducts = () => {
         stock: "",
         category: "General",
         description: "",
-        images: "",
+        images: [],
         isBestDeal: false,
         isLatest: false,
         isReadyToShip: false,
@@ -127,7 +128,7 @@ const AdminProducts = () => {
       price: Number(formData.price),
       labeledPrice: Number(formData.labeledPrice),
       stock: Number(formData.stock),
-      images: formData.images.split(",").map(img => img.trim()).filter(Boolean),
+      images: formData.images,
     };
 
     try {
@@ -324,14 +325,10 @@ const AdminProducts = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image URLs (comma separated)</label>
-                <input
-                  type="text"
-                  name="images"
-                  value={formData.images}
-                  onChange={handleInputChange}
-                  placeholder="https://test.com/img1.jpg, https://test.com/img2.jpg"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Images</label>
+                <ImageUploader
+                  images={formData.images}
+                  onChange={(urls) => setFormData((prev) => ({ ...prev, images: urls }))}
                 />
               </div>
 

@@ -118,7 +118,7 @@ export default function CartPage() {
           <div className="lg:w-2/3 space-y-4">
             {cart.map((item, index) => (
               <div
-                key={index}
+              key={item.productId ?? item.id ?? index}
                 className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 relative group"
               >
                 {/* Item Image */}

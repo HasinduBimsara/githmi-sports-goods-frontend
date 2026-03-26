@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { FaFilter, FaSearch, FaStar, FaShoppingCart } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader";
@@ -9,6 +9,7 @@ import { fetchProducts } from "../../utils/products";
 export default function ProductsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "All");
   const [priceLimit, setPriceLimit] = useState(0);
@@ -20,7 +21,7 @@ export default function ProductsPage() {
 
     if (!token) {
       toast.error("Please login or register to add items to cart");
-      navigate("/login");
+      navigate("/login", { state: { redirect: location.pathname } });
       return false;
     }
 
@@ -242,7 +243,7 @@ export default function ProductsPage() {
                       className="block relative h-64 overflow-hidden"
                     >
                       <img
-                        src={product.image}
+                        src={product.images?.[0] || product.image}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       />

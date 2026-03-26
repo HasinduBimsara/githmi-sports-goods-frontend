@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FaHeart,
   FaShieldAlt,
@@ -15,6 +15,7 @@ import { fetchProductById } from "../../utils/products";
 export default function ProductOverview() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -25,7 +26,7 @@ export default function ProductOverview() {
 
     if (!token) {
       toast.error("Please login or register to add items to cart");
-      navigate("/login");
+      navigate("/login", { state: { redirect: location.pathname } });
       return false;
     }
 
@@ -197,7 +198,7 @@ export default function ProductOverview() {
                 <li className="flex items-center">
                   <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-3"></span>
                   Variants:{" "}
-                  {product.altNames.length > 0
+                  {(product.altNames?.length ?? 0) > 0
                     ? product.altNames.join(", ")
                     : "Standard"}
                 </li>
