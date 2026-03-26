@@ -1,12 +1,10 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import LoginPage from "./pages/loginPage";
-import Testing from "./pages/testing";
 import { Toaster } from "react-hot-toast";
 import RegisterPage from "./pages/client/register";
 import HomePage from "./pages/homePage";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import ResponsiveTesting from "./pages/test";
 import ForgetPassword from "./pages/client/forgetPassword";
 import ContactPage from "./pages/client/ContactPage";
 import ReviewPage from "./pages/client/ReviewPage";
@@ -64,8 +62,6 @@ function App() {
 
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/reviews" element={<ReviewPage />} />
-            <Route path="/testing" element={<Testing />} />
-            <Route path="/r" element={<ResponsiveTesting />} />
 
             <Route path="/" element={<SplashPage />} />
             <Route path="/home" element={<HomePage />} />
