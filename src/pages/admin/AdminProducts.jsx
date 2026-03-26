@@ -83,8 +83,10 @@ const AdminProducts = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    const inputValue = type === "checkbox" ? checked : value;
+    
+    setFormData((prev) => ({ ...prev, [name]: inputValue }));
 
     if (name === "name") {
       if (value.trim().length > 2) {
@@ -342,7 +344,7 @@ const AdminProducts = () => {
                       type="checkbox"
                       name="isBestDeal"
                       checked={formData.isBestDeal}
-                      onChange={(e) => setFormData({ ...formData, isBestDeal: e.target.checked })}
+                      onChange={handleInputChange}
                       className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <span className="font-medium">Best Deals</span>
@@ -352,7 +354,7 @@ const AdminProducts = () => {
                       type="checkbox"
                       name="isLatest"
                       checked={formData.isLatest}
-                      onChange={(e) => setFormData({ ...formData, isLatest: e.target.checked })}
+                      onChange={handleInputChange}
                       className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <span className="font-medium">New Arrivals</span>
@@ -362,7 +364,7 @@ const AdminProducts = () => {
                       type="checkbox"
                       name="isReadyToShip"
                       checked={formData.isReadyToShip}
-                      onChange={(e) => setFormData({ ...formData, isReadyToShip: e.target.checked })}
+                      onChange={handleInputChange}
                       className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <span className="font-medium">Limited Stock</span>
