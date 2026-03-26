@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GrGoogle } from "react-icons/gr";
 import {
@@ -16,6 +16,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.redirect || "/";
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (res) => {
@@ -28,7 +30,7 @@ export default function LoginPage() {
           console.log("Login successful", response.data);
           toast.success("Login successful");
           localStorage.setItem("token", response.data.token);
-          navigate("/");
+          navigate(redirectTo);
         })
         .catch((error) => {
           console.log("Google login failed", error?.response?.data || error);
@@ -51,7 +53,7 @@ export default function LoginPage() {
         console.log("Login successful", response.data);
         toast.success("Login successful");
         localStorage.setItem("token", response.data.token);
-        navigate("/");
+        navigate(redirectTo);
       })
       .catch((error) => {
         console.log("Login failed", error.response?.data);
