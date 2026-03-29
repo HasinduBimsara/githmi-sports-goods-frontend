@@ -5,49 +5,68 @@ import axios from "axios";
 
 const AdminLayout = () => {
   const location = useLocation();
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [stats, setStats] = useState({
+    orders: 0,
+    users: 0,
+    reviews: 0,
+    messages: 0,
+  });
 
   useEffect(() => {
-    const fetchUnreadCount = async () => {
+    const fetchStats = async () => {
       try {
         const baseUrl = import.meta.env.VITE_BACKEND_URL;
-        const token = localStorage.getItem("token");
-        if (!token) return;
+        const idToken = localStorage.getItem("token");
+        if (!idToken) return;
         
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.get(`${baseUrl}/api/messages`, config);
-        const data = response.data.messages || [];
-        const unread = data.filter(msg => msg.status === "Unread").length;
-        setUnreadCount(unread);
+        const config = { headers: { Authorization: `Bearer ${idToken}` } };
+        const response = await axios.get(`${baseUrl}/api/user/admin-stats`, config);
+        setStats(response.data);
       } catch (error) {
-        console.error("Failed to fetch unread count:", error);
+        console.error("Failed to fetch admin stats:", error);
       }
     };
     
-    fetchUnreadCount();
+    fetchStats();
     
     // Automatically poll every 30 seconds for live badge updates
-    const interval = setInterval(fetchUnreadCount, 30000);
+    const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
-  }, [location.pathname]); // Re-fetch unread count every time admin changes pages
+  }, [location.pathname]); // Re-fetch when admin changes pages
 
   const navItems = [
     { name: "Dashboard", path: "/admin", icon: <FiHome className="w-5 h-5" /> },
     { name: "Products", path: "/admin/products", icon: <FiBox className="w-5 h-5" /> },
-    { name: "Orders", path: "/admin/orders", icon: <FiShoppingCart className="w-5 h-5" /> },
-    { name: "Users", path: "/admin/users", icon: <FiUsers className="w-5 h-5" /> },
-    { name: "Reviews", path: "/admin/reviews", icon: <FiMessageSquare className="w-5 h-5" /> },
+    { 
+      name: "Orders", 
+      path: "/admin/orders", 
+      icon: <FiShoppingCart className="w-5 h-5" />,
+      badge: stats.orders > 0 ? stats.orders : null
+    },
+    { 
+      name: "Users", 
+      path: "/admin/users", 
+      icon: <FiUsers className="w-5 h-5" />,
+      badge: stats.users > 0 ? stats.users : null
+    },
+    { 
+      name: "Reviews", 
+      path: "/admin/reviews", 
+      icon: <FiMessageSquare className="w-5 h-5" />,
+      badge: stats.reviews > 0 ? stats.reviews : null
+    },
     { 
       name: "Inbox", 
       path: "/admin/messages", 
       icon: <FiMail className="w-5 h-5" />,
-      badge: unreadCount > 0 ? unreadCount : null
+      badge: stats.messages > 0 ? stats.messages : null
     },
   ];
 
   const isActive = (path) => {
-    if (path === "/admin" && location.pathname !== "/admin") return false;
-    return location.pathname.startsWith(path);
+    const currentPath = location.pathname;
+    if (path === "/admin" && currentPath !== "/admin") return false;
+    return currentPath.startsWith(path);
   };
 
   return (
@@ -75,8 +94,8 @@ const AdminLayout = () => {
                   {item.icon}
                   <span className="flex-1">{item.name}</span>
                   {item.badge && (
-                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
-                      {item.badge} New
+                    <span className="flex items-center justify-center bg-red-600 text-white text-[11px] font-bold min-w-[20px] h-5 px-1.5 rounded-full shadow-[0_2px_4px_rgba(220,38,38,0.3)]">
+                      {item.badge}
                     </span>
                   )}
                 </Link>
