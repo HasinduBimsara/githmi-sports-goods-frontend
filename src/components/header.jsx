@@ -7,6 +7,7 @@ import { FiHome, FiBox, FiPhoneCall, FiHeart } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ShinyText from "./ShinyText";
 import getCart from "../utils/cart";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +16,7 @@ export default function Header() {
     return savedTheme === "dark";
   });
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const userMenuRef = useRef(null);
@@ -48,31 +49,8 @@ export default function Header() {
       0,
     );
 
-  const loadUser = () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setUser(null);
-      return;
-    }
-
-    axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/api/user/current`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUser(response.data.user || null);
-      })
-      .catch(() => {
-        setUser(null);
-      });
-  };
-
   useEffect(() => {
     setUserMenuOpen(false);
-    loadUser();
     setCartCount(getCartCount());
   }, [location.pathname]);
 
@@ -82,14 +60,6 @@ export default function Header() {
     };
     window.addEventListener("cart:updated", handleCartUpdate);
     return () => window.removeEventListener("cart:updated", handleCartUpdate);
-  }, []);
-
-  useEffect(() => {
-    const handleAuthChange = () => {
-      loadUser();
-    };
-    window.addEventListener("auth:changed", handleAuthChange);
-    return () => window.removeEventListener("auth:changed", handleAuthChange);
   }, []);
 
   useEffect(() => {
@@ -140,9 +110,7 @@ export default function Header() {
   const avatarUrl =
     user?.profilePicture || user?.avatar || user?.image || null;
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("cart");
-    setUser(null);
+    logout();
     setUserMenuOpen(false);
     navigate("/login");
   };

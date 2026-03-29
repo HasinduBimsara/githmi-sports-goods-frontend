@@ -4,7 +4,6 @@ import LoginPage from "./pages/loginPage";
 import { Toaster } from "react-hot-toast";
 import RegisterPage from "./pages/client/register";
 import HomePage from "./pages/homePage";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import ForgetPassword from "./pages/client/forgetPassword";
 import ContactPage from "./pages/client/ContactPage";
 import ReviewPage from "./pages/client/ReviewPage";
@@ -22,6 +21,7 @@ import AdminRoute from "./components/admin/AdminRoute";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminMessages from "./pages/admin/AdminMessages";
 import SplashPage from "./pages/SplashPage";
+import { AuthProvider } from "./context/AuthContext";
 
 function ConditionalHeader() {
   const location = useLocation();
@@ -31,7 +31,7 @@ function ConditionalHeader() {
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId="797436517957-cvsurn88audvjb951j65grp8hia64pac.apps.googleusercontent.com">
+    <AuthProvider>
       {/* GLOBAL THEME WRAPPER - This controls the background and text color globally */}
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <BrowserRouter>
@@ -69,7 +69,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </div>
-    </GoogleOAuthProvider>
+    </AuthProvider>
   );
 }
 

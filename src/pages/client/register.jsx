@@ -2,8 +2,12 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { auth, googleProvider } from "../../lib/firebase";
+import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { GrGoogle } from "react-icons/gr";
 import {
   AuthButton,
+  AuthDivider,
   AuthInput,
   AuthLayout,
 } from "../../components/authLayout";
@@ -25,35 +29,55 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleRegister() {
+  async function handleRegister() {
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
 
     setLoading(true);
+    try {
+      // 1. Create user in Firebase
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const idToken = await userCredential.user.getIdToken();
 
-    axios
-      .post(import.meta.env.VITE_BACKEND_URL + "/api/user/", {
+      // 2. Sync with backend MongoDB
+      await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/register-firebase", {
+        idToken,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: formData.email,
         phone: formData.phone,
-        password: formData.password,
-      })
-      .then((response) => {
-        console.log("Registration successful", response.data);
-        toast.success("Registration successful");
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.log("Registration failed", error?.response?.data);
-        toast.error(error?.response?.data?.message || "Registration failed");
-      })
-      .finally(() => {
-        setLoading(false);
       });
+
+      toast.success("Registration successful");
+      navigate("/login");
+    } catch (error) {
+      console.error("Registration failed", error);
+      toast.error(error.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      
+      await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/firebase-sync", {
+        idToken,
+      });
+
+      toast.success("Registration successful");
+      navigate("/");
+    } catch (error) {
+      console.error("Google registration failed", error);
+      toast.error(error?.response?.data?.message || error.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthLayout
@@ -126,6 +150,17 @@ export default function RegisterPage() {
             <span className="animate-pulse">Registering...</span>
           ) : (
             "Register"
+          )}
+        </AuthButton>
+
+        <AuthDivider />
+
+        <AuthButton onClick={loginWithGoogle} disabled={loading} type="button">
+          <GrGoogle className="mr-[10px] text-lg" />
+          {loading ? (
+            <span className="animate-pulse">Loading...</span>
+          ) : (
+            "Continue with Google"
           )}
         </AuthButton>
       </form>

@@ -2,7 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useGoogleLogin } from "@react-oauth/google";
+import { auth, googleProvider } from "../lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { GrGoogle } from "react-icons/gr";
 import {
   AuthButton,
@@ -19,49 +20,47 @@ export default function LoginPage() {
   const location = useLocation();
   const redirectTo = location.state?.redirect || "/";
 
-  const loginWithGoogle = useGoogleLogin({
-    onSuccess: (res) => {
-      setLoading(true);
-      axios
-        .post(import.meta.env.VITE_BACKEND_URL + "/api/user/google", {
-          accessToken: res.access_token,
-        })
-        .then((response) => {
-          console.log("Login successful", response.data);
-          toast.success("Login successful");
-          localStorage.setItem("token", response.data.token);
-          navigate(redirectTo);
-        })
-        .catch((error) => {
-          console.log("Google login failed", error?.response?.data || error);
-          toast.error(error?.response?.data?.message || "Login failed");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    },
-  });
-
-  function handleLogin() {
+  const loginWithGoogle = async () => {
     setLoading(true);
-    axios
-      .post(import.meta.env.VITE_BACKEND_URL + "/api/user/login", {
-        email,
-        password,
-      })
-      .then((response) => {
-        console.log("Login successful", response.data);
-        toast.success("Login successful");
-        localStorage.setItem("token", response.data.token);
-        navigate(redirectTo);
-      })
-      .catch((error) => {
-        console.log("Login failed", error.response?.data);
-        toast.error(error.response?.data?.message || "Login failed");
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      
+      const response = await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/firebase-sync", {
+        idToken,
       });
+
+      toast.success("Login successful");
+      localStorage.setItem("token", idToken); // Use Firebase ID token for backend auth
+      navigate(redirectTo);
+    } catch (error) {
+      console.error("Google login failed", error);
+      toast.error(error?.response?.data?.message || error.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  async function handleLogin() {
+    setLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await userCredential.user.getIdToken();
+
+      // Sync with backend (ensure user exists in MongoDB)
+      await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/firebase-sync", {
+        idToken,
+      });
+
+      toast.success("Login successful");
+      localStorage.setItem("token", idToken);
+      navigate(redirectTo);
+    } catch (error) {
+      console.error("Login failed", error);
+      toast.error(error.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
