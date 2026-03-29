@@ -32,6 +32,10 @@ const AdminMessages = () => {
 
   useEffect(() => {
     fetchMessages();
+    
+    // Automatically poll every 10 seconds for live inbox updates
+    const interval = setInterval(fetchMessages, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleToggleStatus = async (msgId, currentStatus) => {
