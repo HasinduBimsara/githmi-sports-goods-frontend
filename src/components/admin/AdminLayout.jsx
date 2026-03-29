@@ -95,7 +95,7 @@ const AdminLayout = () => {
                   {item.icon}
                   <span className="flex-1">{item.name}</span>
                   {item.badge && (
-                    <span className="flex items-center justify-center bg-red-600 text-white text-[11px] font-bold min-w-[20px] h-5 px-1.5 rounded-full shadow-[0_2px_4px_rgba(220,38,38,0.3)]">
+                    <span className="flex items-center justify-center bg-emerald-500 text-emerald-950 text-[11px] font-bold min-w-[22px] h-[22px] rounded-full shadow-sm ml-auto">
                       {item.badge}
                     </span>
                   )}
