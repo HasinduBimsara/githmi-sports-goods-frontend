@@ -31,7 +31,10 @@ const AdminDashboard = () => {
         // The exact structure depends on the backend controllers, but we guess list or array
         const usersCount = Array.isArray(usersRes.data) ? usersRes.data.length : (usersRes.data.list?.length || 0);
         const productsCount = Array.isArray(productsRes.data) ? productsRes.data.length : (productsRes.data.products?.length || usersRes.data.list?.length || 0);
-        const ordersCount = Array.isArray(ordersRes.data) ? ordersRes.data.length : (ordersRes.data.orders?.length || 0);
+        const rawOrders = Array.isArray(ordersRes.data) ? ordersRes.data : (ordersRes.data.orders || []);
+        // Only count Active orders (Pending, Processing)
+        const activeOrders = rawOrders.filter(order => order.status !== "Delivered" && order.status !== "Cancelled");
+        const ordersCount = activeOrders.length;
 
         setStats({
           users: usersCount,
@@ -65,7 +68,7 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-center transition-colors">
-          <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Orders</h3>
+          <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Active Orders</h3>
           <p className="text-3xl font-bold text-gray-800 dark:text-white mt-2">
             {loading ? <span className="animate-pulse">--</span> : stats.orders}
           </p>
