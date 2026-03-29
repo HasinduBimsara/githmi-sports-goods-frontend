@@ -30,10 +30,13 @@ const AdminLayout = () => {
     
     fetchStats();
     
-    // Automatically poll every 10 seconds for live badge updates
-    const interval = setInterval(fetchStats, 10000);
+    // Check every 5 seconds for live badge updates
+    const interval = setInterval(() => {
+      console.log("Polling Admin Stats...");
+      fetchStats();
+    }, 5000);
     return () => clearInterval(interval);
-  }, [location.pathname]); // Re-fetch when admin changes pages
+  }, [location.pathname]);
 
   const navItems = [
     { name: "Dashboard", path: "/admin", icon: <FiHome className="w-5 h-5" /> },
