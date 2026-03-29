@@ -111,7 +111,7 @@ const AdminMessages = () => {
           <FiMail className="text-indigo-600" /> Inbox Messages
         </h2>
         <div className="text-sm text-gray-500 dark:text-gray-400 font-medium bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-xl">
-          Total Messages: {messages.length}
+          Unread Messages: {messages.filter(m => m.status === 'Unread').length}
         </div>
       </div>
 
@@ -140,7 +140,15 @@ const AdminMessages = () => {
                 messages.map((msg) => (
                   <tr key={msg._id} className={`transition-colors ${msg.status === 'Unread' ? 'bg-indigo-50/50 dark:bg-indigo-900/10 font-medium' : 'hover:bg-gray-50 dark:hover:bg-gray-700/20'}`}>
                     <td className="p-4">
-                      <p className="text-sm font-bold text-gray-900 dark:text-gray-200">{msg.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-gray-900 dark:text-gray-200">{msg.name}</p>
+                        {msg.status === "Unread" && (
+                          <span 
+                            className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239, 68, 68, 0.5)] animate-pulse" 
+                            title="New Message"
+                          ></span>
+                        )}
+                      </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{msg.email}</p>
                       {msg.phone && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{msg.phone}</p>}
                     </td>
