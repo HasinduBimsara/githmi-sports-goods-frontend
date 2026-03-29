@@ -21,6 +21,7 @@ const AdminLayout = () => {
         
         const config = { headers: { Authorization: `Bearer ${idToken}` } };
         const response = await axios.get(`${baseUrl}/api/user/admin-stats`, config);
+        console.log("Admin Stats Received:", response.data);
         setStats(response.data);
       } catch (error) {
         console.error("Failed to fetch admin stats:", error);
@@ -29,8 +30,8 @@ const AdminLayout = () => {
     
     fetchStats();
     
-    // Automatically poll every 30 seconds for live badge updates
-    const interval = setInterval(fetchStats, 30000);
+    // Automatically poll every 10 seconds for live badge updates
+    const interval = setInterval(fetchStats, 10000);
     return () => clearInterval(interval);
   }, [location.pathname]); // Re-fetch when admin changes pages
 
