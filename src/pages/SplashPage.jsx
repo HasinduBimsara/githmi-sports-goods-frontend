@@ -81,7 +81,7 @@ export default function SplashPage() {
   const [progress, setProgress] = useState(0);
   const [loadingStep, setLoadingStep] = useState(0);
   const [ready, setReady] = useState(false);
-  const [stats, setStats] = useState({ users: 3540, products: 1284, brands: 50, satisfaction: 99 });
+  const [stats, setStats] = useState({ users: 0, products: 0, brands: 0, satisfaction: 0 });
 
   const loadingMessages = [
     "Initializing physics engine...",
