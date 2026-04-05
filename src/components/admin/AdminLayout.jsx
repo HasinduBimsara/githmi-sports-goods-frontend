@@ -7,6 +7,8 @@ const AdminLayout = () => {
   const location = useLocation();
   const [stats, setStats] = useState({
     orders: 0,
+    processingOrders: 0,
+    products: 0,
     users: 0,
     reviews: 0,
     messages: 0,
@@ -40,12 +42,18 @@ const AdminLayout = () => {
 
   const navItems = [
     { name: "Dashboard", path: "/admin", icon: <FiHome className="w-5 h-5" /> },
-    { name: "Products", path: "/admin/products", icon: <FiBox className="w-5 h-5" /> },
+    { 
+      name: "Products", 
+      path: "/admin/products", 
+      icon: <FiBox className="w-5 h-5" />,
+      badge: stats.products > 0 ? stats.products : null 
+    },
     { 
       name: "Orders", 
       path: "/admin/orders", 
       icon: <FiShoppingCart className="w-5 h-5" />,
-      badge: stats.orders > 0 ? stats.orders : null
+      badge: stats.orders > 0 ? stats.orders : null,
+      processingBadge: stats.processingOrders > 0 ? stats.processingOrders : null
     },
     { 
       name: "Users", 
@@ -78,8 +86,8 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-colors duration-300 shadow-lg">
         <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
-          <Link to="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">
-            Githmi Admin
+          <Link to="/admin" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">
+            Admin
           </Link>
         </div>
         
@@ -97,11 +105,18 @@ const AdminLayout = () => {
                 >
                   {item.icon}
                   <span className="flex-1">{item.name}</span>
-                  {item.badge && (
-                    <span className="flex items-center justify-center bg-emerald-500 text-emerald-950 text-[11px] font-bold min-w-[22px] h-[22px] rounded-full shadow-sm ml-auto">
-                      {item.badge}
-                    </span>
-                  )}
+                  <div className="ml-auto flex gap-1.5">
+                    {item.badge && (
+                      <span title={item.name === "Orders" ? "Pending" : "New"} className={`flex items-center justify-center text-[11px] font-bold min-w-[22px] h-[22px] rounded-full shadow-sm ${item.name === "Orders" ? "bg-amber-400 text-amber-950" : "bg-emerald-500 text-emerald-950"}`}>
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.processingBadge && (
+                      <span title="Processing" className="flex items-center justify-center bg-blue-500 text-blue-50 text-[11px] font-bold min-w-[22px] h-[22px] rounded-full shadow-sm">
+                        {item.processingBadge}
+                      </span>
+                    )}
+                  </div>
                 </Link>
               </li>
             ))}
@@ -125,11 +140,6 @@ const AdminLayout = () => {
           <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
             {navItems.find((item) => isActive(item.path))?.name || "Admin Panel"}
           </h1>
-          <div className="flex items-center gap-4">
-            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-              A
-            </div>
-          </div>
         </header>
 
         <div className="flex-1 overflow-auto p-6 scroll-smooth">
