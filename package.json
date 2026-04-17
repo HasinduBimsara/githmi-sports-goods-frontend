@@ -7,7 +7,7 @@
     "start": "vite --host",
     "dev": "vite --host",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint src --ext .js,.jsx",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.4.0",
+    "recharts": "^3.8.1",
     "tailwindcss": "^4.0.15"
   },
   "devDependencies": {
