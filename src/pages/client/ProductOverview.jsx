@@ -8,7 +8,7 @@ import {
   FaTruck,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
-import Loader from "../../components/loader";
+import Loader from "../../components/Loader";
 import getCart, { addToCart } from "../../utils/cart";
 import { fetchProductById } from "../../utils/products";
 

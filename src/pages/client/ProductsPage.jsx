@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { FaFilter, FaSearch, FaStar, FaShoppingCart } from "react-icons/fa";
 import toast from "react-hot-toast";
-import Loader from "../../components/loader";
+import Loader from "../../components/Loader";
 import { addToCart } from "../../utils/cart";
 import { fetchProducts } from "../../utils/products";
 
