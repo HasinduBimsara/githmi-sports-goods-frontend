@@ -9,7 +9,7 @@ import {
   FaStar,
   FaUserCircle,
 } from "react-icons/fa";
-import Loader from "../../components/loader";
+import Loader from "../../components/Loader";
 import ShinyText from "../../components/ShinyText";
 import { fetchProducts } from "../../utils/products";
 import "../ProductSlider.css";
