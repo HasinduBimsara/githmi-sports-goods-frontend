@@ -17,6 +17,7 @@ const AdminUsers = () => {
       const data = response.data.list || response.data || [];
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
+      console.error(error);
       toast.error("Failed to load users");
     } finally {
       setLoading(false);
@@ -39,6 +40,7 @@ const AdminUsers = () => {
       toast.success("User deleted successfully");
       fetchUsers();
     } catch (error) {
+      console.error(error);
       toast.error(error.response?.data?.message || "Failed to delete user");
     }
   };

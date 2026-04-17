@@ -54,6 +54,7 @@ const AdminMessages = () => {
       toast.success(`Message marked as ${newStatus}`);
       fetchMessages();
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update status");
     }
   };
@@ -70,6 +71,7 @@ const AdminMessages = () => {
       toast.success("Message deleted successfully");
       fetchMessages();
     } catch (error) {
+      console.error(error);
       toast.error("Failed to delete message");
     }
   };

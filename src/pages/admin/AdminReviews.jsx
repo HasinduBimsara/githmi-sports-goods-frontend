@@ -44,6 +44,7 @@ const AdminReviews = () => {
       toast.success(`Review ${!currentStatus ? "approved" : "hidden"} successfully`);
       fetchReviews();
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update review status");
     }
   };
@@ -60,6 +61,7 @@ const AdminReviews = () => {
       toast.success("Review deleted successfully");
       fetchReviews();
     } catch (error) {
+      console.error(error);
       toast.error("Failed to delete review");
     }
   };

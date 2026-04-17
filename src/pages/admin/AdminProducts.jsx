@@ -32,6 +32,7 @@ const AdminProducts = () => {
       const data = Array.isArray(response.data) ? response.data : response.data.products || [];
       setProducts(data);
     } catch (error) {
+      console.error(error);
       toast.error("Failed to load products");
     } finally {
       setLoading(false);
@@ -144,6 +145,7 @@ const AdminProducts = () => {
       closeModal();
       fetchProducts();
     } catch (error) {
+      console.error(error);
       toast.error(error.response?.data?.message || "Operation failed");
     }
   };
@@ -160,6 +162,7 @@ const AdminProducts = () => {
       toast.success("Product deleted");
       fetchProducts();
     } catch (error) {
+      console.error(error);
       toast.error("Failed to delete product");
     }
   };
