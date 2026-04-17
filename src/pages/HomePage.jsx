@@ -12,7 +12,7 @@ import {
   FaTruck,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
-import Loader from "../components/loader";
+import Loader from "../components/Loader";
 import ShinyText from "../components/ShinyText";
 import "./ProductSlider.css";
 import { addToCart } from "../utils/cart";
@@ -340,50 +340,12 @@ export default function HomePage() {
             <div className="flex justify-center py-12">
               <Loader />
             </div>
-          ) : latestProducts.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 text-center shadow-sm">
-              <p className="text-gray-500 dark:text-gray-400">Latest products will appear here after they are added by admin.</p>
-            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {latestProducts.map((product, index) => (
-                <div key={product.productId || index} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700 group">
-                  <Link to={`/overview/${product.productId}`} className="h-56 overflow-hidden relative block">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-blue-500 z-20">
-                      <FaBoxOpen />
-                    </div>
-                  </Link>
-                  <div className="p-4 flex flex-col flex-grow">
-                    <p className="text-xs font-bold uppercase tracking-wider text-blue-500">{product.category || "General"}</p>
-                    <Link to={`/overview/${product.productId}`}>
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{product.name}</h3>
-                    </Link>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{product.description}</p>
-                    <div className="mt-auto flex justify-between items-end gap-3">
-                      <div>
-                        <span className="text-xl font-bold text-gray-900 dark:text-white block">LKR {product.price.toFixed(2)}</span>
-                        {product.labeledPrice > product.price && (
-                          <span className="text-sm text-gray-400 line-through">LKR {product.labeledPrice.toFixed(2)}</span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (product.stock <= 0) { toast.error("This product is currently out of stock"); return; }
-                          if (!ensureLoggedInForCart()) return;
-                          addToCart(product, 1);
-                          toast.success(`${product.name} added to cart`);
-                        }}
-                        className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-sm active:scale-90 hover:-translate-y-1 disabled:opacity-50"
-                        disabled={product.stock <= 0}
-                      >
-                        <FaShoppingBag />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProductSlider
+              products={latestProducts}
+              badgeColor="text-blue-500"
+              emptyMessage="Latest products will appear here after they are added by admin."
+            />
           )}
         </div>
       </section>
@@ -418,50 +380,12 @@ export default function HomePage() {
             <div className="flex justify-center py-12">
               <Loader />
             </div>
-          ) : availableProducts.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 text-center shadow-sm">
-              <p className="text-gray-500 dark:text-gray-400">In-stock products will appear here after they are added by admin.</p>
-            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {availableProducts.map((product, index) => (
-                <div key={product.productId || index} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700 group">
-                  <Link to={`/overview/${product.productId}`} className="h-56 overflow-hidden relative block">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-yellow-500 z-20">
-                      <FaShieldAlt />
-                    </div>
-                  </Link>
-                  <div className="p-4 flex flex-col flex-grow">
-                    <p className="text-xs font-bold uppercase tracking-wider text-yellow-600">{product.category || "General"}</p>
-                    <Link to={`/overview/${product.productId}`}>
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors">{product.name}</h3>
-                    </Link>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{product.description}</p>
-                    <div className="mt-auto flex justify-between items-end gap-3">
-                      <div>
-                        <span className="text-xl font-bold text-gray-900 dark:text-white block">LKR {product.price.toFixed(2)}</span>
-                        {product.labeledPrice > product.price && (
-                          <span className="text-sm text-gray-400 line-through">LKR {product.labeledPrice.toFixed(2)}</span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (product.stock <= 0) { toast.error("This product is currently out of stock"); return; }
-                          if (!ensureLoggedInForCart()) return;
-                          addToCart(product, 1);
-                          toast.success(`${product.name} added to cart`);
-                        }}
-                        className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-yellow-500 transition-all duration-300 shadow-sm active:scale-90 hover:-translate-y-1 disabled:opacity-50"
-                        disabled={product.stock <= 0}
-                      >
-                        <FaShoppingBag />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProductSlider
+              products={availableProducts}
+              badgeColor="text-yellow-500"
+              emptyMessage="In-stock products will appear here after they are added by admin."
+            />
           )}
         </div>
       </section>

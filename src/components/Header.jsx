@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { BsCart4, BsSunFill, BsMoonFill } from "react-icons/bs";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { FaUserCircle } from "react-icons/fa";

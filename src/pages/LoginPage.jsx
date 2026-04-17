@@ -26,7 +26,7 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
       
-      const response = await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/firebase-sync", {
+      await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/firebase-sync", {
         idToken,
       });
 
