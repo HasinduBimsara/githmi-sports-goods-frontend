@@ -21,6 +21,7 @@ import AdminRoute from "./components/admin/AdminRoute";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminMessages from "./pages/admin/AdminMessages";
 import SplashPage from "./pages/SplashPage";
+import ProfilePage from "./pages/client/ProfilePage";
 import { AuthProvider } from "./context/AuthContext";
 
 function ConditionalHeader() {
@@ -59,6 +60,7 @@ function App() {
             <Route path="/overview/:id" element={<ProductOverview />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
 
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/reviews" element={<ReviewPage />} />

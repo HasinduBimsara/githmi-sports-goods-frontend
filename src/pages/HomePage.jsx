@@ -17,6 +17,7 @@ import ShinyText from "../components/ShinyText";
 import "./ProductSlider.css";
 import { addToCart } from "../utils/cart";
 import { fetchProducts } from "../utils/products";
+import ProductCard from "../components/client/ProductCard";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -51,13 +52,11 @@ export default function HomePage() {
           return;
         }
 
-        const deals = products.filter((product) => product.isBestDeal);
-        const latest = products.filter((product) => product.isLatest);
-        const inStock = products.filter((product) => product.isReadyToShip);
-
-        setDiscountedProducts(deals.slice(0, 18));
-        setLatestProducts(latest.slice(0, 18));
-        setAvailableProducts(inStock.slice(0, 18));
+        // Segment products explicitly by Admin flags, mapping latest first
+        const sortedProducts = [...products].reverse();
+        setDiscountedProducts(sortedProducts.filter(p => p.isBestDeal).slice(0, 18));
+        setLatestProducts(sortedProducts.filter(p => p.isLatest).slice(0, 18));
+        setAvailableProducts(sortedProducts.filter(p => p.isReadyToShip).slice(0, 18));
         setCatalogTags(
           Array.from(
             new Set(products.map((product) => product.category).filter(Boolean)),
@@ -145,71 +144,16 @@ export default function HomePage() {
       <div className="slider-body">
         <div className="slider-wrapper">
           <div className="slider-track">
-            {products.map((product, index) => (
-              <div className="slide" key={product.productId || index}>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden h-full flex flex-col hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700 group">
-                  <Link
-                    to={`/overview/${product.productId}`}
-                    className="h-64 overflow-hidden relative block"
-                  >
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md text-gray-400 dark:text-gray-300 z-20">
-                      <FaFire className={badgeColor} />
-                    </div>
-                  </Link>
-
-                  <div className="p-4 flex flex-col flex-grow relative z-10 bg-white dark:bg-gray-800">
-                    <p className={`text-xs font-bold uppercase tracking-wider ${badgeColor}`}>
-                      {product.category || "General"}
-                    </p>
-                    <Link to={`/overview/${product.productId}`}>
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        {product.name}
-                      </h3>
-                    </Link>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
-                      {product.description}
-                    </p>
-
-                    <div className="mt-auto flex justify-between items-end gap-3">
-                      <div>
-                        <span className="text-xl font-bold text-gray-900 dark:text-white block">
-                          LKR {product.price.toFixed(2)}
-                        </span>
-                        {product.labeledPrice > product.price && (
-                          <span className="text-sm text-gray-400 line-through">
-                            LKR {product.labeledPrice.toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          if (product.stock <= 0) {
-                            toast.error("This product is currently out of stock");
-                            return;
-                          }
-
-                          if (!ensureLoggedInForCart()) {
-                            return;
-                          }
-
-                          addToCart(product, 1);
-                          toast.success(`${product.name} added to cart`);
-                        }}
-                        className="bg-gray-900 dark:bg-gray-700 text-white p-2 rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-sm active:scale-90 hover:-translate-y-1 disabled:opacity-50 disabled:hover:translate-y-0"
-                        aria-label={`Add ${product.name} to cart`}
-                        disabled={product.stock <= 0}
-                      >
-                        <FaShoppingBag />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            {/* Render array twice to create a seamless infinite loop */}
+            {[...products, ...products].map((product, index) => (
+              <div className="slide" key={`${product.productId || index}-loop-${index}`}>
+                 <ProductCard 
+                   product={product} 
+                   ensureLoggedInForCart={ensureLoggedInForCart} 
+                   addToCart={addToCart} 
+                   badgeColor={badgeColor} 
+                   variant="slider" 
+                 />
               </div>
             ))}
           </div>
