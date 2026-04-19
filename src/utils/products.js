@@ -57,6 +57,8 @@ export function normalizeProduct(product) {
     productId,
     name: product.name ?? "Product",
     altNames: Array.isArray(product.altNames) ? product.altNames.filter(Boolean) : [],
+    colors: Array.isArray(product.colors) ? product.colors : [],
+    sizes: Array.isArray(product.sizes) ? product.sizes : [],
     price,
     labeledPrice,
     stock,

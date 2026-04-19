@@ -7,7 +7,7 @@ export default function getCart() {
     return [];
   }
 
-  cart = JSON.parse(cart).map((item) => normalizeProduct(item, item.quantity ?? 1));
+  cart = JSON.parse(cart).map((item) => normalizeProduct(item, item.quantity ?? 1, item.size ?? "", item.color ?? ""));
   localStorage.setItem("cart", JSON.stringify(cart));
   return cart;
 }
@@ -45,12 +45,15 @@ function getItemImage(product) {
   return "https://placehold.co/150x150";
 }
 
-function normalizeProduct(product, qty) {
+function normalizeProduct(product, qty, size = "", color = "") {
   const itemId = getItemId(product);
   const price = Number(product?.price ?? 0);
   const labeledPrice = Number(product?.labeledPrice ?? price);
 
+  const cartItemId = `${itemId}${size ? '-' + size : ''}${color ? '-' + color : ''}`;
+
   return {
+    cartItemId,
     id: itemId,
     productId: itemId,
     name: product?.name ?? "Product",
@@ -59,28 +62,31 @@ function normalizeProduct(product, qty) {
     labeledPrice,
     image: getItemImage(product),
     quantity: qty,
+    size,
+    color,
   };
 }
 
-export function addToCart(product, qty) {
+export function addToCart(product, qty, size = "", color = "") {
   const itemId = getItemId(product);
 
   if (!itemId || qty === 0) {
     return getCart();
   }
 
+  const cartItemId = `${itemId}${size ? '-' + size : ''}${color ? '-' + color : ''}`;
   let cart = getCart();
-  const productIndex = cart.findIndex((item) => getItemId(item) === itemId);
+  const productIndex = cart.findIndex((item) => (item.cartItemId || getItemId(item)) === cartItemId);
 
   if (productIndex === -1) {
     if (qty > 0) {
-      cart.push(normalizeProduct(product, qty));
+      cart.push(normalizeProduct(product, qty, size, color));
     }
   } else {
     cart[productIndex].quantity += qty;
 
     if (cart[productIndex].quantity <= 0) {
-      cart = cart.filter((item) => getItemId(item) !== itemId);
+      cart = cart.filter((item) => (item.cartItemId || getItemId(item)) !== cartItemId);
     }
   }
 
@@ -89,9 +95,9 @@ export function addToCart(product, qty) {
   return cart;
 }
 
-export function removeFromCart(productId) {
+export function removeFromCart(cartItemId) {
   let cart = getCart();
-  cart = cart.filter((product) => getItemId(product) !== productId);
+  cart = cart.filter((item) => (item.cartItemId || getItemId(item)) !== cartItemId);
   localStorage.setItem("cart", JSON.stringify(cart));
   notifyCartUpdate(cart);
   return cart;

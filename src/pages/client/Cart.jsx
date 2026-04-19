@@ -118,7 +118,7 @@ export default function CartPage() {
           <div className="lg:w-2/3 space-y-4">
             {cart.map((item, index) => (
               <div
-              key={item.productId ?? item.id ?? index}
+              key={item.cartItemId ?? item.productId ?? item.id ?? index}
                 className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300 relative group"
               >
                 {/* Item Image */}
@@ -135,8 +135,13 @@ export default function CartPage() {
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1 mb-1">
                     {item.name}
                   </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    {item.altNames && item.altNames.length > 0
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 gap-2 flex items-center justify-center sm:justify-start">
+                    {(item.size || item.color) ? (
+                       <span className="flex items-center gap-2">
+                         {item.color && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500"></span>{item.color}</span>}
+                         {item.size && <span className="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded font-bold">{item.size}</span>}
+                       </span>
+                    ) : item.altNames && item.altNames.length > 0
                       ? item.altNames.join(" | ")
                       : "Standard Edition"}
                   </p>
@@ -192,7 +197,7 @@ export default function CartPage() {
                       if (!ensureLoggedInForCart()) {
                         return;
                       }
-                      removeFromCart(item.productId ?? item.id);
+                      removeFromCart(item.cartItemId ?? item.productId ?? item.id);
                       setCartLoaded(false);
                     }}
                     title="Remove item"
