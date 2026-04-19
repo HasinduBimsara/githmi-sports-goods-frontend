@@ -23,12 +23,15 @@
 
 .slider-track {
   display: flex;
-  width: calc(280px * 18);
-  animation: scroll 15s linear infinite alternate;
-  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+  animation: scroll 40s linear infinite;
+  justify-content: flex-start;
   gap: 1.5rem;
   transform-style: preserve-3d;
   pointer-events: none;
+  /* Add padding equal to exactly half the gap on each end to make the seamless snapping mathematically perfect */
+  padding: 0 0.75rem;
 }
 
 .slide {
@@ -87,6 +90,6 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-280px * 9));
+    transform: translateX(-50%);
   }
 }

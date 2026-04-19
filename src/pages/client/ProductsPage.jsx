@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
 import { addToCart } from "../../utils/cart";
 import { fetchProducts } from "../../utils/products";
+import ProductCard from "../../components/client/ProductCard";
 
 export default function ProductsPage() {
   const navigate = useNavigate();
@@ -228,83 +229,16 @@ export default function ProductsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => {
-                const category =
-                  product.altNames?.[0] || product.category || "Sports";
-                const rating = Number(product.rating ?? 4.5);
-
-                return (
-                  <div
-                    key={product.productId}
-                    className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:shadow-blue-500/10 transition-all duration-500 border border-gray-100 dark:border-gray-700 overflow-hidden group hover:-translate-y-2 flex flex-col"
-                  >
-                    <Link
-                      to={`/overview/${product.productId}`}
-                      className="block relative h-64 overflow-hidden"
-                    >
-                      <img
-                        src={product.images?.[0] || product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                      <div className="absolute top-3 left-3 bg-white/70 dark:bg-black/50 backdrop-blur-md text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm text-gray-900 dark:text-white uppercase tracking-wider">
-                        {category}
-                      </div>
-                    </Link>
-
-                    <div className="p-5 flex flex-col flex-grow">
-                      <div className="flex items-center space-x-1 mb-2">
-                        <FaStar className="text-yellow-400 text-sm drop-shadow-sm" />
-                        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
-                          {rating.toFixed(1)}
-                        </span>
-                      </div>
-
-                      <Link to={`/overview/${product.productId}`}>
-                        <h3 className="font-bold text-lg mb-1 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                          {product.name}
-                        </h3>
-                      </Link>
-
-                      <div className="flex items-center justify-between mt-auto pt-4">
-                        <div className="flex flex-col">
-                          <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                            LKR {product.price.toFixed(2)}
-                          </span>
-                          {product.labeledPrice > product.price && (
-                            <span className="text-sm text-gray-400 line-through">
-                              LKR {product.labeledPrice.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-
-                        <button
-                          onClick={() => {
-                            if (product.stock <= 0) {
-                              toast.error("This product is currently out of stock");
-                              return;
-                            }
-
-                            if (!ensureLoggedInForCart()) {
-                              return;
-                            }
-
-                            addToCart(product, 1);
-                            toast.success(`${product.name} added to cart`);
-                          }}
-                          className="w-12 h-12 bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/40 transform hover:-translate-y-1 active:scale-90 transition-all duration-300 z-10 overflow-hidden relative disabled:opacity-50 disabled:hover:translate-y-0"
-                          aria-label={`Add ${product.name} to cart`}
-                          disabled={product.stock <= 0}
-                        >
-                          <FaShoppingCart className="text-lg relative z-10" />
-                        </button>
-                      </div>
-                    </div>
+              {filteredProducts.map((product) => (
+                  <div key={product.productId} className="h-full">
+                    <ProductCard
+                      product={product}
+                      ensureLoggedInForCart={ensureLoggedInForCart}
+                      addToCart={addToCart}
+                      variant="grid"
+                    />
                   </div>
-                );
-              })}
+              ))}
             </div>
           )}
         </div>
