@@ -73,6 +73,8 @@ export default function CheckoutPage() {
       items: cart.map((item) => ({
         productId: item.productId ?? item.id ?? item._id,
         quantity: item.quantity,
+        size: item.size || "",
+        color: item.color || "",
       })),
     };
 
@@ -111,10 +113,10 @@ export default function CheckoutPage() {
     });
   };
 
-  const handleRemoveItem = (productId) => {
+  const handleRemoveItem = (identifier) => {
     setCart((prevCart) =>
       prevCart.filter(
-        (item) => (item.productId ?? item.id ?? item._id) !== productId,
+        (item) => (item.cartItemId ?? item.productId ?? item.id ?? item._id) !== identifier,
       ),
     );
   };
@@ -254,8 +256,14 @@ export default function CheckoutPage() {
                       <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1">
                         {item.name}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {item.altNames?.join(" | ") || "Standard"}
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 gap-1 flex justify-center sm:justify-start items-center">
+                        {(item.size || item.color) ? (
+                          <>
+                            {item.color && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>{item.color}</span>}
+                            {item.color && item.size && <span className="mx-1">|</span>}
+                            {item.size && <span className="font-bold bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-1 rounded">{item.size}</span>}
+                          </>
+                        ) : item.altNames?.join(" | ") || "Standard"}
                       </p>
                       <p className="text-[#4f46e5] dark:text-[#a855f7] font-bold text-sm">
                         LKR {item.price.toFixed(2)}
@@ -287,7 +295,7 @@ export default function CheckoutPage() {
                         type="button"
                         className="w-9 h-9 flex justify-center items-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors active:scale-90"
                         onClick={() =>
-                          handleRemoveItem(item.productId ?? item.id ?? item._id)
+                          handleRemoveItem(item.cartItemId ?? item.productId ?? item.id ?? item._id)
                         }
                         title="Remove item"
                       >

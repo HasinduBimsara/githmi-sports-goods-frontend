@@ -3,7 +3,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { FiUploadCloud, FiTrash2, FiPlus, FiImage } from "react-icons/fi";
 
-const ImageUploader = ({ images = [], onChange }) => {
+const ImageUploader = ({ images = [], folderName = "Uncategorized", onChange }) => {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -30,6 +30,7 @@ const ImageUploader = ({ images = [], onChange }) => {
       const token = localStorage.getItem("token");
       const baseUrl = import.meta.env.VITE_BACKEND_URL;
       const formData = new FormData();
+      formData.append("folderName", folderName);
       allowed.forEach((f) => formData.append("images", f));
 
       const { data } = await axios.post(`${baseUrl}/api/upload`, formData, {
@@ -64,9 +65,9 @@ const ImageUploader = ({ images = [], onChange }) => {
   // Slot 0: Main
   displaySlots.push({ index: 0, required: true, label: "Main Image" });
   
-  // Slots 1, 2, 3: Secondary Required
+  // Slots 1, 2, 3: Secondary Optional
   for (let i = 1; i <= 3; i++) {
-    displaySlots.push({ index: i, required: true });
+    displaySlots.push({ index: i, required: false });
   }
 
   // Slots 4+: Extra uploaded images
@@ -74,7 +75,7 @@ const ImageUploader = ({ images = [], onChange }) => {
     displaySlots.push({ index: i, required: false });
   }
 
-  const showAddMore = images.length >= 4 && images.length < 10;
+  const showAddMore = images.length < 10;
 
   return (
     <div 
@@ -164,7 +165,9 @@ const ImageUploader = ({ images = [], onChange }) => {
               ) : (
                  <div className="text-gray-400 dark:text-gray-600 flex flex-col items-center">
                     <FiPlus size={24} className="mb-2 opacity-50" />
-                    {slot.required && <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tight">Required</span>}
+                    <span className={`text-[10px] font-bold uppercase tracking-tight ${slot.required ? "text-indigo-500 dark:text-indigo-400" : "text-gray-400 dark:text-gray-500"}`}>
+                       {slot.required ? "Required" : "Optional"}
+                    </span>
                  </div>
               )}
             </div>

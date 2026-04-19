@@ -253,11 +253,19 @@ export default function Header() {
                         </div>
                       </div>
 
+                      <Link
+                        to="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="mt-4 block w-full rounded-xl bg-gray-50 dark:bg-gray-800 py-2.5 text-center text-sm font-bold text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        My Profile
+                      </Link>
+
                       {user?.role === "admin" && (
                         <Link
                           to="/admin"
                           onClick={() => setUserMenuOpen(false)}
-                          className="mt-4 block w-full rounded-xl bg-indigo-50 dark:bg-indigo-900/40 py-2.5 text-center text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/60"
+                          className="mt-2 block w-full rounded-xl bg-indigo-50 dark:bg-indigo-900/40 py-2.5 text-center text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/60"
                         >
                           Dashboard
                         </Link>
@@ -469,11 +477,19 @@ export default function Header() {
                     </div>
                   </div>
 
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="mt-4 block w-full rounded-xl bg-gray-50 dark:bg-gray-800 py-3 text-center text-sm font-bold text-gray-700 dark:text-gray-300 transition-all active:scale-95"
+                  >
+                    My Profile
+                  </Link>
+
                   {user?.role === "admin" && (
                     <Link
                       to="/admin"
                       onClick={() => setIsOpen(false)}
-                      className="mt-4 block w-full rounded-xl bg-indigo-50 dark:bg-indigo-900/40 py-3 text-center text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-all active:scale-95"
+                      className="mt-2 block w-full rounded-xl bg-indigo-50 dark:bg-indigo-900/40 py-3 text-center text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-all active:scale-95"
                     >
                       Admin Dashboard
                     </Link>
