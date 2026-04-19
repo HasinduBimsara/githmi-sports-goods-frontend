@@ -152,7 +152,7 @@ const AdminOrders = () => {
                       {new Date(order.date || order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      ${order.total}
+                      LKR {order.total}
                     </td>
                     <td className="p-4 text-sm">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${activeCfg.rowBadge}`}>
