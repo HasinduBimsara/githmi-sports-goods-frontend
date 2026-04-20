@@ -36,7 +36,8 @@ const AdminProducts = () => {
   const fetchProducts = async () => {
     try {
       const baseUrl = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.get(`${baseUrl}/api/product`);
+      // Use a high limit so all products are visible in the admin panel
+      const response = await axios.get(`${baseUrl}/api/product?limit=200`);
       // Adapt based on actual API response
       const data = Array.isArray(response.data) ? response.data : response.data.products || [];
       setProducts(data);
