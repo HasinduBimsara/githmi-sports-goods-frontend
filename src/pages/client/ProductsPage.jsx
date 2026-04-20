@@ -41,7 +41,14 @@ export default function ProductsPage() {
           return;
         }
 
-        setProducts(loadedProducts);
+        // Fisher-Yates shuffle — mix products so categories don't clump together
+        const shuffled = [...loadedProducts];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        setProducts(shuffled);
         setError("");
 
         const maxPrice = loadedProducts.reduce(
