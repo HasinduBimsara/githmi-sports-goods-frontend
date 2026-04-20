@@ -68,8 +68,10 @@ export function normalizeProduct(product) {
   };
 }
 
-export async function fetchProducts() {
-  const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product`);
+export async function fetchProducts(params = {}) {
+  // Default to a high limit so all products show on the storefront (backend default is only 12)
+  const query = new URLSearchParams({ limit: 200, ...params }).toString();
+  const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product?${query}`);
   return getProductListFromResponse(response.data)
     .map(normalizeProduct)
     .filter(Boolean);
