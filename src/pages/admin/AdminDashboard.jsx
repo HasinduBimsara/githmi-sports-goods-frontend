@@ -5,7 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from "recharts";
 import { 
-  FiUsers, FiBox, FiShoppingBag, FiDollarSign, FiTrendingUp, FiTrendingDown, FiActivity, FiClock, FiCheckCircle
+  FiUsers, FiBox, FiShoppingBag, FiDollarSign, FiTrendingUp, FiTrendingDown, FiActivity, FiClock, FiCheckCircle, FiXCircle
 } from "react-icons/fi";
 
 const AdminDashboard = () => {
@@ -26,6 +26,8 @@ const AdminDashboard = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [systemStatus, setSystemStatus] = useState("Live Syncing");
+  const [dbStatus, setDbStatus] = useState("Connected");
 
   const fetchStats = useCallback(async (isInitial = false) => {
     try {
@@ -38,14 +40,17 @@ const AdminDashboard = () => {
       const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
       const [usersRes, productsRes, ordersRes] = await Promise.all([
-        axios.get(`${baseUrl}/api/user`, config).catch(() => ({ data: { list: [] } })),
-        axios.get(`${baseUrl}/api/product`, config).catch(() => ({ data: { products: [] } })),
-        axios.get(`${baseUrl}/api/order`, config).catch(() => ({ data: [] }))
+        axios.get(`${baseUrl}/api/user`, config).catch(() => ({ data: [] })),
+        axios.get(`${baseUrl}/api/product`, config).catch(() => ({ data: { products: [], total: 0 } })),
+        axios.get(`${baseUrl}/api/order`, config).catch(() => ({ data: { orders: [], total: 0 } }))
       ]);
 
       const usersList = Array.isArray(usersRes.data) ? usersRes.data : (usersRes.data.list || []);
-      const productsList = Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data.products || []);
-      const ordersList = Array.isArray(ordersRes.data) ? ordersRes.data : (ordersRes.data.orders || []);
+      const productsList = Array.isArray(productsRes.data) ? (productsRes.data.products || []) : (productsRes.data.products || []);
+      const ordersList = Array.isArray(ordersRes.data) ? (ordersRes.data.orders || []) : (ordersRes.data.orders || []);
+      
+      const totalProducts = productsRes.data.total || productsList.length;
+      const totalOrdersCount = ordersRes.data.total || ordersList.length;
       
       const now = new Date();
       
@@ -68,7 +73,7 @@ const AdminDashboard = () => {
       let totalRev = 0;
 
       ordersList.forEach(order => {
-         const amount = Number(order.totalPrice || order.amount) || 0;
+         const amount = Number(order.total) || 0;
          totalRev += amount;
          const d = new Date(order.createdAt);
          if (!isNaN(d)) {
@@ -133,8 +138,8 @@ const AdminDashboard = () => {
 
       setStats({
         users: usersList.length,
-        products: productsList.length,
-        orders: activeOrders.length,
+        products: totalProducts,
+        orders: activeOrders.length, // Keep only active orders count for the summary, or use a separate total if available
         revenue: totalRev
       });
 
@@ -164,7 +169,7 @@ const AdminDashboard = () => {
         if (!isNaN(date)) {
            const key = `${months[date.getMonth()]} ${date.getFullYear().toString().slice(2)}`;
            if (typeof salesByMonth[key] !== "undefined") {
-             salesByMonth[key] += (Number(order.totalPrice || order.amount) || 0);
+             salesByMonth[key] += (Number(order.total) || 0);
            }
         }
       });
@@ -187,6 +192,17 @@ const AdminDashboard = () => {
       } else {
           setChartData(generatedChartData);
       }
+
+      // Check System Health
+      axios.get(`${baseUrl}/health`).then(res => {
+         if (res.data?.status === "OK") {
+            setSystemStatus("Live Syncing");
+            setDbStatus(res.data.database === "Connected" ? "Connected" : "Warning");
+         }
+      }).catch(() => {
+         setSystemStatus("Disconnected");
+         setDbStatus("Offline");
+      });
 
     } catch (error) {
       if (isInitial) {
@@ -394,10 +410,10 @@ const AdminDashboard = () => {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-colors cursor-pointer backdrop-blur-sm">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-bold text-sm text-emerald-300">System Status</h4>
-                  <FiCheckCircle className="text-emerald-400" />
+                  {systemStatus === "Live Syncing" ? <FiCheckCircle className="text-emerald-400" /> : <FiXCircle className="text-red-400" />}
                 </div>
-                <p className="text-2xl font-black text-emerald-400">Live Syncing</p>
-                <p className="text-xs text-gray-400 mt-2 font-medium tracking-wide">Live updates are broadcasting optimally.</p>
+                <p className={`text-2xl font-black ${systemStatus === "Live Syncing" ? 'text-emerald-400' : 'text-red-400'}`}>{systemStatus}</p>
+                <p className="text-xs text-gray-400 mt-2 font-medium tracking-wide">DB: {dbStatus} • {systemStatus === "Live Syncing" ? "Broadcasting optimally" : "Connection lost"}</p>
               </div>
            </div>
 
@@ -439,10 +455,10 @@ const AdminDashboard = () => {
                     <td className="p-5">
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-900 dark:text-gray-100 mb-1">
-                          {order.user?.firstName || order.shippingAddress?.fullName || "Guest Customer"}
+                          {order.name || "Guest Customer"}
                         </span>
                         <span className="text-xs font-mono text-gray-400 bg-gray-100 dark:bg-gray-700/50 w-max px-2 py-0.5 rounded-md">
-                          #{order._id || order.id || `ORD-${Math.floor(Math.random()*10000)}`}
+                          #{order.orderId || order._id || `ORD-${Math.floor(Math.random()*10000)}`}
                         </span>
                       </div>
                     </td>
@@ -450,7 +466,7 @@ const AdminDashboard = () => {
                       {order.createdAt ? new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}
                     </td>
                     <td className="p-5 text-sm font-black text-gray-900 dark:text-gray-100">
-                      LKR {Number(order.totalPrice || order.amount || 0).toLocaleString()}
+                      LKR {Number(order.total || 0).toLocaleString()}
                     </td>
                     <td className="p-5">
                       {renderStatus(order.status)}
