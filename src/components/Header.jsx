@@ -261,6 +261,16 @@ export default function Header() {
                         My Profile
                       </Link>
 
+                      {user?.role !== "admin" && (
+                        <Link
+                          to="/orders"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="mt-2 block w-full rounded-xl bg-gray-50 dark:bg-gray-800 py-2.5 text-center text-sm font-bold text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          My Orders
+                        </Link>
+                      )}
+
                       {user?.role === "admin" && (
                         <Link
                           to="/admin"
@@ -484,6 +494,16 @@ export default function Header() {
                   >
                     My Profile
                   </Link>
+
+                  {user?.role !== "admin" && (
+                    <Link
+                      to="/orders"
+                      onClick={() => setIsOpen(false)}
+                      className="mt-2 block w-full rounded-xl bg-gray-50 dark:bg-gray-800 py-3 text-center text-sm font-bold text-gray-700 dark:text-gray-300 transition-all active:scale-95"
+                    >
+                      My Orders
+                    </Link>
+                  )}
 
                   {user?.role === "admin" && (
                     <Link
