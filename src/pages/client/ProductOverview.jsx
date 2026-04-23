@@ -189,14 +189,30 @@ export default function ProductOverview() {
               {product.name}
             </h1>
 
-            {/* Micro Details */}
-            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-3 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex text-yellow-400 text-[13px]">
-                <FaStar/><FaStar/><FaStar/><FaStar/><FaStar className="text-gray-300 dark:text-gray-600"/>
+            {/* Micro Details: Ratings & Sold Info */}
+            <div className="flex items-center text-xs gap-3 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-1.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 px-2 py-1 rounded-lg transition-colors cursor-pointer">
+                <div className="flex text-yellow-400 text-[13px]">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} className={i < Math.floor(product.rating || 4.5) ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}/>
+                  ))}
+                </div>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">{(product.rating || 4.5).toFixed(1)}</span>
+                <span className="text-gray-400 font-medium">({product.numReviews || 12} Ratings)</span>
               </div>
-              <span className="text-blue-600 dark:text-blue-400 cursor-pointer hover:underline font-medium">12 Ratings</span>
-              <span className="text-gray-300 dark:text-gray-600">|</span>
-              <span>Category: <Link to="/products" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{product.category || 'General'}</Link></span>
+              
+              <span className="text-gray-300 dark:text-gray-600 font-light">|</span>
+              
+              <div className="flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full text-indigo-700 dark:text-indigo-300 font-black tracking-tight">
+                <span className="text-[13px]">{product.soldCount || 0}</span>
+                <span className="text-[9px] uppercase tracking-widest">Units Sold</span>
+              </div>
+              
+              <span className="text-gray-300 dark:text-gray-600 font-light">|</span>
+              
+              <span className="text-gray-500 dark:text-gray-400">
+                Category: <Link to="/products" className="text-blue-600 dark:text-blue-400 hover:underline font-bold">{product.category || 'General'}</Link>
+              </span>
             </div>
 
             {/* Huge Price Block */}
@@ -307,11 +323,17 @@ export default function ProductOverview() {
                 </button>
               </div>
               <span className="text-xs font-medium border px-2 py-0.5 rounded shadow-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                 {displayStock > 0 ? (
-                   <span className="text-gray-700 dark:text-gray-300"><span className="text-indigo-600 dark:text-indigo-400 font-black">{displayStock}</span> items left</span>
-                 ) : (
-                   <span className="text-red-500 font-bold">Out of stock for this variant</span>
-                 )}
+                  {displayStock > 0 ? (
+                    <span className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                      </span>
+                      <span className="text-indigo-600 dark:text-indigo-400 font-black">{displayStock}</span> items left
+                    </span>
+                  ) : (
+                    <span className="text-red-500 font-bold">Out of stock for this variant</span>
+                  )}
               </span>
             </div>
 
