@@ -83,10 +83,16 @@ export default function ProductCard({ product, ensureLoggedInForCart, addToCart,
              {category}
            </p>
         ) : (
-          <div className="flex items-center space-x-1 mb-2">
-            <FaStar className="text-yellow-400 text-sm drop-shadow-sm" />
-            <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
-              {rating.toFixed(1)}
+          <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center space-x-1">
+              <FaStar className="text-yellow-400 text-sm drop-shadow-sm" />
+              <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
+                {rating.toFixed(1)}
+              </span>
+            </div>
+            <span className="text-gray-300 dark:text-gray-600">|</span>
+            <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">
+               {product.soldCount || 0} Sold
             </span>
           </div>
         )}
