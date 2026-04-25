@@ -2,17 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { BsCart4, BsSunFill, BsMoonFill } from "react-icons/bs";
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import { FaUserCircle } from "react-icons/fa";
-import { FiHome, FiBox, FiPhoneCall, FiHeart } from "react-icons/fi";
+import { FiHome, FiBox, FiPhoneCall, FiHeart, FiBell } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ShinyText from "./ShinyText";
 import getCart from "../utils/cart";
 import { useAuth } from "../context/AuthContext";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark";
+    return savedTheme ? savedTheme === "dark" : true;
   });
   const [scrolled, setScrolled] = useState(false);
   const { user, logout } = useAuth();
@@ -202,6 +203,9 @@ export default function Header() {
                   </span>
                 )}
               </Link>
+
+              {/* Notifications */}
+              {user && <NotificationDropdown />}
 
               {/* Auth / User (Desktop) */}
               {user ? (
@@ -427,6 +431,27 @@ export default function Header() {
                     </span>
                   )}
                 </Link>
+
+                {/* Mobile Notifications */}
+                {user && (
+                  <div className="p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 mt-2">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                          <FiBell className="text-lg text-gray-600 dark:text-gray-400" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">
+                            Notifications
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pl-14">
+                      <NotificationDropdown />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Theme Toggle (Mobile) */}

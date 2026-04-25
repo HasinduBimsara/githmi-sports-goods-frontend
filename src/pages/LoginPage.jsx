@@ -10,7 +10,7 @@ import {
   AuthDivider,
   AuthInput,
   AuthLayout,
-} from "../components/authLayout";
+} from "../components/AuthLayout";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
