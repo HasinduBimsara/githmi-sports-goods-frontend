@@ -50,7 +50,6 @@ const AdminDashboard = () => {
       const ordersList = Array.isArray(ordersRes.data) ? (ordersRes.data.orders || []) : (ordersRes.data.orders || []);
       
       const totalProducts = productsRes.data.total || productsList.length;
-      const totalOrdersCount = ordersRes.data.total || ordersList.length;
       
       const now = new Date();
       
