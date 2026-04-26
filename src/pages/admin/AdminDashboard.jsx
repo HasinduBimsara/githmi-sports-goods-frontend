@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { 
@@ -7,6 +8,8 @@ import {
 import { 
   FiUsers, FiBox, FiShoppingBag, FiDollarSign, FiTrendingUp, FiTrendingDown, FiActivity, FiClock, FiCheckCircle, FiXCircle
 } from "react-icons/fi";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -224,6 +227,136 @@ const AdminDashboard = () => {
     return () => clearInterval(interval);
   }, [fetchStats]);
 
+  const handleExportSummaryReport = async () => {
+    try {
+      toast.loading("Compiling Executive Summary...", { id: "export-toast" });
+      const token = localStorage.getItem("token");
+      const baseUrl = import.meta.env.VITE_BACKEND_URL;
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      
+      const [usersRes, productsRes, ordersRes] = await Promise.all([
+        axios.get(`${baseUrl}/api/user`, config).catch(() => ({ data: [] })),
+        axios.get(`${baseUrl}/api/product`, config).catch(() => ({ data: { products: [] } })),
+        axios.get(`${baseUrl}/api/order`, config).catch(() => ({ data: { orders: [] } }))
+      ]);
+
+      const usersList = Array.isArray(usersRes.data) ? usersRes.data : (usersRes.data.list || []);
+      const productsList = Array.isArray(productsRes.data) ? (productsRes.data.products || []) : (productsRes.data.products || []);
+      const ordersList = Array.isArray(ordersRes.data) ? (ordersRes.data.orders || []) : (ordersRes.data.orders || []);
+      
+      const doc = new jsPDF();
+      doc.setFont("helvetica");
+
+      // Company Header
+      doc.setFontSize(24);
+      doc.setTextColor(17, 24, 39);
+      doc.text("Githmi Sports Goods", 14, 22);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(107, 114, 128);
+      doc.text("Executive Analytics Summary", 14, 30);
+      
+      const generateDate = new Date().toLocaleString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      doc.setFontSize(10);
+      doc.setTextColor(156, 163, 175);
+      doc.text(`Automated Generation: ${generateDate}`, 14, 38);
+
+      // System Overview Stats
+      doc.setFontSize(16);
+      doc.setTextColor(17, 24, 39);
+      doc.text("Platform Metric Overview", 14, 52);
+
+      const totalRevenue = ordersList.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(55, 65, 81);
+      doc.text(`Total Registered Users: ${usersList.length}`, 14, 62);
+      doc.text(`Active Catalog Products: ${productsRes.data.total || productsList.length}`, 105, 62);
+      doc.text(`Cumulative Orders: ${ordersList.length}`, 14, 70);
+      doc.text(`Gross Revenue: LKR ${totalRevenue.toLocaleString()}`, 105, 70);
+
+      // Save PDF
+      doc.save(`Githmi_Summary_Report_${new Date().getTime()}.pdf`);
+      toast.success("Summary report securely exported!", { id: "export-toast" });
+    } catch (error) {
+       console.error("Export failure:", error);
+       toast.error("Failed to generate summary report", { id: "export-toast" });
+    }
+  };
+
+  const handleExportFullReport = async () => {
+    try {
+      toast.loading("Compiling Full Operational Report...", { id: "export-toast" });
+      const token = localStorage.getItem("token");
+      const baseUrl = import.meta.env.VITE_BACKEND_URL;
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      
+      const ordersRes = await axios.get(`${baseUrl}/api/order`, config).catch(() => ({ data: { orders: [] } }));
+      const ordersList = Array.isArray(ordersRes.data) ? (ordersRes.data.orders || []) : (ordersRes.data.orders || []);
+      
+      const doc = new jsPDF();
+      doc.setFont("helvetica");
+
+      // Company Header
+      doc.setFontSize(24);
+      doc.setTextColor(17, 24, 39);
+      doc.text("Githmi Sports Goods", 14, 22);
+      
+      doc.setFontSize(12);
+      doc.setTextColor(107, 114, 128);
+      doc.text("Comprehensive Operational Master Log", 14, 30);
+      
+      const generateDate = new Date().toLocaleString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      doc.setFontSize(10);
+      doc.setTextColor(156, 163, 175);
+      doc.text(`Automated Generation: ${generateDate}`, 14, 38);
+
+      // Category metrics
+      const pendingCount = ordersList.filter(o => !o.status || o.status === "Pending").length;
+      const processingCount = ordersList.filter(o => o.status === "Processing").length;
+      const deliveredCount = ordersList.filter(o => o.status === "Delivered").length;
+      
+      doc.setFontSize(12);
+      doc.setTextColor(55, 65, 81);
+      doc.text(`Pending Actions Required: ${pendingCount}`, 14, 50);
+      doc.text(`Currently Processing: ${processingCount}`, 14, 57);
+      doc.text(`Successfully Delivered: ${deliveredCount}`, 14, 64);
+      doc.text(`Total Recorded Entries: ${ordersList.length}`, 14, 71);
+
+      // Orders Summary Table Header
+      doc.setFontSize(16);
+      doc.setTextColor(17, 24, 39);
+      doc.text("Complete Transaction History", 14, 87);
+
+      const sortedOrders = [...ordersList].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      const tableData = sortedOrders.map(order => [
+        order.orderId || order._id.slice(-6).toUpperCase(),
+        order.name || "Guest Customer",
+        new Date(order.createdAt).toLocaleDateString(),
+        `LKR ${Number(order.total || 0).toLocaleString()}`,
+        order.status || "Pending"
+      ]);
+
+      autoTable(doc, {
+        startY: 93,
+        head: [['Order ID', 'Customer', 'Date Placed', 'Total Value', 'Status']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [15, 118, 110], textColor: [255, 255, 255], fontStyle: 'bold' }, // Emerald 600
+        styles: { fontSize: 9, cellPadding: 4 },
+        alternateRowStyles: { fillColor: [240, 253, 244] }, // Emerald 50
+      });
+
+      // Save PDF
+      doc.save(`Githmi_Full_Operational_Log_${new Date().getTime()}.pdf`);
+      toast.success("Full operational report exported!", { id: "export-toast" });
+    } catch (error) {
+       console.error("Export failure:", error);
+       toast.error("Failed to generate operational report", { id: "export-toast" });
+    }
+  };
+
   const renderStatus = (status) => {
     switch (status) {
       case "Delivered": return <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 px-3 py-1 rounded-full text-xs font-bold">Delivered</span>;
@@ -258,7 +391,7 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+          <button onClick={handleExportSummaryReport} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition">
             Export Report
           </button>
         </div>
@@ -416,7 +549,7 @@ const AdminDashboard = () => {
               </div>
            </div>
 
-           <button className="mt-8 w-full py-3 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:-translate-y-1 active:scale-95 transition-all text-sm">
+           <button onClick={handleExportFullReport} className="mt-8 w-full py-3 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:-translate-y-1 active:scale-95 transition-all text-sm">
              View Full Report
            </button>
         </div>
@@ -427,7 +560,7 @@ const AdminDashboard = () => {
       <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="p-6 sm:p-8 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
           <h2 className="text-lg font-black text-gray-900 dark:text-white">Recent Orders Snapshot</h2>
-          <button className="text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:underline">View All Orders</button>
+          <Link to="/admin/orders" className="text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:underline">View All Orders</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
