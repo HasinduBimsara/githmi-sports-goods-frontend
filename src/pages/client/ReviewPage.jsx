@@ -12,6 +12,7 @@ import {
 import Loader from "../../components/Loader";
 import ShinyText from "../../components/ShinyText";
 import { fetchProducts } from "../../utils/products";
+import { useAuth } from "../../context/AuthContext";
 import "../ProductSlider.css";
 
 const initialReviewForm = {
@@ -40,31 +41,6 @@ const renderStars = (rating) => {
   );
 };
 
-const HappyCustomerSlider = ({ customers }) => {
-  if (customers.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="slider-body bg-transparent py-0">
-      <div className="slider-wrapper">
-        <div className="slider-track">
-          {customers.map((customer, index) => (
-            <div className="slide" key={customer.id || index}>
-              <div className="inner-card bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden h-full border border-gray-100 dark:border-gray-700 transition-all duration-300">
-                <img
-                  src={customer.image}
-                  alt={customer.name}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 function getReviewList(data) {
   if (Array.isArray(data)) {
@@ -110,7 +86,10 @@ export default function ReviewPage() {
   const [error, setError] = useState("");
   const [activeField, setActiveField] = useState(null);
   const [reviewForm, setReviewForm] = useState(initialReviewForm);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const isLoggedIn = Boolean(localStorage.getItem("token"));
+
 
   useEffect(() => {
     let active = true;
@@ -168,13 +147,8 @@ export default function ReviewPage() {
     };
   }, []);
 
-  const happyCustomers = reviews
-    .map((review, index) => ({
-      id: review?._id || index,
-      name: review?.name || "Customer",
-      image: review?.avatar || review?.image || "",
-    }))
-    .filter((customer) => customer.image);
+  // Only display standard textual user reviews, ignoring any image-only entries if any remain
+  const displayedReviews = reviews.filter((r) => r.productId !== "HAPPY_CUSTOMER" && !r.isHappyCustomerImageOnly);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -250,6 +224,7 @@ export default function ReviewPage() {
     }
   };
 
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -288,38 +263,8 @@ export default function ReviewPage() {
           </button>
         </div>
 
-        {happyCustomers.length > 0 && (
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl py-3 px-4 sm:p-5 border border-white/50 dark:border-gray-700 shadow-sm overflow-hidden mb-8 transition-colors duration-300">
-            <div className="relative flex flex-col md:flex-row items-center justify-center">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold transition-colors duration-300 text-center px-2 leading-tight whitespace-normal sm:whitespace-nowrap">
-                <ShinyText
-                  text="Happy Customers"
-                  speed={3}
-                  delay={0.3}
-                  color="#fff700"
-                  shineColor="#ff0000"
-                  spread={120}
-                  direction="right"
-                  yoyo
-                  pauseOnHover
-                  disabled={false}
-                />
-              </h2>
 
-              <Link
-                to="/products"
-                className="group mt-2 md:mt-0 md:absolute md:right-4 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center bg-blue-50 dark:bg-gray-800 md:bg-transparent px-4 py-2 md:px-0 md:py-0 rounded-full"
-              >
-                Shop reviewed products
-                <FaArrowRight className="ml-2 opacity-100 md:opacity-0 md:-translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-              </Link>
-            </div>
-
-            <HappyCustomerSlider customers={happyCustomers} />
-          </div>
-        )}
-
-        {reviews.length === 0 ? (
+        {displayedReviews.length === 0 ? (
           <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-8 sm:p-10 shadow-sm border border-gray-100 dark:border-gray-700 text-center mb-10">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
               No reviews yet
@@ -330,7 +275,7 @@ export default function ReviewPage() {
           </div>
         ) : (
           <div className="columns-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4 sm:space-y-6 mb-10">
-            {reviews.map((review, index) => (
+            {displayedReviews.map((review, index) => (
               <div
                 key={review?._id || index}
                 className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 break-inside-avoid hover:-translate-y-1 hover:shadow-md transition-all duration-300 group"
