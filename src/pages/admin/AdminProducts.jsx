@@ -22,6 +22,7 @@ const AdminProducts = () => {
     isBestDeal: false,
     isLatest: false,
     isReadyToShip: false,
+    isPremium: false,
     colors: [],
     sizes: [],
   });
@@ -68,6 +69,7 @@ const AdminProducts = () => {
         isBestDeal: product.isBestDeal || false,
         isLatest: product.isLatest || false,
         isReadyToShip: product.isReadyToShip || false,
+        isPremium: product.isPremium || false,
         colors: product.colors || [],
         sizes: product.sizes || [],
       });
@@ -85,6 +87,7 @@ const AdminProducts = () => {
         isBestDeal: false,
         isLatest: false,
         isReadyToShip: false,
+        isPremium: false,
         colors: [],
         sizes: [],
       });
@@ -292,9 +295,16 @@ const AdminProducts = () => {
                     <td className="p-4 text-sm text-gray-700 dark:text-gray-300">{product.name}</td>
                     <td className="p-4 text-sm text-gray-700 dark:text-gray-300">LKR {product.price}</td>
                     <td className="p-4 text-sm text-gray-700 dark:text-gray-300">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.stock > 0 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                        {product.stock}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className={`w-fit px-2 py-1 rounded-full text-xs font-medium ${product.stock > 0 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                          {product.stock} in stock
+                        </span>
+                        {product.isPremium && (
+                          <span className="w-fit px-2 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 uppercase tracking-widest">
+                            💎 Premium
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 text-right space-x-2">
                        <button
@@ -581,6 +591,18 @@ const AdminProducts = () => {
                         className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
                       <span className="group-hover:text-indigo-600 transition-colors">Limited Stock</span>
+                    </label>
+                    <label className="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer font-bold select-none group">
+                      <input
+                        type="checkbox"
+                        name="isPremium"
+                        checked={formData.isPremium}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span className="group-hover:text-amber-500 transition-colors flex items-center gap-1">
+                        💎 Premium Product
+                      </span>
                     </label>
                   </div>
                 </div>

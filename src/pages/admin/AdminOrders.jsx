@@ -78,6 +78,23 @@ const AdminOrders = () => {
     }
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm(`Are you sure you want to remove order ${orderId}? It will no longer show in the dashboard or user history.`)) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const baseUrl = import.meta.env.VITE_BACKEND_URL;
+      await axios.delete(`${baseUrl}/api/order/${orderId}`, config);
+      toast.success("Order removed successfully");
+      fetchOrders();
+    } catch (error) {
+      console.error("Remove order failed:", error);
+      const msg = error.response?.data?.message || error.message || "Failed to remove order";
+      toast.error(msg);
+    }
+  };
+
   const activeCfg = STATUSES.find((s) => s.key === activeTab);
   const visibleOrders = orders.filter((o) => o.status === activeTab);
   const otherStatuses = STATUSES.filter((s) => s.key !== activeTab);
@@ -170,6 +187,13 @@ const AdminOrders = () => {
                             {s.icon} {s.key}
                           </button>
                         ))}
+                        <button
+                          onClick={() => handleDeleteOrder(order.orderId)}
+                          className="px-2.5 py-1 rounded-full text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 dark:border-red-900/30 dark:hover:bg-red-900/20 transition-all duration-200 cursor-pointer"
+                          title="Remove Order"
+                        >
+                          🗑️ Remove
+                        </button>
                       </div>
                     </td>
                   </tr>
