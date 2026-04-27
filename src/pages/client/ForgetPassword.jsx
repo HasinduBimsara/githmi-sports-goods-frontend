@@ -20,17 +20,18 @@ export default function ForgetPassword() {
     }
 
     setLoading(true);
+    const normalizedEmail = email.trim().toLowerCase();
     axios
       .post(import.meta.env.VITE_BACKEND_URL + "/api/user/sendMail", {
-        email: email,
+        email: normalizedEmail,
       })
       .then((response) => {
-        console.log(response.data);
+        console.log("OTP Sent:", response.data);
         setEmailSent(true);
         toast.success("OTP sent to your email!");
       })
       .catch((error) => {
-        console.log(error);
+        console.error("OTP Error:", error);
         toast.error(error?.response?.data?.message || "Something went wrong");
       })
       .finally(() => {
@@ -45,22 +46,31 @@ export default function ForgetPassword() {
       return;
     }
 
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
     setLoading(true);
+    const normalizedEmail = email.trim().toLowerCase();
+    const trimmedOtp = otp.trim();
+    const trimmedPassword = password.trim();
+
     axios
       .post(import.meta.env.VITE_BACKEND_URL + "/api/user/changePW", {
-        email: email,
-        otp: otp,
-        password: password,
+        email: normalizedEmail,
+        otp: trimmedOtp,
+        password: trimmedPassword,
       })
       .then((response) => {
-        console.log(response.data);
+        console.log("Password Change Successful:", response.data);
         toast.success("Password changed successfully");
-        navigate("/login"); // Smooth React Router navigation
+        navigate("/login"); 
       })
       .catch((error) => {
-        console.log(error);
+        console.error("Password Change Error:", error);
         toast.error(
-          error?.response?.data?.message || "Invalid OTP or error occurred",
+          error?.response?.data?.message || "Invalid OTP or sync error occurred",
         );
         setLoading(false);
       });
