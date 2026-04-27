@@ -42,11 +42,22 @@ export default function LoginPage() {
   };
 
   async function handleLogin() {
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      toast.error("Email and password are required");
+      return;
+    }
+
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log(`[Diagnostic] Firebase Project: ${auth.app.options.projectId}`);
+      console.log(`[Auth] Email: "${trimmedEmail}", Password Length: ${trimmedPassword.length}`);
+      const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
       const idToken = await userCredential.user.getIdToken();
 
+      console.log(`[Auth] Firebase login successful, syncing with backend...`);
       // Sync with backend (ensure user exists in MongoDB)
       await axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/firebase-sync", {
         idToken,
@@ -56,8 +67,17 @@ export default function LoginPage() {
       localStorage.setItem("token", idToken);
       navigate(redirectTo);
     } catch (error) {
-      console.error("Login failed", error);
-      toast.error(error.message || "Login failed");
+      console.error("[Auth] Login failed error:", error);
+      
+      // Handle the specific 'invalid-credential' error which is generic in v9+
+      let errorMessage = error.message;
+      if (error.code === 'auth/invalid-credential') {
+         errorMessage = "Invalid email or password. Please double-check your credentials. If you just reset your password, ensure the reset was successful.";
+      } else if (error.code) {
+         errorMessage = `Firebase Error: ${error.code} - ${error.message}`;
+      }
+      
+      toast.error(errorMessage, { duration: 6000 });
     } finally {
       setLoading(false);
     }
