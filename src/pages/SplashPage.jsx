@@ -93,7 +93,8 @@ export default function SplashPage() {
 
   // Fetch real database aggregated stats on mount
   useEffect(() => {
-    fetch('http://localhost:5000/api/stats')
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    fetch(`${backendUrl}/api/stats`)
       .then(res => res.json())
       .then(data => {
         if(data.users !== undefined) {
